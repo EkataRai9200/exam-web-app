@@ -3,49 +3,17 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 
-import * as React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import * as React from "react";
 
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import {
-  CheckCircle,
-  CheckCircleIcon,
-  Delete,
-  Flag,
-  FlagOff,
-  Menu,
-  ShieldQuestionIcon,
-  Timer,
-  Trash,
-  X,
-} from "lucide-react";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { Flag, FlagOff, Menu, Timer, Trash, X } from "lucide-react";
 
-import { Minus, Plus } from "lucide-react";
-import { Bar, BarChart, ResponsiveContainer } from "recharts";
+import { Badge } from "@/components/ui/badge";
 import {
   Drawer,
   DrawerClose,
@@ -56,57 +24,8 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Badge } from "@/components/ui/badge";
-
-const data = [
-  {
-    goal: 400,
-  },
-  {
-    goal: 300,
-  },
-  {
-    goal: 200,
-  },
-  {
-    goal: 300,
-  },
-  {
-    goal: 200,
-  },
-  {
-    goal: 278,
-  },
-  {
-    goal: 189,
-  },
-  {
-    goal: 239,
-  },
-  {
-    goal: 300,
-  },
-  {
-    goal: 200,
-  },
-  {
-    goal: 278,
-  },
-  {
-    goal: 189,
-  },
-  {
-    goal: 349,
-  },
-];
 
 export function DrawerDemo() {
-  const [goal, setGoal] = React.useState(350);
-
-  function onClick(adjustment: number) {
-    setGoal(Math.max(200, Math.min(400, goal + adjustment)));
-  }
-
   const answered = [2, 5, 10, 100, 50, 24, 45, 23, 67, 4, 34, 9, 8];
   const marked_for_review = [7, 4, 9, 12, 15, 66, 78, 55];
 
@@ -145,7 +64,7 @@ export function DrawerDemo() {
             <Button variant={"outline"}>Test 3</Button>
           </div>
           <div className="p-3 pb-0 grid grid-cols-6 gap-2 mb-5 h-[50vh] overflow-y-auto">
-            {Array.from({ length: 100 }, (_, index) => index).map((v, i) => {
+            {Array.from({ length: 100 }, (_, index) => index).map((_v, i) => {
               const sel =
                 answered.filter((a) => a == i).length > 0 ? "yes" : "no";
               const selmarked =
@@ -184,7 +103,7 @@ function MCQOption() {
 
   return (
     <>
-      {["", "", "", ""].map((v, i) => {
+      {["", "", "", ""].map((_v, i) => {
         const status = i == ans ? "answered" : "pending";
         return (
           <div
@@ -270,51 +189,6 @@ export function CardWithForm() {
   );
 }
 
-const invoices = [
-  {
-    invoice: "INV001",
-    paymentStatus: "Paid",
-    totalAmount: "$250.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV002",
-    paymentStatus: "Pending",
-    totalAmount: "$150.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV003",
-    paymentStatus: "Unpaid",
-    totalAmount: "$350.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV004",
-    paymentStatus: "Paid",
-    totalAmount: "$450.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV005",
-    paymentStatus: "Paid",
-    totalAmount: "$550.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV006",
-    paymentStatus: "Pending",
-    totalAmount: "$200.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-    totalAmount: "$300.00",
-    paymentMethod: "Credit Card",
-  },
-];
-
 export function TableDemo() {
   return (
     <Card className="w-full">
@@ -359,8 +233,8 @@ export function TakeExam() {
     <div className="flex min-h-screen w-full flex-col">
       {activeTab == "questions" ? (
         <>
-          <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 bg-muted md:gap-8 md:p-10">
-            <div className="flex justify-between p-2 bg-gray-100">
+          <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col p-2 gap-4 bg-muted md:gap-8 md:p-10">
+            <div className="flex justify-between items-center p-2">
               <h5 className="scroll-m-20 text-lg font-medium tracking-tight">
                 UPSC Mock Test
               </h5>
@@ -386,8 +260,8 @@ export function TakeExam() {
         </>
       ) : (
         <>
-          <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 bg-muted/40 p-2 md:gap-8 md:p-10">
-            <div className="flex justify-between p-2">
+          <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 bg-muted p-2 md:gap-8 md:p-10">
+            <div className="flex items-center justify-between p-2">
               <h5 className="scroll-m-20 text-lg font-medium tracking-tight">
                 UPSC Mock Test
               </h5>

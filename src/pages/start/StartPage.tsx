@@ -1,18 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import clsx from "clsx";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -22,10 +16,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import clsx from "clsx";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export function LanguageDropDown() {
-  const [position, setPosition] = React.useState("bottom");
-
   return (
     <Select>
       <SelectTrigger className="w-[180px]">
@@ -43,13 +39,11 @@ export function LanguageDropDown() {
 }
 
 const Instructions = () => {
-  const [selectedLang, setSelectedLang] = useState("EN");
-  const [tlcontent1, setTlcontent1] = useState(619); // Adjust as necessary for dynamic height
-  const [ins1, setIns1] = useState(true);
+  const [selectedLang] = useState("EN");
 
   return (
-    <div className="tl-page1">
-      <div className="tl-content">
+    <div>
+      <div>
         {selectedLang === "EN" && (
           <div>
             <p>
@@ -256,7 +250,7 @@ const Instructions = () => {
 };
 
 const Instructions2 = () => {
-  const [selectedLang, setSelectedLang] = useState("EN");
+  const [selectedLang] = useState("EN");
 
   return (
     <div className="tl-page1">
@@ -294,8 +288,6 @@ const Instructions2 = () => {
 };
 
 const Instructions3 = () => {
-  const [selectedLang, setSelectedLang] = useState("EN");
-
   return (
     <div className="flex h-full justify-center items-center">
       {/* code... */}
