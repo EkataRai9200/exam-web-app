@@ -1,299 +1,250 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import * as React from "react";
 
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { Flag, FlagOff, Menu, Timer, Trash, X } from "lucide-react";
+import { ChevronLeft, Flag, FlagOff, Menu, Trash, X } from "lucide-react";
 
+import { RenderQuestion } from "@/components/exams/questions/render";
+import CountdownTimer from "@/components/exams/timer/countDownTimer";
 import { Badge } from "@/components/ui/badge";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
 
-export function DrawerDemo() {
-  const answered = [2, 5, 10, 100, 50, 24, 45, 23, 67, 4, 34, 9, 8];
-  const marked_for_review = [7, 4, 9, 12, 15, 66, 78, 55];
-
-  return (
-    <Drawer direction="right">
-      <DrawerTrigger asChild>
-        <Button variant="outline">
-          <Menu />
-        </Button>
-      </DrawerTrigger>
-      <DrawerContent>
-        <div className="mx-auto h-screen w-full relative">
-          <div className="flex flex-row gap-2 justify-center items-center p-2 bg-gray-100">
-            <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-            <p className="font-medium">Raman Singh</p>
-          </div>
-          <DrawerHeader>
-            <DrawerTitle>Question Pallete</DrawerTitle>
-            <DrawerDescription>Set your daily activity goal.</DrawerDescription>
-          </DrawerHeader>
-          <DrawerClose asChild>
-            <Button
-              variant={"secondary"}
-              size={"sm"}
-              className="bg-gray-200 absolute right-2 top-2"
-            >
-              <X size={15} />
-            </Button>
-          </DrawerClose>
-          <div className="flex max-w-full overflow-x-auto gap-2 p-2 bg-gray-100">
-            <Button variant={"default"}>Test 1</Button>
-            <Button variant={"outline"}>Test 2</Button>
-            <Button variant={"outline"}>Test 3</Button>
-          </div>
-          <div className="p-3 pb-0 grid grid-cols-6 gap-2 mb-5 h-[50vh] overflow-y-auto">
-            {Array.from({ length: 100 }, (_, index) => index).map((_v, i) => {
-              const sel =
-                answered.filter((a) => a == i).length > 0 ? "yes" : "no";
-              const selmarked =
-                marked_for_review.filter((a) => a == i).length > 0
-                  ? "yes"
-                  : "no";
-              return (
-                <div className="flex items-center justify-center cursor-pointer">
-                  <div
-                    className={cn(
-                      "bg-gray-200 w-10 h-10 rounded-lg flex items-center justify-center",
-                      sel == "yes" ? "bg-green-500 text-white" : "",
-                      selmarked == "yes" ? "bg-yellow-500 text-white" : ""
-                    )}
-                  >
-                    {i + 1}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <DrawerFooter>
-            <Button className="bg-green-600">Submit Exam</Button>
-            <DrawerClose asChild>
-              <Button variant="outline">Close</Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </div>
-      </DrawerContent>
-    </Drawer>
-  );
-}
-
-function MCQOption() {
-  const [ans, setAns] = React.useState<number | undefined>(undefined);
-
-  return (
-    <>
-      {["", "", "", ""].map((_v, i) => {
-        const status = i == ans ? "answered" : "pending";
-        return (
-          <div
-            className={cn(
-              "w-full bg-white border rounded-lg p-2 flex items-center gap-2 cursor-pointer relative",
-              status == "pending" ? "bg-white" : "",
-              status == "answered" ? "bg-blue-100" : ""
-            )}
-            onClick={() => {
-              setAns(i);
-            }}
-          >
-            <div
-              className={cn(
-                "border w-10 h-10 flex items-center justify-center text-center rounded-full",
-                status == "answered" ? "bg-blue-400 text-white" : ""
-              )}
-            >
-              {String.fromCharCode(65 + i)}
-            </div>
-            <div>Option {i + 1}</div>
-            {/* <CheckCircle size={15} className="absolute right-5 text-blue-400" /> */}
-          </div>
-        );
-      })}
-    </>
-  );
-}
-
-export function CardWithForm() {
-  const [isMarked, setIsMarked] = React.useState(false);
-  const [isAnswered, setIsAnswered] = React.useState(true);
-
-  return (
-    <Card className="w-full">
-      <CardHeader className="relative">
-        <CardDescription>
-          <div className="flex justify-between items-center">
-            <p>Question 1</p>
-          </div>
-          <div>
-            {isMarked ? (
-              <p className="text-yellow-600 mt-2 italic font-medium">
-                Question is Marked for review
-              </p>
-            ) : (
-              ""
-            )}
-          </div>
-        </CardDescription>
-        <div className="absolute right-3 top-1 flex items-center gap-2">
-          {isAnswered ? (
-            <Button
-              size={"icon"}
-              onClick={() => setIsAnswered(false)}
-              className="bg-gray-300 hover:bg-gray-500 text-black"
-            >
-              <Trash size={15} />
-            </Button>
-          ) : (
-            ""
-          )}
-          <Button
-            size={"icon"}
-            onClick={() => setIsMarked(!isMarked)}
-            className={cn("text-black", "bg-yellow-300 hover:bg-yellow-500")}
-          >
-            {isMarked ? <FlagOff size={15} /> : <Flag size={15} />}
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        {" "}
-        <h3 className="scroll-m-20 text-xl font-semibold tracking-tight">
-          Question Name
-        </h3>
-        {/* MCQ OPTION */}
-        <div className="flex flex-col gap-3 mt-5">
-          <MCQOption />
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-export function TableDemo() {
-  return (
-    <Card className="w-full">
-      <Table>
-        <TableBody>
-          <TableRow>
-            <TableCell className="font-medium">Total Questions</TableCell>
-            <TableCell>
-              <Badge className="bg-gray-600">100</Badge>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className="font-medium">Answered Questions</TableCell>
-            <TableCell>
-              <Badge className="bg-green-600">30</Badge>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className="font-medium">UnAnswered Questions</TableCell>
-            <TableCell>
-              <Badge className="bg-red-600">20</Badge>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className="font-medium">Marked for Review</TableCell>
-            <TableCell>
-              <Badge className="bg-yellow-600">10</Badge>
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    </Card>
-  );
-}
+import { authenticateToken, getTestDetails } from "@/pages/start/StartPage";
+import { useSearchParams } from "react-router-dom";
+import { ExamDrawer } from "@/components/exams/drawer/drawer";
+import { useExamData } from "@/lib/hooks";
+import Loader from "@/components/blocks/Loader";
 
 export function TakeExam() {
-  const [activeTab, setActiveTab] = React.useState<"questions" | "submitExam">(
-    "questions"
-  );
+  const { examData, dispatch, fetchExamData } = useExamData();
 
+  const activeSubject = examData.studentExamState.activeSubject ?? -1;
+  const activeQuestion =
+    activeSubject >= 0 ? examData.studentExamState.activeQuestion ?? -1 : -1;
+
+  const setActiveSubject = (index: number) => {
+    dispatch({ type: "setActiveSubject", payload: index });
+  };
+  const setActiveQuestion = (index: number) => {
+    dispatch({ type: "setActiveQuestion", payload: index });
+  };
+
+  const [searchParams] = useSearchParams();
+
+  const handleNextQuestion = () => {
+    if (
+      activeQuestion <
+      examData.subjects[examData.studentExamState.activeSubject].questions
+        .length -
+        1
+    ) {
+      setActiveQuestion(activeQuestion + 1);
+    } else if (
+      examData.studentExamState.activeSubject + 1 <=
+      examData.subjects.length - 1
+    ) {
+      setActiveSubject(examData.studentExamState.activeSubject + 1);
+    }
+  };
+
+  const handlePreviousQuestion = () => {
+    if (activeQuestion > 0) {
+      setActiveQuestion(activeQuestion - 1);
+    } else if (examData.studentExamState.activeSubject > 0) {
+      setActiveSubject(examData.studentExamState.activeSubject - 1);
+    }
+  };
+
+  React.useEffect(() => {
+    setActiveQuestion(0);
+  }, [examData.studentExamState.activeSubject]);
+
+  React.useEffect(() => {
+    console.log("====================================");
+    console.log(examData);
+    console.log("====================================");
+  }, [examData]);
+
+  React.useEffect(() => {
+    if (!examData.test_name || examData.test_name == "") {
+      fetchExamData().then((data) => {
+        dispatch({ type: "init", payload: data });
+        if (data.start_date)
+          dispatch({ type: "start_exam", payload: data.start_date });
+      });
+    }
+  }, []);
   return (
-    <div className="flex min-h-screen w-full flex-col">
-      {activeTab == "questions" ? (
-        <>
-          <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col p-2 gap-4 bg-muted md:gap-8 md:p-10">
+    <>
+      {examData.subjects.length > 0 ? (
+        <div className="flex min-h-screen w-full flex-col">
+          <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-0 bg-muted md:gap-8 md:p-10">
             <div className="flex justify-between items-center p-2">
-              <h5 className="scroll-m-20 text-lg font-medium tracking-tight">
-                UPSC Mock Test
+              <h5 className="scroll-m-20 text-md font-medium tracking-tight">
+                {examData.test_name}
               </h5>
               <div className="flex gap-4">
-                <p className="flex items-center bg-gray-200 p-2 rounded-3xl gap-2 text-sm">
-                  <Timer size={20} />
-                  <span className="font-medium"> 05:00:00</span>
-                </p>
-                <DrawerDemo />
+                {parseInt(examData.test_time_limit) > 0 &&
+                  examData.studentExamState.start_date > 0 && (
+                    <CountdownTimer
+                      startTime={examData.studentExamState.start_date}
+                      initialSeconds={parseInt(examData.test_time_limit) * 60}
+                    />
+                  )}
+
+                <ExamDrawer key={2} />
                 {/* <Button className="bg-blue-600">Submit</Button> */}
               </div>
             </div>
-            <CardWithForm />
+
+            <div className="flex max-w-full overflow-x-auto gap-2 py-2 px-2 bg-gray-200">
+              {examData.subjects.map((v, i) => {
+                return (
+                  <Button
+                    key={v.sub_id}
+                    size={"sm"}
+                    variant={activeSubject == i ? "default" : "outline"}
+                    onClick={() => setActiveSubject(i)}
+                  >
+                    {v.name}
+                  </Button>
+                );
+              })}
+            </div>
+            {/* TODO: yet to be implemented */}
+            {examData.subjects.length > 0 &&
+              activeSubject >= 0 &&
+              examData.subject_time == "yes" && (
+                <div className="flex bg-gray-100 items-center justify-start gap-2 p-2">
+                  <p className="text-xs font-medium">
+                    Time Left For Subject :{" "}
+                  </p>
+                  <CountdownTimer
+                    startTime={examData.studentExamState.start_date}
+                    initialSeconds={
+                      parseInt(
+                        examData?.subjects[
+                          examData.studentExamState.activeSubject
+                        ]?.subject_time
+                      ) * 60
+                    }
+                  />
+                </div>
+              )}
+
+            {examData.subjects.length > 0 && (
+              <>
+                <div className="p-2 mb-[100px]">
+                  {examData.subjects[
+                    examData.studentExamState.activeSubject
+                  ]?.questions.map((v, i) => {
+                    return (
+                      <RenderQuestion
+                        index={i}
+                        subjectIndex={activeSubject}
+                        isActive={activeQuestion == i}
+                        setActive={setActiveQuestion}
+                        key={v._id.$oid}
+                      />
+                    );
+                  })}
+                </div>
+              </>
+            )}
           </main>
-          <div className="flex justify-between absolute bottom-0 w-full p-2">
-            <Button size={"lg"} variant="outline">
-              Previous Question
-            </Button>
-            <Button onClick={() => setActiveTab("submitExam")} size={"lg"}>
-              Next Question
-            </Button>
+          <div className="flex justify-between gap-2 items-center fixed bg-gray-100 bottom-0 w-full p-2">
+            <div className="flex justify-start gap-2 w-full p-2">
+              <Button
+                size={"icon"}
+                variant="outline"
+                onClick={handlePreviousQuestion}
+              >
+                <ChevronLeft />
+              </Button>
+              <Button
+                size={"icon"}
+                variant="default"
+                className="bg-gray-300 text-red-500"
+                onClick={() => {
+                  dispatch({
+                    type: "deleteAnswer",
+                    payload:
+                      examData.subjects[activeSubject].questions[activeQuestion]
+                        ._id.$oid,
+                  });
+                }}
+              >
+                <Trash size={18} />
+              </Button>
+              {examData.studentExamState.marked_for_review.filter((v, i) => {
+                return v.index == activeQuestion;
+              }).length > 0 ? (
+                <Button
+                  size={"icon"}
+                  variant="default"
+                  className="bg-yellow-400 text-dark"
+                  onClick={() => {
+                    dispatch({
+                      type: "removeMarkForReview",
+                      payload: {
+                        index: activeQuestion,
+                        subjectIndex: activeSubject,
+                      },
+                    });
+                  }}
+                >
+                  <FlagOff size={18} />
+                </Button>
+              ) : (
+                <Button
+                  size={"icon"}
+                  variant="default"
+                  className="bg-yellow-400 text-dark"
+                  onClick={() => {
+                    dispatch({
+                      type: "markForReview",
+                      payload: {
+                        index: activeQuestion,
+                        subjectIndex: activeSubject,
+                      },
+                    });
+                  }}
+                >
+                  <Flag size={18} />
+                </Button>
+              )}
+            </div>
+            {examData.subjects.length >= 0 && (
+              <>
+                {activeSubject == examData.subjects.length - 1 &&
+                activeQuestion ==
+                  examData.subjects[examData.studentExamState.activeSubject]
+                    .questions.length -
+                    1 ? (
+                  <Button
+                    onClick={() => {
+                      // TODO: submit exam
+                    }}
+                    className="bg-green-600 hover:bg-green-800"
+                    size={"lg"}
+                  >
+                    Submit
+                  </Button>
+                ) : (
+                  <Button onClick={handleNextQuestion} size={"lg"}>
+                    Next
+                  </Button>
+                )}
+              </>
+            )}
           </div>
-        </>
+        </div>
       ) : (
-        <>
-          <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 bg-muted p-2 md:gap-8 md:p-10">
-            <div className="flex items-center justify-between p-2">
-              <h5 className="scroll-m-20 text-lg font-medium tracking-tight">
-                UPSC Mock Test
-              </h5>
-              <div className="flex gap-4">
-                <p className="flex items-center bg-gray-200 p-2 rounded-3xl gap-2 text-sm">
-                  <Timer size={20} />
-                  <span className="font-medium"> 05:00:00</span>
-                </p>
-                <DrawerDemo />
-                {/* <Button className="bg-blue-600">Submit</Button> */}
-              </div>
-            </div>
-            <TableDemo />
-          </main>
-          <div className="flex flex-col justify-between absolute gap-4 bottom-0 w-full p-2 mb-2">
-            <Button
-              className="bg-green-600 w-full"
-              onClick={() => setActiveTab("submitExam")}
-              size={"lg"}
-            >
-              Submit Exam
-            </Button>
-            <Button
-              className="bg-gray-600 w-full"
-              onClick={() => setActiveTab("questions")}
-              size={"lg"}
-            >
-              Go Back to Questions
-            </Button>
-          </div>
-        </>
+        <Loader visible={true} />
       )}
-    </div>
+    </>
   );
 }
