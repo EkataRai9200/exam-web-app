@@ -1,6 +1,6 @@
 import { formatTime } from "@/lib/utils";
 import { Timer } from "lucide-react";
-import React, { useState, useEffect, useRef, startTransition } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface CountdownTimerProps {
   startTime: number;
@@ -24,8 +24,10 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
       const now = Date.now();
       const timeLeft = Math.max(0, endTimeRef.current - now);
       if (timeLeft / 1000 <= 0) {
-        if (intervalRef.current) clearInterval(intervalRef.current);
-        onExpire && onExpire();
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          onExpire && onExpire();
+        }
       }
       setTimeLeft(Math.floor(timeLeft / 1000));
     };

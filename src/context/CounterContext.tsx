@@ -1,5 +1,5 @@
 // CounterContext.tsx
-import React, { createContext, useReducer, ReactNode, Dispatch } from "react";
+import React, { Dispatch, createContext, useReducer } from "react";
 
 // Define the shape of our state and actions
 interface State {

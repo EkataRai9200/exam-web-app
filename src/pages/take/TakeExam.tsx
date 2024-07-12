@@ -1,25 +1,24 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import * as React from "react";
 
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
-import { ChevronLeft, Flag, FlagOff, Menu, Trash, X } from "lucide-react";
+import { ChevronLeft, Flag, FlagOff, Trash } from "lucide-react";
 
 import { RenderQuestion } from "@/components/exams/questions/render";
 import CountdownTimer from "@/components/exams/timer/countDownTimer";
-import { Badge } from "@/components/ui/badge";
 
-import { authenticateToken, getTestDetails } from "@/pages/start/StartPage";
-import { useSearchParams } from "react-router-dom";
-import { ExamDrawer } from "@/components/exams/drawer/drawer";
-import { useExamData } from "@/lib/hooks";
 import Loader from "@/components/blocks/Loader";
+import { ExamDrawer } from "@/components/exams/drawer/drawer";
+import { useExamData, useSaveExam } from "@/lib/hooks";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { cn, saveTest } from "@/lib/utils";
+
+// modules css
+import "ckeditor5/ckeditor5.css";
+import "react-simple-keyboard/build/css/index.css";
 
 export function TakeExam() {
-  const { examData, dispatch, fetchExamData } = useExamData();
+  const { examData, dispatch } = useExamData();
 
   const activeSubject = examData.studentExamState.activeSubject ?? -1;
   const activeQuestion =
@@ -33,6 +32,7 @@ export function TakeExam() {
   };
 
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const handleNextQuestion = () => {
     if (
@@ -58,25 +58,26 @@ export function TakeExam() {
     }
   };
 
-  React.useEffect(() => {
-    setActiveQuestion(0);
-  }, [examData.studentExamState.activeSubject]);
+  const saveExam = useSaveExam();
 
-  React.useEffect(() => {
-    console.log("====================================");
-    console.log(examData);
-    console.log("====================================");
-  }, [examData]);
+  // React.useEffect(() => {
+  //   if (examData.subjects.length > 0)
+  //     console.log(
+  //       examData.studentExamState.student_answers[
+  //         examData.subjects[activeSubject].questions[activeQuestion]._id.$oid
+  //       ]
+  //     );
+  // }, [examData]);
 
   React.useEffect(() => {
     if (!examData.test_name || examData.test_name == "") {
-      fetchExamData().then((data) => {
-        dispatch({ type: "init", payload: data });
-        if (data.start_date)
-          dispatch({ type: "start_exam", payload: data.start_date });
+      navigate({
+        pathname: "/start",
+        search: searchParams.toString(),
       });
     }
   }, []);
+
   return (
     <>
       {examData.subjects.length > 0 ? (
@@ -115,44 +116,49 @@ export function TakeExam() {
               })}
             </div>
             {/* TODO: yet to be implemented */}
-            {examData.subjects.length > 0 &&
-              activeSubject >= 0 &&
-              examData.subject_time == "yes" && (
-                <div className="flex bg-gray-100 items-center justify-start gap-2 p-2">
-                  <p className="text-xs font-medium">
-                    Time Left For Subject :{" "}
-                  </p>
-                  <CountdownTimer
-                    startTime={examData.studentExamState.start_date}
-                    initialSeconds={
-                      parseInt(
-                        examData?.subjects[
-                          examData.studentExamState.activeSubject
-                        ]?.subject_time
-                      ) * 60
-                    }
-                  />
-                </div>
-              )}
+            {examData.subjects.length > 0 && examData.subject_time == "yes" && (
+              <div className="flex bg-gray-100 items-center justify-start gap-2 p-2">
+                <p className="text-xs font-medium">Time Left For Subject : </p>
+                <CountdownTimer
+                  startTime={examData.studentExamState.start_date}
+                  initialSeconds={
+                    parseInt(
+                      examData?.subjects[
+                        examData.studentExamState.activeSubject
+                      ]?.subject_time
+                    ) * 60
+                  }
+                />
+              </div>
+            )}
 
-            {examData.subjects.length > 0 && (
+            {examData.subjects.length > 0 ? (
               <>
                 <div className="p-2 mb-[100px]">
-                  {examData.subjects[
-                    examData.studentExamState.activeSubject
-                  ]?.questions.map((v, i) => {
-                    return (
-                      <RenderQuestion
-                        index={i}
-                        subjectIndex={activeSubject}
-                        isActive={activeQuestion == i}
-                        setActive={setActiveQuestion}
-                        key={v._id.$oid}
-                      />
-                    );
-                  })}
+                  {examData.subjects.map((subject, subjectIndex) => (
+                    <div
+                      className={cn({
+                        hidden: activeSubject != subjectIndex,
+                        block: activeSubject == subjectIndex,
+                      })}
+                    >
+                      {subject.questions?.map((v, i) => {
+                        return (
+                          <RenderQuestion
+                            index={i}
+                            subjectIndex={subjectIndex}
+                            isActive={activeQuestion == i}
+                            setActive={setActiveQuestion}
+                            key={v._id.$oid}
+                          />
+                        );
+                      })}
+                    </div>
+                  ))}
                 </div>
               </>
+            ) : (
+              ""
             )}
           </main>
           <div className="flex justify-between gap-2 items-center fixed bg-gray-100 bottom-0 w-full p-2">
@@ -179,9 +185,11 @@ export function TakeExam() {
               >
                 <Trash size={18} />
               </Button>
-              {examData.studentExamState.marked_for_review.filter((v, i) => {
-                return v.index == activeQuestion;
-              }).length > 0 ? (
+
+              {examData.studentExamState.student_answers[
+                examData.subjects[activeSubject].questions[activeQuestion]._id
+                  .$oid
+              ]?.review ? (
                 <Button
                   size={"icon"}
                   variant="default"
@@ -220,6 +228,7 @@ export function TakeExam() {
             {examData.subjects.length >= 0 && (
               <>
                 {activeSubject == examData.subjects.length - 1 &&
+                examData.studentExamState.activeSubject >= 0 &&
                 activeQuestion ==
                   examData.subjects[examData.studentExamState.activeSubject]
                     .questions.length -
@@ -227,6 +236,12 @@ export function TakeExam() {
                   <Button
                     onClick={() => {
                       // TODO: submit exam
+                      saveTest(examData).then(() => {
+                        navigate({
+                          pathname: "/submit",
+                          search: searchParams.toString(),
+                        });
+                      });
                     }}
                     className="bg-green-600 hover:bg-green-800"
                     size={"lg"}

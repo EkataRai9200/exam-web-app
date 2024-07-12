@@ -3,24 +3,22 @@ import { LanguageDropdown } from "@/components/exams/language/LanguageDropdown";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ExamContext, ExamDetailData } from "@/context/ExamContext";
+import { ExamAuthUser, ExamDetailData } from "@/context/ExamContext";
 import { useExamData } from "@/lib/hooks";
 import { ExamTokenData } from "@/types/exams/ExamToken";
 import clsx from "clsx";
 import { jwtDecode } from "jwt-decode";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  Link,
   LoaderFunctionArgs,
-  createSearchParams,
   useLoaderData,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
 
 const Instructions = ({
-  InstructionsPage,
+  // InstructionsPage,
   setInstructionsPage,
 }: {
   InstructionsPage: any;
@@ -250,7 +248,7 @@ const Instructions = ({
 };
 
 const Instructions2 = ({
-  InstructionsPage,
+  // InstructionsPage,
   setInstructionsPage,
 }: {
   InstructionsPage: any;
@@ -265,20 +263,17 @@ const Instructions2 = ({
       search: searchParams.toString(),
     });
 
-    const api = await fetch(
-      `http://${examData.authUser?.institute_url}/student/livetest/start_exam`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          test_id: examData._id.$oid,
-          webtesttoken: examData.authUser?.webtesttoken,
-        }),
-      }
-    );
-    const res = await api.json();
+    await fetch(`${examData.authUser?.api_url}/start_exam`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        test_id: examData._id.$oid,
+        webtesttoken: examData.authUser?.webtesttoken,
+      }),
+    });
+    // const res = await api.json();
   };
 
   const [termsChecked, setTermsChecked] = useState(false);
@@ -360,18 +355,21 @@ export function StartPage() {
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    dispatch({
-      type: "init",
-      payload: { ...data.examData, authUser: data.authUser },
-    });
-    if (data.examData.start_date) {
-      dispatch({ type: "start_exam", payload: data.examData.start_date });
-      navigate({
-        pathname: "/take",
-        search: searchParams.toString(),
+    if (data.examData._id.$oid) {
+      dispatch({
+        type: "init",
+        payload: { ...data.examData, authUser: data.authUser },
       });
+
+      if (data.examData?.start_date) {
+        // dispatch({ type: "start_exam", payload: data.examData?.start_date });
+        navigate({
+          pathname: "/take",
+          search: searchParams.toString(),
+        });
+      }
+      setShowLoading(false);
     }
-    setShowLoading(false);
   }, [data]);
 
   return (
@@ -413,7 +411,7 @@ export const authenticateToken = async (token: string | null) => {
   const decoded = jwtDecode(token as string) as ExamTokenData;
 
   const data = await fetch(
-    `http://${decoded.institute_url}/student/livetest/generateTeskTokenForStudentInternal/65f15ded47ae0ebe07035fa5?authtoken=${decoded.student_token}`
+    `${decoded.api_url}/generateTeskTokenForStudentInternal/${decoded.test_id}?token=${token}`
   );
 
   const json = await data.json();
@@ -435,12 +433,16 @@ export const getTestDetails = async (
   const decoded = jwtDecode(token as string) as ExamTokenData;
 
   const examReq = await fetch(
-    `http://${decoded.institute_url}/student/livetest/get-test-details/${decoded.package_id}/${decoded.test_series_id}/${decoded.test_id}/undefined?webtesttoken=${webtesttoken}`
+    `${decoded.api_url}/get-test-details/${decoded.package_id}/${decoded.test_series_id}/${decoded.test_id}/undefined?webtesttoken=${webtesttoken}`
   );
 
-  const examData = (await examReq.json()).data;
+  const examData = await examReq.json();
 
-  return examData;
+  if (!examData.data) {
+    throw new Error(examData.msg);
+  }
+
+  return examData.data;
 };
 
 export const StartPageLoaderData = async ({

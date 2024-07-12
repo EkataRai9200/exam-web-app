@@ -6,43 +6,49 @@ import React, { useEffect } from "react";
 
 interface RenderMCQOptionProps extends QuestionTypeProps {}
 
-export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
+export function MAQ({ index, subjectIndex }: RenderMCQOptionProps) {
   const { examData, dispatch } = useExamData();
   const [options, setOptions] = React.useState<Array<string | undefined>>([]);
-
   const question: Question = examData.subjects[subjectIndex].questions[index];
   const activeLang = examData.studentExamState.activeLang;
+  const studentResponse =
+    examData.studentExamState.student_answers[question._id.$oid] ?? {};
+  const ans = studentResponse?.ans ?? "";
+  const ansArr = ans != "" ? ans.split(",") : [];
 
   React.useEffect(() => {
     if (activeLang == "EN") {
-      setOptions([
-        question?.opt1,
-        question?.opt2,
-        question?.opt3,
-        question?.opt4,
-      ]);
+      let o = [question?.opt1, question?.opt2, question?.opt3, question?.opt4];
+      if (question?.opt5) o.push(question?.opt5);
+      setOptions(o);
     } else {
       if (question?.hi_opt1) {
-        setOptions([
+        let o_hi = [
           question?.hi_opt1,
           question?.hi_opt2,
           question?.hi_opt3,
           question?.hi_opt4,
-        ]);
+        ];
+        if (question?.hi_opt5) o_hi.push(question?.hi_opt5);
+        setOptions(o_hi);
       } else {
         setOptions([]);
       }
     }
   }, [examData]);
 
-  const studentResponse =
-    examData.studentExamState.student_answers[question._id.$oid] ?? {};
-  const ans = studentResponse?.ans ?? "";
-
   const markAnswer = (i: number) => {
+    if (ansArr.includes(String.fromCharCode(65 + i).toLowerCase()))
+      ansArr.splice(
+        ansArr.indexOf(String.fromCharCode(65 + i).toLowerCase()),
+        1
+      );
+    else ansArr.push(String.fromCharCode(65 + i).toLowerCase());
+    console.log(ansArr);
+
     const payload = {
       ...studentResponse,
-      ans: String.fromCharCode(65 + i).toLowerCase(),
+      ans: ansArr.join(",").trim(),
       sub_id: examData.subjects[subjectIndex].sub_id,
       qid: question._id.$oid,
       qtype: question.question_type,
@@ -65,10 +71,11 @@ export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
       ></div>
 
       {options.map((_v, i) => {
-        const status =
-          String.fromCharCode(65 + i).toLowerCase() == ans
-            ? "answered"
-            : "pending";
+        const status = ansArr.includes(
+          String.fromCharCode(65 + i).toLowerCase()
+        )
+          ? "answered"
+          : "pending";
         return (
           <div
             key={i}

@@ -58,7 +58,7 @@ export function ExamDrawer() {
           <div className="p-3 pb-0 grid grid-cols-6 auto-rows-max gap-2 mb-5 h-[60vh] overflow-y-auto">
             {examData?.subjects[
               examData.studentExamState.activeSubject
-            ]?.questions.map((_v, i) => {
+            ]?.questions?.map((_v, i) => {
               const isAnswered = examData.studentExamState.student_answers[
                 _v._id.$oid
               ]
@@ -66,7 +66,7 @@ export function ExamDrawer() {
                 : false;
               const isMarkedForReview =
                 examData.studentExamState.marked_for_review.filter(
-                  (reviewAns, reviewAnsIndex) => {
+                  (reviewAns, _reviewAnsIndex) => {
                     return reviewAns.index == i;
                   }
                 ).length > 0

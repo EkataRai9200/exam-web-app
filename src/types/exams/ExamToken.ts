@@ -7,5 +7,6 @@ export interface ExamTokenData {
   package_id: string;
   test_series_id: string;
   test_id: string;
+  api_url: string;
   student_token: string;
 }

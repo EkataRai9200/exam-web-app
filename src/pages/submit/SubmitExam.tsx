@@ -6,11 +6,24 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import React from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { authenticateToken, getTestDetails } from "../start/StartPage";
+import { ExamDetailData } from "@/context/ExamContext";
+
+import {
+  Carousel,
+  CarouselContent,
+  type CarouselApi,
+  CarouselItem,
+} from "@/components/ui/carousel";
+const calcTotalQs = (subjects: ExamDetailData["subjects"]): number => {
+  return subjects.reduce((acc, v) => acc + v.questions.length, 0);
+};
 
 export function TableDemo() {
-  const { examData, dispatch } = useExamData();
+  const { examData } = useExamData();
+
+  const totalQs = calcTotalQs(examData.subjects);
 
   return (
     <Card className="w-full">
@@ -19,25 +32,36 @@ export function TableDemo() {
           <TableRow>
             <TableCell className="font-medium">Total Questions</TableCell>
             <TableCell>
-              <Badge className="bg-gray-600">{examData.total_qs}</Badge>
+              <Badge className="bg-gray-600">{totalQs}</Badge>
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="font-medium">Answered Questions</TableCell>
             <TableCell>
-              <Badge className="bg-green-600">10</Badge>
+              <Badge className="bg-green-600">
+                {Object.keys(examData.studentExamState.student_answers).length}
+              </Badge>
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="font-medium">UnAnswered Questions</TableCell>
             <TableCell>
-              <Badge className="bg-red-600">20</Badge>
+              <Badge className="bg-red-600">
+                {totalQs -
+                  Object.keys(examData.studentExamState.student_answers).length}
+              </Badge>
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="font-medium">Marked for Review</TableCell>
             <TableCell>
-              <Badge className="bg-yellow-600">10</Badge>
+              <Badge className="bg-yellow-600">
+                {
+                  Object.values(
+                    examData.studentExamState.student_answers
+                  ).filter((v) => v.review).length
+                }
+              </Badge>
             </TableCell>
           </TableRow>
         </TableBody>
@@ -46,28 +70,118 @@ export function TableDemo() {
   );
 }
 
-export function TableDemo2() {
+export function SubjectWiseOverview() {
+  const { examData } = useExamData();
+  const [api, setApi] = React.useState<CarouselApi>();
+  const [current, setCurrent] = React.useState(0);
+  const [count, setCount] = React.useState(0);
+  React.useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap() + 1);
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap() + 1);
+    });
+  }, [api]);
+
   return (
-    <Card className="w-full">
+    <>
+      <div className="flex max-w-full overflow-x-auto gap-2 p-1 bg-gray-200">
+        {examData.subjects.map((s, i) => (
+          <Button
+            key={`button_${s.sub_id}`}
+            size={"sm"}
+            variant={i === api?.selectedScrollSnap() ? "default" : "outline"}
+            onClick={() => api?.scrollTo(i)}
+          >
+            {s.name}
+          </Button>
+        ))}
+      </div>
+      <Carousel setApi={setApi}>
+        <CarouselContent>
+          {examData.subjects.map((s) => (
+            <CarouselItem>
+              <SubjectOverviewBlock subject={s} />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
+    </>
+  );
+}
+
+export function SubjectOverviewBlock({
+  subject: s,
+}: {
+  subject: ExamDetailData["subjects"][0];
+}) {
+  const { examData } = useExamData();
+  return (
+    <Card key={`card_${s.sub_id}`} className="w-full">
       <CardContent className="px-3 py-2">
-        <h3 className="text-lg font-medium mb-2">Subject 1</h3>
+        <h3 className="text-lg font-medium mb-2">{s.name}</h3>
         <div className="grid grid-cols-3 font-medium text-xs gap-1 justify-between tracking-tight">
           <div>
-            <Badge className="px-1 bg-green-600">100</Badge> Answered
+            <Badge className="min-w-5 max-w-fit flex justify-center  bg-gray-600">
+              {s.questions.length}
+            </Badge>
+            Total Questions
           </div>
           <div>
-            <Badge className="px-1 bg-red-600">100</Badge> UnAnswered
+            <Badge className="min-w-5 max-w-fit flex justify-center  bg-green-600">
+              {
+                Object.values(examData.studentExamState.student_answers).filter(
+                  (a) => a.sub_id == s.sub_id
+                ).length
+              }
+            </Badge>
+            Answered
           </div>
           <div>
-            <Badge className="px-1 bg-yellow-600">100</Badge> Marked
+            <Badge className="min-w-5 max-w-fit flex justify-center  bg-red-600">
+              {s.questions.length -
+                Object.values(examData.studentExamState.student_answers).filter(
+                  (a) => a.sub_id == s.sub_id
+                ).length}
+            </Badge>
+            UnAnswered
           </div>
           <div>
-            <Badge className="px-1 bg-purple-600">100</Badge> Marked Answer
+            <Badge className="min-w-5 max-w-fit flex justify-center  bg-yellow-600">
+              {
+                Object.values(examData.studentExamState.student_answers).filter(
+                  (a) => a.sub_id == s.sub_id && a.review
+                ).length
+              }
+            </Badge>
+            Marked
           </div>
           <div>
-            <Badge className="px-1 bg-gray-600">10</Badge> Not Visited
+            <Badge className="min-w-5 max-w-fit flex justify-center  bg-purple-600">
+              {
+                Object.values(examData.studentExamState.student_answers).filter(
+                  (a) => a.sub_id == s.sub_id && a.review
+                ).length
+              }
+            </Badge>
+            Marked Answer
           </div>
-        </div>{" "}
+          <div>
+            <Badge className="min-w-5 max-w-fit flex justify-center  bg-gray-200 text-black">
+              {
+                Object.values(examData.studentExamState.student_answers).filter(
+                  (a) => a.sub_id == s.sub_id && a.review
+                ).length
+              }
+            </Badge>
+            Not Visited
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
@@ -77,15 +191,13 @@ function SubmitExam() {
   const { examData, dispatch } = useExamData();
   const [searchParams] = useSearchParams();
 
+  const navigate = useNavigate();
+
   React.useEffect(() => {
     if (!examData.test_name || examData.test_name == "") {
-      authenticateToken(searchParams.get("token") ?? "").then((authUser) => {
-        getTestDetails(
-          searchParams.get("token") ?? "",
-          authUser.webtesttoken
-        ).then((examData) => {
-          dispatch({ type: "init", payload: examData });
-        });
+      navigate({
+        pathname: "/start",
+        search: searchParams.toString(),
       });
     }
   }, []);
@@ -99,7 +211,7 @@ function SubmitExam() {
         <div className="flex gap-4">
           {examData.subjects.length > 0 ? (
             <CountdownTimer
-              startTime={examData.studentExamState.start_time}
+              startTime={examData.studentExamState.start_date}
               initialSeconds={parseInt(examData.time_limit) * 60}
             />
           ) : (
@@ -109,34 +221,15 @@ function SubmitExam() {
       </div>
       <div className="flex flex-col gap-2">
         <TableDemo />
-        <div className="flex max-w-full overflow-x-auto gap-2 p-1 bg-gray-200">
-          <Button size={"sm"} variant={"default"}>
-            Subject 1
-          </Button>
-          <Button size={"sm"} variant={"outline"}>
-            Subject 2
-          </Button>
-          <Button size={"sm"} variant={"outline"}>
-            Subject 3
-          </Button>
-        </div>
-        <TableDemo2 />
+        <SubjectWiseOverview />
       </div>
       <div className="flex flex-col justify-between gap-4 bottom-0 w-full p-2">
         <Button
           className="bg-green-600 w-full"
-          //   onClick={() => setActiveTab("submitExam")}
           size={"lg"}
-          asChild
+          onClick={() => dispatch({ type: "submit_exam", payload: examData })}
         >
-          <Link
-            to={{
-              pathname: "/take",
-              search: searchParams.toString(),
-            }}
-          >
-            Submit Exam
-          </Link>
+          Submit Exam
         </Button>
         <Button className="bg-gray-600 w-full" size={"lg"} asChild>
           <Link

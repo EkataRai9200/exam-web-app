@@ -1,16 +1,21 @@
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-} from "@/components/ui/card";
-import React from "react";
 import { LanguageDropdown } from "@/components/exams/language/LanguageDropdown";
-import { MCQOption } from "@/components/exams/questions/mcq";
-import { ExamDetailData, Question } from "@/context/ExamContext";
-import { cn } from "@/lib/utils";
+import { MAQ } from "@/components/exams/questions/maq";
+import { MCQ } from "@/components/exams/questions/mcq";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useExamData } from "@/lib/hooks";
+import { cn } from "@/lib/utils";
+import React from "react";
+import { Subjective } from "./subjective";
+import { NAT } from "./nat";
+
+export enum QuestionType {
+  MCQ = "MCQ",
+  MAQ = "MAQ",
+  VMAQ = "VMAQ",
+  SUBJECTIVE = "SUBJECTIVE",
+  NAT = "NAT",
+}
 
 interface RenderQuestionProps {
   index: number;
@@ -19,15 +24,19 @@ interface RenderQuestionProps {
   subjectIndex: number;
 }
 
+export interface QuestionTypeProps {
+  index: number;
+  subjectIndex: number;
+}
+
 export function RenderQuestion({
   index,
   isActive,
   subjectIndex,
 }: RenderQuestionProps) {
-  const [isMarked, setIsMarked] = React.useState(false);
-  const [isAnswered, setIsAnswered] = React.useState(true);
+  const [isMarked] = React.useState(false);
 
-  const { examData, dispatch } = useExamData();
+  const { examData } = useExamData();
   const question = examData.subjects[subjectIndex].questions[index];
 
   return (
@@ -46,7 +55,7 @@ export function RenderQuestion({
               ""
             )}
           </div>
-          <div className="absolute right-3 top-0 flex items-center gap-2 pe-2">
+          <div className="absolute right-3 top-0 flex items-center gap-2">
             <Badge className="bg-gray-100 text-gray-600 font-medium uppercase px-1">
               {question.question_type}
             </Badge>
@@ -59,16 +68,20 @@ export function RenderQuestion({
             <LanguageDropdown />
           </div>
         </CardHeader>
-        <CardContent>
-          {" "}
-          {/* <h3 className="scroll-m-20 text-xl font-semibold tracking-tight">
-            {}
-          </h3> */}
-          <div dangerouslySetInnerHTML={{ __html: question.question }}></div>
-          {/* MCQ OPTION */}
+        <CardContent className="px-3">
           <div className="flex flex-col gap-3 mt-5">
-            {question.question_type == "MCQ" && (
-              <MCQOption subjectIndex={subjectIndex} index={index} />
+            {question.question_type == QuestionType.MCQ && (
+              <MCQ subjectIndex={subjectIndex} index={index} />
+            )}
+            {(question.question_type == QuestionType.MAQ ||
+              question.question_type == QuestionType.VMAQ) && (
+              <MAQ subjectIndex={subjectIndex} index={index} />
+            )}
+            {question.question_type == QuestionType.SUBJECTIVE && (
+              <Subjective subjectIndex={subjectIndex} index={index} />
+            )}
+            {question.question_type == QuestionType.NAT && (
+              <NAT subjectIndex={subjectIndex} index={index} />
             )}
           </div>
         </CardContent>

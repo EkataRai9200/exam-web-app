@@ -1,6 +1,5 @@
-import React from "react";
-import Spinner from "../ui/spinner";
 import { cn } from "@/lib/utils";
+import Spinner from "../ui/spinner";
 
 function Loader({ visible }: { visible: boolean }) {
   return (

@@ -1,5 +1,7 @@
 // ExamContext.tsx
-import React, { createContext, useReducer, Dispatch } from "react";
+import { toast } from "@/components/ui/use-toast";
+import { saveTest } from "@/lib/utils";
+import React, { Dispatch, createContext, useReducer } from "react";
 
 export interface Instruction {
   _id: {
@@ -19,11 +21,18 @@ export interface Question {
   question_type: string;
   font: string;
   question: string;
+  hi_question?: string;
   language: string;
   opt1?: string;
   opt2?: string;
   opt3?: string;
   opt4?: string;
+  opt5?: string;
+  hi_opt1?: string;
+  hi_opt2?: string;
+  hi_opt3?: string;
+  hi_opt4?: string;
+  hi_opt5?: string;
   passage_desc: Array<PassageDesc>;
   hi_passage_desc: Array<any>;
   passage_id?: {
@@ -50,14 +59,40 @@ export interface Answer {
   image: Array<string>;
   pdf: string;
   qid: string;
+  sub_id: string;
   qtype: string;
   tt: number;
+  review?: boolean;
+}
+
+export enum ExamLanguage {
+  EN = "English",
+  HI = "Hindi",
+}
+
+// util func
+export function createAnswer(obj: any): Answer {
+  if (!obj.qid || !obj.qtype) {
+    throw new Error("Invalid Answer Data");
+  }
+
+  return {
+    ans: "",
+    image: [],
+    pdf: "",
+    qid: "",
+    qtype: "",
+    sub_id: "",
+    tt: 0,
+    ...obj,
+  };
 }
 
 export interface StudentExamState {
   start_date: number;
   activeSubject: number;
   activeQuestion: number;
+  activeLang: keyof typeof ExamLanguage;
   student_answers: {
     [key: string]: Answer;
   };
@@ -81,6 +116,7 @@ export interface ExamAuthUser {
   sub: {};
   test_id: string;
   test_series_id: string;
+  api_url: string;
   _id: ObjectID;
 }
 
@@ -96,7 +132,8 @@ export interface ExamDetailData {
   subject_lock: number;
   qlimit: string;
   is_proctoring_allow: any;
-  lang: string;
+  lang: ExamLanguage;
+  available_languages: Array<keyof typeof ExamLanguage>;
   is_calc_allow: string;
   is_keyboard_allow: any;
   passage_alignment: string;
@@ -121,6 +158,8 @@ type Action = {
     | "markAnswer"
     | "markForReview"
     | "removeMarkForReview"
+    | "setActiveLang"
+    | "submit_exam"
     | "deleteAnswer";
   payload: any;
 };
@@ -138,7 +177,8 @@ const initialState: ExamDetailData = {
   subject_lock: 0,
   qlimit: "",
   is_proctoring_allow: "",
-  lang: "",
+  lang: ExamLanguage.EN,
+  available_languages: [],
   is_calc_allow: "",
   is_keyboard_allow: "",
   passage_alignment: "",
@@ -160,6 +200,7 @@ const initialState: ExamDetailData = {
     start_date: 0,
     activeSubject: 0,
     activeQuestion: 0,
+    activeLang: "EN",
     student_answers: {},
     marked_for_review: [],
   },
@@ -167,39 +208,93 @@ const initialState: ExamDetailData = {
 
 // Create the reducer function
 const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
+  console.log("reducer action is called", action.type, action.payload);
   switch (action.type) {
     case "init":
-      return { ...state, ...action.payload };
+      let newState = { ...state, ...action.payload };
+      newState.studentExamState.student_answers = action.payload.response ?? {};
+      if (action.payload.start_date)
+        state.studentExamState.start_date = action.payload.start_date;
+      return newState;
     case "start_exam":
       state.studentExamState.start_date = action.payload;
       return { ...state };
     case "setActiveSubject":
       state.studentExamState.activeSubject = action.payload;
+      state.studentExamState.activeQuestion = 0;
       return { ...state };
     case "setActiveQuestion":
       state.studentExamState.activeQuestion = action.payload;
       return { ...state };
     case "markAnswer":
-      state.studentExamState.student_answers[action.payload.qid] =
-        action.payload;
-      return { ...state };
+      const d = { ...state };
+      d.studentExamState.student_answers[action.payload.qid] = createAnswer(
+        action.payload
+      );
+      saveTest(d);
+      return d;
     case "deleteAnswer":
       delete state.studentExamState.student_answers[action.payload];
+      saveTest(state);
       return { ...state };
     case "markForReview":
+      const markedState = { ...state };
       const isMarked = state.studentExamState.marked_for_review.findIndex(
-        (v, i) => v.index == action.payload.index
+        (v) => v.index == action.payload.index
       );
       if (isMarked < 0)
         state.studentExamState.marked_for_review.push(action.payload);
-      return { ...state };
+
+      let markQs =
+        markedState.subjects[action.payload.subjectIndex].questions[
+          action.payload.index
+        ];
+
+      if (!markedState.studentExamState.student_answers[markQs._id.$oid])
+        markedState.studentExamState.student_answers[markQs._id.$oid] = {
+          ans: "",
+          image: [],
+          pdf: "",
+          qid: markQs._id.$oid,
+          qtype: markQs.question_type,
+          sub_id: markedState.subjects[action.payload.subjectIndex].sub_id,
+          tt: 0,
+          review: true,
+        };
+      else {
+        markedState.studentExamState.student_answers[markQs._id.$oid] = {
+          ...markedState.studentExamState.student_answers[markQs._id.$oid],
+          review: true,
+        };
+      }
+      return markedState;
     case "removeMarkForReview":
+      let removeMarkState = { ...state };
       const isMarkedAns = state.studentExamState.marked_for_review.findIndex(
-        (v, i) => v.index == action.payload.index
+        (v) => v.index == action.payload.index
       );
       if (isMarkedAns >= 0)
         state.studentExamState.marked_for_review.splice(isMarkedAns, 1);
-      return { ...state };
+      let removeMarkQs =
+        removeMarkState.subjects[action.payload.subjectIndex].questions[
+          action.payload.index
+        ];
+      removeMarkState.studentExamState.student_answers[
+        removeMarkQs._id.$oid
+      ].review = false;
+      return removeMarkState;
+    case "setActiveLang":
+      const activeLangState = { ...state };
+      activeLangState.studentExamState.activeLang = action.payload;
+      return activeLangState;
+    case "submit_exam":
+      const submitState = { ...state };
+      saveTest(submitState, "Yes").then(() => {
+        toast({
+          title: "Exam submitted successfully",
+        });
+      });
+      return submitState;
     default:
       return state;
   }

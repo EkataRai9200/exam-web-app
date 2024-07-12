@@ -1,5 +1,4 @@
 // Importing components for different routes
-import { Dashboard } from "@/pages/Dashboard.tsx";
 import Layout from "@/pages/Layout";
 import { StartPage, StartPageLoaderData } from "@/pages/start/StartPage.tsx";
 import SubmitExam from "@/pages/submit/SubmitExam";
@@ -10,11 +9,12 @@ import { RouteObject, createBrowserRouter } from "react-router-dom";
 // Defining routes configuration
 export const routes: RouteObject[] = [
   {
-    Component: Layout,
+    // Component: Layout,
+    element: <Layout />,
     children: [
       {
         path: "/",
-        Component: Dashboard,
+        Component: TakeExam,
       },
       {
         path: "/start",
@@ -34,4 +34,4 @@ export const routes: RouteObject[] = [
 ];
 
 // Creating a browser router with the defined routes
-export const router = createBrowserRouter(routes, { basename: "/exam" });
+export const router = createBrowserRouter(routes);
