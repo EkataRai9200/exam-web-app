@@ -3,7 +3,7 @@ import { LanguageDropdown } from "@/components/exams/language/LanguageDropdown";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ExamAuthUser, ExamDetailData } from "@/context/ExamContext";
+import { ExamDetailData } from "@/context/ExamContext";
 import { useExamData } from "@/lib/hooks";
 import { ExamTokenData } from "@/types/exams/ExamToken";
 import clsx from "clsx";

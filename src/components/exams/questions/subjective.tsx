@@ -1,6 +1,6 @@
+import { Button } from "@/components/ui/button";
 import { Question } from "@/context/ExamContext";
 import { useExamData } from "@/lib/hooks";
-import { QuestionTypeProps } from "./render";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import {
   Bold,
@@ -11,9 +11,9 @@ import {
   Paragraph,
   Undo,
 } from "ckeditor5";
+import { CheckCircle } from "lucide-react";
 import React, { useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Check, CheckCircle } from "lucide-react";
+import { QuestionTypeProps } from "./render";
 
 interface RenderMCQOptionProps extends QuestionTypeProps {}
 

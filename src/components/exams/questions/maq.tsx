@@ -1,8 +1,8 @@
-import { ExamLanguage, Question } from "@/context/ExamContext";
+import { Question } from "@/context/ExamContext";
 import { useExamData } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
+import React from "react";
 import { QuestionTypeProps } from "./render";
-import React, { useEffect } from "react";
 
 interface RenderMCQOptionProps extends QuestionTypeProps {}
 

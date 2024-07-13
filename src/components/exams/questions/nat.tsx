@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Question } from "@/context/ExamContext";
 import { useExamData } from "@/lib/hooks";
 import { CheckCircle } from "lucide-react";
 import React, { useEffect } from "react";
+import Keyboard from "react-simple-keyboard";
 import { QuestionTypeProps } from "./render";
 
 interface RenderMCQOptionProps extends QuestionTypeProps {}
-import Keyboard from "react-simple-keyboard";
-import { Input } from "@/components/ui/input";
 
 export function NAT({ index, subjectIndex }: RenderMCQOptionProps) {
   const { examData, dispatch } = useExamData();
@@ -15,7 +15,7 @@ export function NAT({ index, subjectIndex }: RenderMCQOptionProps) {
   const activeLang = examData.studentExamState.activeLang;
   const studentResponse =
     examData.studentExamState.student_answers[question._id.$oid] ?? {};
-  const ans = studentResponse?.ans ?? "";
+  // const ans = studentResponse?.ans ?? "";
 
   const [value, setValue] = React.useState("");
 

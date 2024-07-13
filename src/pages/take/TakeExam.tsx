@@ -9,9 +9,9 @@ import CountdownTimer from "@/components/exams/timer/countDownTimer";
 
 import Loader from "@/components/blocks/Loader";
 import { ExamDrawer } from "@/components/exams/drawer/drawer";
-import { useExamData, useSaveExam } from "@/lib/hooks";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useExamData } from "@/lib/hooks";
 import { cn, saveTest } from "@/lib/utils";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 // modules css
 import "ckeditor5/ckeditor5.css";
@@ -58,7 +58,7 @@ export function TakeExam() {
     }
   };
 
-  const saveExam = useSaveExam();
+  // const saveExam = useSaveExam();
 
   // React.useEffect(() => {
   //   if (examData.subjects.length > 0)

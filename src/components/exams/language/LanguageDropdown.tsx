@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/select";
 import { ExamLanguage } from "@/context/ExamContext";
 import { useExamData } from "@/lib/hooks";
-import { useEffect, useState } from "react";
 
 /**
  * Renders a dropdown component for selecting a language.

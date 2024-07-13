@@ -5,16 +5,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import { ExamDetailData } from "@/context/ExamContext";
 import React from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { authenticateToken, getTestDetails } from "../start/StartPage";
-import { ExamDetailData } from "@/context/ExamContext";
 
 import {
   Carousel,
   CarouselContent,
-  type CarouselApi,
   CarouselItem,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 const calcTotalQs = (subjects: ExamDetailData["subjects"]): number => {
   return subjects.reduce((acc, v) => acc + v.questions.length, 0);
@@ -73,8 +72,8 @@ export function TableDemo() {
 export function SubjectWiseOverview() {
   const { examData } = useExamData();
   const [api, setApi] = React.useState<CarouselApi>();
-  const [current, setCurrent] = React.useState(0);
-  const [count, setCount] = React.useState(0);
+  const [_current, setCurrent] = React.useState(0);
+  const [_count, setCount] = React.useState(0);
   React.useEffect(() => {
     if (!api) {
       return;

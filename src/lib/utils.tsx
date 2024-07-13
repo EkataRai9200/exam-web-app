@@ -1,6 +1,6 @@
 import { ToastAction } from "@/components/ui/toast";
 import { toast } from "@/components/ui/use-toast";
-import { Answer, ExamAuthUser, ExamDetailData } from "@/context/ExamContext";
+import { ExamAuthUser, ExamDetailData } from "@/context/ExamContext";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
