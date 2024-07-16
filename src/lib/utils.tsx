@@ -44,7 +44,7 @@ export function saveTest(
 }
 
 export const showSaveTestError = (
-  callback: Function,
+  callback: (payload: any) => void,
   payload: ExamDetailData
 ) => {
   toast({

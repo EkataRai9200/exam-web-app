@@ -67,7 +67,7 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
       <CKEditor
         editor={ClassicEditor}
         config={{
-          initialData: ans,
+          initialData: ans.toString(),
           toolbar: {
             items: ["undo", "redo", "|", "bold", "italic"],
           },

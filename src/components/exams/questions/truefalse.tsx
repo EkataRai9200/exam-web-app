@@ -6,54 +6,33 @@ import { QuestionTypeProps } from "./render";
 
 interface RenderMCQOptionProps extends QuestionTypeProps {}
 
-export function MAQ({ index, subjectIndex }: RenderMCQOptionProps) {
+export function TRUEFALSE({ index, subjectIndex }: RenderMCQOptionProps) {
   const { examData, dispatch } = useExamData();
   const [options, setOptions] = React.useState<Array<string | undefined>>([]);
+
   const question: Question = examData.subjects[subjectIndex].questions[index];
   const activeLang = examData.studentExamState.activeLang;
-  const studentResponse =
-    examData.studentExamState.student_answers[question._id.$oid] ?? {};
-  const ans = studentResponse?.ans ?? "";
-  const ansArr = typeof ans == "string" && ans != "" ? ans.split(",") : [];
 
   React.useEffect(() => {
     if (activeLang == "EN") {
-      const o = [
-        question?.opt1,
-        question?.opt2,
-        question?.opt3,
-        question?.opt4,
-      ];
-      if (question?.opt5) o.push(question?.opt5);
-      setOptions(o);
+      setOptions([question?.opt1, question?.opt2]);
     } else {
       if (question?.hi_opt1) {
-        const o_hi = [
-          question?.hi_opt1,
-          question?.hi_opt2,
-          question?.hi_opt3,
-          question?.hi_opt4,
-        ];
-        if (question?.hi_opt5) o_hi.push(question?.hi_opt5);
-        setOptions(o_hi);
+        setOptions([question?.hi_opt1, question?.hi_opt2]);
       } else {
         setOptions([]);
       }
     }
   }, [examData]);
 
-  const markAnswer = (i: number) => {
-    if (ansArr.includes(String.fromCharCode(65 + i).toLowerCase()))
-      ansArr.splice(
-        ansArr.indexOf(String.fromCharCode(65 + i).toLowerCase()),
-        1
-      );
-    else ansArr.push(String.fromCharCode(65 + i).toLowerCase());
-    console.log(ansArr);
+  const studentResponse =
+    examData.studentExamState.student_answers[question._id.$oid] ?? {};
+  const ans = studentResponse?.ans ?? "";
 
+  const markAnswer = (i: number) => {
     const payload = {
       ...studentResponse,
-      ans: ansArr.join(",").trim(),
+      ans: i == 0 ? "true" : "false",
       sub_id: examData.subjects[subjectIndex].sub_id,
       qid: question._id.$oid,
       qtype: question.question_type,
@@ -76,11 +55,10 @@ export function MAQ({ index, subjectIndex }: RenderMCQOptionProps) {
       ></div>
 
       {options.map((_v, i) => {
-        const status = ansArr.includes(
-          String.fromCharCode(65 + i).toLowerCase()
-        )
-          ? "answered"
-          : "pending";
+        const status =
+          (ans == "true" && i == 0) || (ans == "false" && i == 1)
+            ? "answered"
+            : "pending";
         return (
           <div
             key={i}
@@ -105,7 +83,6 @@ export function MAQ({ index, subjectIndex }: RenderMCQOptionProps) {
           </div>
         );
       })}
-      {/* <div>{isSaved ? "Saved" : "Not Saved"}</div> */}
     </>
   );
 }

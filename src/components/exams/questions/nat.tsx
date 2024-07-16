@@ -15,9 +15,16 @@ export function NAT({ index, subjectIndex }: RenderMCQOptionProps) {
   const activeLang = examData.studentExamState.activeLang;
   const studentResponse =
     examData.studentExamState.student_answers[question._id.$oid] ?? {};
-  // const ans = studentResponse?.ans ?? "";
 
-  const [value, setValue] = React.useState("");
+  const [value, setValue] = React.useState(studentResponse?.ans ?? null);
+
+  useEffect(() => {
+    if (!examData.studentExamState.student_answers[question._id.$oid]) {
+      setValue("");
+      keyboard.current.setInput("");
+      setIsSaved(false);
+    }
+  }, [examData.studentExamState.student_answers[question._id.$oid]]);
 
   const saveLatestAnswer = () => {
     const payload = {
@@ -60,7 +67,7 @@ export function NAT({ index, subjectIndex }: RenderMCQOptionProps) {
       <h5 className="text-md font-medium">Answer</h5>
       <Input
         type="number"
-        value={value}
+        value={value ?? ""}
         onChange={(e) => {
           setValue(e.target.value);
           setIsSaved(false);
@@ -70,7 +77,7 @@ export function NAT({ index, subjectIndex }: RenderMCQOptionProps) {
       <Keyboard
         keyboardRef={(r) => (keyboard.current = r)}
         layout={{
-          default: ["1 2 3", "4 5 6", "7 8 9", "0 _ {bksp}"],
+          default: ["1 2 3", "4 5 6", "7 8 9", "0 {bksp} "],
         }}
         theme="hg-theme-default hg-layout-numeric numeric-theme"
         onChange={(input) => {

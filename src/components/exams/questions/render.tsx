@@ -6,8 +6,13 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useExamData } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
 import React from "react";
-import { Subjective } from "./subjective";
 import { NAT } from "./nat";
+import SLCT from "./slct";
+import { Subjective } from "./subjective";
+import { TRUEFALSE } from "./truefalse";
+import MULTI_SLCT from "./multi_slct";
+import { MCQ_MULTI_OPTIONS } from "./mcq_multi_options";
+import { TXT_INPUT } from "./txt_input";
 
 export enum QuestionType {
   MCQ = "MCQ",
@@ -15,12 +20,18 @@ export enum QuestionType {
   VMAQ = "VMAQ",
   SUBJECTIVE = "SUBJECTIVE",
   NAT = "NAT",
+  TRUEFALSE = "TrueFalse",
+  SLCT = "SLCT",
+  MULTI_SLCT = "MULTI_SLCT",
+  MCQ_MULTI_OPTIONS = "MCQ_MULTI_OPTIONS",
+  TXT_INPUT = "TXT_INPUT",
+  FILL_BLANKS = "FILL_BLANKS",
 }
 
 interface RenderQuestionProps {
   index: number;
   isActive: boolean;
-  setActive: Function;
+  setActive: (value: any) => void;
   subjectIndex: number;
 }
 
@@ -82,6 +93,21 @@ export function RenderQuestion({
             )}
             {question.question_type == QuestionType.NAT && (
               <NAT subjectIndex={subjectIndex} index={index} />
+            )}
+            {question.question_type == QuestionType.TRUEFALSE && (
+              <TRUEFALSE subjectIndex={subjectIndex} index={index} />
+            )}
+            {question.question_type == QuestionType.SLCT && (
+              <SLCT subjectIndex={subjectIndex} index={index} />
+            )}
+            {question.question_type == QuestionType.MULTI_SLCT && (
+              <MULTI_SLCT subjectIndex={subjectIndex} index={index} />
+            )}
+            {question.question_type == QuestionType.MCQ_MULTI_OPTIONS && (
+              <MCQ_MULTI_OPTIONS subjectIndex={subjectIndex} index={index} />
+            )}
+            {question.question_type == QuestionType.TXT_INPUT && (
+              <TXT_INPUT subjectIndex={subjectIndex} index={index} />
             )}
           </div>
         </CardContent>

@@ -10,12 +10,18 @@ import React from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import {
+  isAnswered,
+  isMarkedReview,
+} from "@/components/exams/drawer/examDrawerContent";
+import {
   Carousel,
   CarouselContent,
   CarouselItem,
   type CarouselApi,
 } from "@/components/ui/carousel";
-const calcTotalQs = (subjects: ExamDetailData["subjects"]): number => {
+import { saveTest } from "@/lib/utils";
+import { toast } from "sonner";
+export const calcTotalQs = (subjects: ExamDetailData["subjects"]): number => {
   return subjects.reduce((acc, v) => acc + v.questions.length, 0);
 };
 
@@ -38,7 +44,11 @@ export function TableDemo() {
             <TableCell className="font-medium">Answered Questions</TableCell>
             <TableCell>
               <Badge className="bg-green-600">
-                {Object.keys(examData.studentExamState.student_answers).length}
+                {
+                  Object.values(
+                    examData.studentExamState.student_answers
+                  ).filter((a) => isAnswered(a)).length
+                }
               </Badge>
             </TableCell>
           </TableRow>
@@ -47,7 +57,9 @@ export function TableDemo() {
             <TableCell>
               <Badge className="bg-red-600">
                 {totalQs -
-                  Object.keys(examData.studentExamState.student_answers).length}
+                  Object.values(
+                    examData.studentExamState.student_answers
+                  ).filter((a) => isAnswered(a)).length}
               </Badge>
             </TableCell>
           </TableRow>
@@ -58,7 +70,7 @@ export function TableDemo() {
                 {
                   Object.values(
                     examData.studentExamState.student_answers
-                  ).filter((v) => v.review).length
+                  ).filter((a) => isMarkedReview(a)).length
                 }
               </Badge>
             </TableCell>
@@ -135,7 +147,7 @@ export function SubjectOverviewBlock({
             <Badge className="min-w-5 max-w-fit flex justify-center  bg-green-600">
               {
                 Object.values(examData.studentExamState.student_answers).filter(
-                  (a) => a.sub_id == s.sub_id
+                  (a) => a.sub_id == s.sub_id && isAnswered(a)
                 ).length
               }
             </Badge>
@@ -145,7 +157,7 @@ export function SubjectOverviewBlock({
             <Badge className="min-w-5 max-w-fit flex justify-center  bg-red-600">
               {s.questions.length -
                 Object.values(examData.studentExamState.student_answers).filter(
-                  (a) => a.sub_id == s.sub_id
+                  (a) => a.sub_id == s.sub_id && isAnswered(a)
                 ).length}
             </Badge>
             UnAnswered
@@ -154,7 +166,7 @@ export function SubjectOverviewBlock({
             <Badge className="min-w-5 max-w-fit flex justify-center  bg-yellow-600">
               {
                 Object.values(examData.studentExamState.student_answers).filter(
-                  (a) => a.sub_id == s.sub_id && a.review
+                  (a) => a.sub_id == s.sub_id && isMarkedReview(a)
                 ).length
               }
             </Badge>
@@ -164,7 +176,8 @@ export function SubjectOverviewBlock({
             <Badge className="min-w-5 max-w-fit flex justify-center  bg-purple-600">
               {
                 Object.values(examData.studentExamState.student_answers).filter(
-                  (a) => a.sub_id == s.sub_id && a.review
+                  (a) =>
+                    a.sub_id == s.sub_id && isMarkedReview(a) && isAnswered(a)
                 ).length
               }
             </Badge>
@@ -201,6 +214,17 @@ function SubmitExam() {
     }
   }, []);
 
+  const onTestTimerExpires = () => {
+    toast.dismiss();
+    toast.error("Timer Expired", { position: "top-center" });
+    saveTest(examData, "Yes").then(() => {
+      setTimeout(() => {
+        window.location.reload();
+        window.close();
+      }, 1000);
+    });
+  };
+
   return (
     <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 bg-muted p-2 md:gap-8 md:p-10">
       <div className="flex items-center justify-between p-2">
@@ -208,10 +232,11 @@ function SubmitExam() {
           {examData.test_name}
         </h5>
         <div className="flex gap-4">
-          {examData.subjects.length > 0 ? (
+          {examData.subjects.length > 0 && examData.start_date ? (
             <CountdownTimer
-              startTime={examData.studentExamState.start_date}
-              initialSeconds={parseInt(examData.time_limit) * 60}
+              startTime={examData.start_date}
+              initialSeconds={parseInt(examData.test_time_limit) * 60}
+              onExpire={onTestTimerExpires}
             />
           ) : (
             ""

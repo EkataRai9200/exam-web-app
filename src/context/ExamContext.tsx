@@ -28,11 +28,22 @@ export interface Question {
   opt3?: string;
   opt4?: string;
   opt5?: string;
+  slct_options?: Array<{ value: string } | undefined>;
+  blanks?:
+    | Array<{
+        id: number;
+        pre: string;
+        post: string;
+        char_count: number;
+      }>
+    | undefined;
+  txt_inputs_count?: number;
   hi_opt1?: string;
   hi_opt2?: string;
   hi_opt3?: string;
   hi_opt4?: string;
   hi_opt5?: string;
+  hi_slct_options?: Array<{ value: string } | undefined>;
   passage_desc: Array<PassageDesc>;
   hi_passage_desc: Array<any>;
   passage_id?: {
@@ -55,7 +66,7 @@ export interface Subject {
 }
 
 export interface Answer {
-  ans: string;
+  ans: string | null | Array<string>;
   image: Array<string>;
   pdf: string;
   qid: string;
@@ -113,7 +124,7 @@ export interface ExamAuthUser {
   name: string;
   package_id: string;
   student_token: string;
-  sub: {};
+  // sub: {};
   test_id: string;
   test_series_id: string;
   api_url: string;
@@ -146,6 +157,7 @@ export interface ExamDetailData {
   instructions: Instruction;
   subjects: Array<Subject>;
   start_date?: number;
+  remaining_time?: number;
   studentExamState: StudentExamState;
 }
 
@@ -208,7 +220,7 @@ const initialState: ExamDetailData = {
 
 // Create the reducer function
 const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
-  console.log("reducer action is called", action.type, action.payload);
+  // console.log("reducer action is called", action.type, action.payload);
   switch (action.type) {
     case "init":
       let newState = { ...state, ...action.payload };
@@ -217,6 +229,7 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
         state.studentExamState.start_date = action.payload.start_date;
       return newState;
     case "start_exam":
+      state.start_date = action.payload;
       state.studentExamState.start_date = action.payload;
       return { ...state };
     case "setActiveSubject":
@@ -252,7 +265,7 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
 
       if (!markedState.studentExamState.student_answers[markQs._id.$oid])
         markedState.studentExamState.student_answers[markQs._id.$oid] = {
-          ans: "",
+          ans: null,
           image: [],
           pdf: "",
           qid: markQs._id.$oid,
@@ -293,6 +306,7 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
         toast({
           title: "Exam submitted successfully",
         });
+        window.close();
       });
       return submitState;
     default:
