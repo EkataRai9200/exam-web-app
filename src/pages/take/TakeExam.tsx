@@ -2,7 +2,14 @@ import { Button } from "@/components/ui/button";
 
 import * as React from "react";
 
-import { ChevronLeft, Flag, FlagOff, Trash } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ChevronLeft,
+  Flag,
+  FlagOff,
+  Trash,
+} from "lucide-react";
 
 import { RenderQuestion } from "@/components/exams/questions/render";
 import CountdownTimer from "@/components/exams/timer/countDownTimer";
@@ -29,14 +36,29 @@ export function TakeExam() {
     activeSubject >= 0 ? examData.studentExamState.activeQuestion ?? -1 : -1;
 
   const setActiveSubject = (index: number) => {
-    dispatch({ type: "setActiveSubject", payload: index });
+    dispatch({
+      type: "setActiveQuestion",
+      payload: {
+        index: 0,
+        subjectIndex: index,
+      },
+    });
   };
   const setActiveQuestion = (index: number) => {
-    dispatch({ type: "setActiveQuestion", payload: index });
+    console.log("setActiveQuestion", index);
+    dispatch({
+      type: "setActiveQuestion",
+      payload: {
+        index,
+        subjectIndex: activeSubject,
+      },
+    });
   };
 
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  const isLoaded = !examData.test_name || examData.test_name == "";
 
   const handleNextQuestion = () => {
     if (
@@ -63,12 +85,13 @@ export function TakeExam() {
   };
 
   React.useEffect(() => {
-    if (!examData.test_name || examData.test_name == "") {
+    if (isLoaded) {
       navigate({
         pathname: "/start",
         search: searchParams.toString(),
       });
     } else {
+      setActiveQuestion(activeQuestion);
       if (examData.remaining_time && examData.remaining_time <= 0) {
         onTestTimerExpires();
       } else {
@@ -176,40 +199,23 @@ export function TakeExam() {
                 ""
               )}
             </main>
-            <div className="flex justify-between gap-2 items-center fixed bg-gray-100 bottom-0 w-full md:w-3/4 p-2">
-              <div className="flex justify-start gap-2 w-full p-2">
+            <div className="flex justify-between items-center fixed bg-gray-100 bottom-0 w-full md:w-3/4 p-2">
+              <div className="flex justify-start gap-2">
                 <Button
                   size={"icon"}
                   variant="outline"
                   onClick={handlePreviousQuestion}
                 >
-                  <ChevronLeft />
+                  <ArrowLeft size={18} />
                 </Button>
-                <Button
-                  size={"icon"}
-                  variant="default"
-                  className="bg-gray-300 text-red-500"
-                  onClick={() => {
-                    dispatch({
-                      type: "deleteAnswer",
-                      payload:
-                        examData.subjects[activeSubject].questions[
-                          activeQuestion
-                        ]._id.$oid,
-                    });
-                  }}
-                >
-                  <Trash size={18} />
-                </Button>
-
                 {examData.studentExamState.student_answers[
                   examData.subjects[activeSubject].questions[activeQuestion]._id
                     .$oid
                 ]?.review ? (
                   <Button
-                    size={"icon"}
+                    size={"default"}
                     variant="default"
-                    className="bg-yellow-400 text-dark"
+                    className="bg-yellow-400 text-dark p-2"
                     onClick={() => {
                       dispatch({
                         type: "removeMarkForReview",
@@ -218,15 +224,16 @@ export function TakeExam() {
                           subjectIndex: activeSubject,
                         },
                       });
+                      handleNextQuestion();
                     }}
                   >
-                    <FlagOff size={18} />
+                    <FlagOff size={18} /> Mark & Review
                   </Button>
                 ) : (
                   <Button
-                    size={"icon"}
+                    size={"default"}
                     variant="default"
-                    className="bg-yellow-400 text-dark"
+                    className="bg-yellow-400 text-dark p-2"
                     onClick={() => {
                       dispatch({
                         type: "markForReview",
@@ -235,41 +242,71 @@ export function TakeExam() {
                           subjectIndex: activeSubject,
                         },
                       });
+                      handleNextQuestion();
                     }}
                   >
-                    <Flag size={18} />
+                    <Flag size={18} className="me-2" /> Mark & Review
+                  </Button>
+                )}
+
+                {examData.studentExamState.student_answers[
+                  examData.subjects[activeSubject].questions[activeQuestion]._id
+                    .$oid
+                ] && (
+                  <Button
+                    size={"icon"}
+                    variant="default"
+                    className="bg-gray-300 text-red-500"
+                    onClick={() => {
+                      dispatch({
+                        type: "deleteAnswer",
+                        payload:
+                          examData.subjects[activeSubject].questions[
+                            activeQuestion
+                          ]._id.$oid,
+                      });
+                      handleNextQuestion();
+                    }}
+                  >
+                    <Trash size={18} />
                   </Button>
                 )}
               </div>
-              {examData.subjects.length >= 0 && (
-                <>
-                  {activeSubject == examData.subjects.length - 1 &&
-                  examData.studentExamState.activeSubject >= 0 &&
-                  activeQuestion ==
-                    examData.subjects[examData.studentExamState.activeSubject]
-                      .questions.length -
-                      1 ? (
-                    <Button
-                      onClick={() => {
-                        saveTest(examData).then(() => {
-                          navigate({
-                            pathname: "/submit",
-                            search: searchParams.toString(),
+              <div className="flex justify-between">
+                {examData.subjects.length >= 0 && (
+                  <>
+                    {activeSubject == examData.subjects.length - 1 &&
+                    examData.studentExamState.activeSubject >= 0 &&
+                    activeQuestion ==
+                      examData.subjects[examData.studentExamState.activeSubject]
+                        .questions.length -
+                        1 ? (
+                      <Button
+                        onClick={() => {
+                          saveTest(examData).then(() => {
+                            navigate({
+                              pathname: "/submit",
+                              search: searchParams.toString(),
+                            });
                           });
-                        });
-                      }}
-                      className="bg-green-600 hover:bg-green-800"
-                      size={"lg"}
-                    >
-                      Submit
-                    </Button>
-                  ) : (
-                    <Button onClick={handleNextQuestion} size={"lg"}>
-                      Next
-                    </Button>
-                  )}
-                </>
-              )}
+                        }}
+                        className="bg-green-600 hover:bg-green-800"
+                        size={"lg"}
+                      >
+                        Submit
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={handleNextQuestion}
+                        size={"default"}
+                        className="px-3"
+                      >
+                        Next <ArrowRight size={18} className="ms-1" />
+                      </Button>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           </div>
           <div className="hidden md:block pt-5 bg-white w-1/4 relative border-l-2">

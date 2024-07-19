@@ -15,6 +15,10 @@ export const isMarkedReview = (a: Answer | undefined) => {
 export const isMarkedAndAnswered = (a: Answer | undefined) => {
   return a && isMarkedReview(a) && isAnswered(a);
 };
+export const isNotAnswered = (a: Answer | undefined) => {
+  if (!a) return false;
+  return !isAnswered(a) && !isMarkedReview(a) ? true : false;
+};
 
 function ExamDrawerContent() {
   // const [searchParams] = useSearchParams();
@@ -42,24 +46,20 @@ function ExamDrawerContent() {
         {examData?.subjects[
           examData.studentExamState.activeSubject
         ]?.questions?.map((_v, i) => {
-          const isAns =
-            examData.studentExamState.student_answers[_v._id.$oid] &&
-            isAnswered(examData.studentExamState.student_answers[_v._id.$oid])
-              ? true
-              : false;
-          const isMarkedForReview = isMarkedReview(
-            examData.studentExamState.student_answers[_v._id.$oid]
-          )
-            ? true
-            : false;
-          const isActiveQues = i === examData.studentExamState.activeQuestion;
+          const sAns = examData.studentExamState.student_answers[_v._id.$oid];
+          const isAns = sAns && isAnswered(sAns) ? true : false;
+          const isMarkedForReview = sAns && isMarkedReview(sAns) ? true : false;
+          const notAnswered = isNotAnswered(sAns);
           return (
             <div
               key={i}
               onClick={() => {
                 dispatch({
                   type: "setActiveQuestion",
-                  payload: i,
+                  payload: {
+                    index: i,
+                    subjectIndex: examData.studentExamState.activeSubject,
+                  },
                 });
               }}
               className="flex items-start justify-start cursor-pointer"
@@ -67,10 +67,10 @@ function ExamDrawerContent() {
               <div
                 className={cn(
                   "bg-gray-200 w-10 h-10 rounded-lg flex items-center justify-center",
+                  notAnswered ? "bg-red-600 text-white" : "",
                   isAns ? "bg-green-600 text-white" : "",
                   isMarkedForReview ? "bg-yellow-600 text-white" : "",
-                  isMarkedForReview && isAns ? "bg-purple-600 text-white" : "",
-                  isActiveQues ? "bg-gray-600 text-white" : ""
+                  isMarkedForReview && isAns ? "bg-purple-600 text-white" : ""
                 )}
               >
                 {i + 1}
@@ -92,10 +92,11 @@ function ExamDrawerContent() {
         </div>
         <div className="flex gap-1 items-center">
           <Badge className="min-w-5 justify-center px-1 bg-red-600">
-            {calcTotalQs(examData.subjects) -
+            {
               Object.values(examData.studentExamState.student_answers).filter(
-                (a) => isAnswered(a)
-              ).length}
+                (a) => isNotAnswered(a)
+              ).length
+            }
           </Badge>
           Not Answered
         </div>
@@ -120,7 +121,10 @@ function ExamDrawerContent() {
           Marked Answer
         </div>
         <div className="flex gap-1 items-center">
-          <Badge className="min-w-5 justify-center px-1 bg-gray-600">10</Badge>
+          <Badge className="min-w-5 justify-center px-1 bg-gray-600">
+            {calcTotalQs(examData.subjects) -
+              Object.values(examData.studentExamState.student_answers).length}
+          </Badge>
           Not Visited
         </div>
       </div>

@@ -226,45 +226,47 @@ function SubmitExam() {
   };
 
   return (
-    <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 bg-muted p-2 md:gap-8 md:p-10">
-      <div className="flex items-center justify-between p-2">
-        <h5 className="scroll-m-20 text-lg font-medium tracking-tight">
-          {examData.test_name}
-        </h5>
-        <div className="flex gap-4">
-          {examData.subjects.length > 0 && examData.start_date ? (
-            <CountdownTimer
-              startTime={examData.start_date}
-              initialSeconds={parseInt(examData.test_time_limit) * 60}
-              onExpire={onTestTimerExpires}
-            />
-          ) : (
-            ""
-          )}
+    <main className="bg-muted">
+      <div className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 p-2 md:gap-8 md:p-10 w-full md:w-1/2 m-auto">
+        <div className="flex items-center justify-between p-2">
+          <h5 className="scroll-m-20 text-lg font-medium tracking-tight">
+            {examData.test_name}
+          </h5>
+          <div className="flex gap-4">
+            {examData.subjects.length > 0 && examData.start_date ? (
+              <CountdownTimer
+                startTime={examData.start_date}
+                initialSeconds={parseInt(examData.test_time_limit) * 60}
+                onExpire={onTestTimerExpires}
+              />
+            ) : (
+              ""
+            )}
+          </div>
         </div>
-      </div>
-      <div className="flex flex-col gap-2">
-        <TableDemo />
-        <SubjectWiseOverview />
-      </div>
-      <div className="flex flex-col justify-between gap-4 bottom-0 w-full p-2">
-        <Button
-          className="bg-green-600 w-full"
-          size={"lg"}
-          onClick={() => dispatch({ type: "submit_exam", payload: examData })}
-        >
-          Submit Exam
-        </Button>
-        <Button className="bg-gray-600 w-full" size={"lg"} asChild>
-          <Link
-            to={{
-              pathname: "/take",
-              search: searchParams.toString(),
-            }}
+        <div className="flex flex-col gap-2">
+          <TableDemo />
+          <SubjectWiseOverview />
+        </div>
+        <div className="flex flex-col md:flex-col justify-between gap-4 bottom-0 w-full p-2">
+          <Button
+            className="bg-green-600 w-full"
+            size={"lg"}
+            onClick={() => dispatch({ type: "submit_exam", payload: examData })}
           >
-            Go Back to Questions
-          </Link>
-        </Button>
+            Submit Exam
+          </Button>
+          <Button variant={"outline"} className=" w-full" size={"lg"} asChild>
+            <Link
+              to={{
+                pathname: "/take",
+                search: searchParams.toString(),
+              }}
+            >
+              Go Back to Questions
+            </Link>
+          </Button>
+        </div>
       </div>
     </main>
   );

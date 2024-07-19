@@ -1,4 +1,6 @@
 import Loader from "@/components/blocks/Loader";
+import EnglishInstructionsContent from "@/components/exams/instructions/content/EnglishInstructionsContent";
+import HindiInstructionsContent from "@/components/exams/instructions/content/HindiInstructionsContent";
 import { LanguageDropdown } from "@/components/exams/language/LanguageDropdown";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -8,7 +10,7 @@ import { useExamData } from "@/lib/hooks";
 import { ExamTokenData } from "@/types/exams/ExamToken";
 import clsx from "clsx";
 import { jwtDecode } from "jwt-decode";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   LoaderFunctionArgs,
@@ -26,221 +28,21 @@ const Instructions = ({
 }) => {
   const [selectedLang] = useState("EN");
 
+  const { examData } = useExamData();
+
   return (
-    <Card className="py-2" x-chunk="dashboard-04-chunk-1">
-      <CardContent className={clsx("h-[60vh] overflow-y-auto")}>
-        <div>
-          <div>
-            {selectedLang === "EN" && (
-              <div>
-                <p>
-                  <strong>
-                    <b>Please read the following instructions carefully</b>
-                  </strong>
-                </p>
-                <p>
-                  <strong>
-                    <u>General Instructions:</u>
-                  </strong>{" "}
-                  <br />
-                </p>
-                <ol>
-                  <li>
-                    The clock has been set at the server and the countdown timer
-                    at the top right corner of your screen will display the time
-                    remaining for you to complete the exam. When the clock runs
-                    out the exam ends by default - you are not required to end
-                    or submit your exam.{" "}
-                  </li>
-                  <li>
-                    The question palette at the right of the screen shows one of
-                    the following statuses of each of the questions numbered:
-                    <table>
-                      <tbody>
-                        <tr>
-                          <td valign="top" className="btn-in-inst btn_nv">
-                            <button id="tooltip_not_visited">1</button>
-                          </td>
-                          <td>You have not visited the question yet.</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <table>
-                      <tbody>
-                        <tr>
-                          <td valign="top" className="btn-in-inst btn_na">
-                            <button id="tooltip_not_answered">3</button>
-                          </td>
-                          <td>You have not answered the question.</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <table>
-                      <tbody>
-                        <tr>
-                          <td valign="top" className="btn-in-inst btn_a">
-                            <button id="tooltip_answered">5</button>
-                          </td>
-                          <td>You have answered the question. </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <table>
-                      <tbody>
-                        <tr>
-                          <td valign="top" className="btn-in-inst btn_m">
-                            <button id="tooltip_review">7</button>
-                          </td>
-                          <td>
-                            You have NOT answered the question but have marked
-                            the question for review.
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <table>
-                      <tbody>
-                        <tr>
-                          <td valign="top" className="btn-in-inst btn_ma">
-                            <button id="tooltip_reviewanswered">9</button>
-                          </td>
-                          <td>
-                            You have answered the question but marked it for
-                            review.{" "}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </li>
-                  <li style={{ listStyleType: "none" }}>
-                    The Marked for Review status simply acts as a reminder that
-                    you have set to look at the question again.{" "}
-                    <span color="red">
-                      <i>
-                        If an answer is selected for a question that is Marked
-                        for Review, the answer will be considered in the final
-                        evaluation.
-                      </i>
-                    </span>
-                  </li>
-                </ol>
-                <p>
-                  <br />
-                  <b>
-                    <u>Navigating to a question : </u>
-                  </b>
-                </p>
-                <ol start={4}>
-                  <li>
-                    To select a question to answer, you can do one of the
-                    following:
-                    <ol type="a">
-                      <li>
-                        Click on the question number on the question palette at
-                        the right of your screen to go to that numbered question
-                        directly. Note that using this option does NOT save your
-                        answer to the current question.{" "}
-                      </li>
-                      <li>
-                        Click on Save and Next to save the answer to the current
-                        question and to go to the next question in sequence.
-                      </li>
-                      <li>
-                        Click on Mark for Review and Next to save the answer to
-                        the current question, mark it for review, and to go to
-                        the next question in sequence.
-                      </li>
-                    </ol>
-                  </li>
-                  <li>
-                    You can view the entire paper by clicking on the{" "}
-                    <b>Question Paper</b> button.
-                  </li>
-                </ol>
-                <p>
-                  <br />
-                  <b>
-                    <u>Answering questions : </u>
-                  </b>
-                </p>
-                <ol start={6}>
-                  <li>
-                    For multiple choice type questions :
-                    <ol type="a">
-                      <li>
-                        To select your answer, click on one of the option
-                        buttons
-                      </li>
-                      <li>
-                        To change your answer, click another desired option
-                        button
-                      </li>
-                      <li>
-                        To save your answer, you MUST click on{" "}
-                        <b>Save &amp; Next</b>{" "}
-                      </li>
-                      <li>
-                        To deselect a chosen answer, click on the chosen option
-                        again or click on the <b>Clear Response</b> button.
-                      </li>
-                      <li>
-                        To mark a question for review click on{" "}
-                        <b>Mark for Review &amp; Next</b>.{" "}
-                        <span color="red">
-                          <i>
-                            If an answer is selected for a question that is
-                            Marked for Review, the answer will be considered in
-                            the final evaluation.{" "}
-                          </i>
-                        </span>
-                      </li>
-                    </ol>
-                  </li>
-                  <li>
-                    To change an answer to a question, first select the question
-                    and then click on the new answer option followed by a click
-                    on the <b>Save &amp; Next</b> button.
-                  </li>
-                  <li>
-                    Questions that are saved or marked for review after
-                    answering will ONLY be considered for evaluation.
-                  </li>
-                </ol>
-                <p>
-                  <br />
-                  <b>
-                    <u>Navigating through sections : </u>
-                  </b>
-                </p>
-                <ol start={9}>
-                  <li>
-                    Sections in this question paper are displayed on the top bar
-                    of the screen. Questions in a section can be viewed by
-                    clicking on the section name. The section you are currently
-                    viewing is highlighted.
-                  </li>
-                  <li>
-                    After clicking the <b>Save &amp; Next</b> button on the last
-                    question for a section, you will automatically be taken to
-                    the first question of the next section.{" "}
-                  </li>
-                  <li>
-                    You can move the mouse cursor over the section names to view
-                    the status of the questions for that section.{" "}
-                  </li>
-                  <li>
-                    You can shuffle between sections and questions anytime
-                    during the examination as per your convenience.{" "}
-                  </li>
-                </ol>
-              </div>
-            )}
-          </div>
-        </div>
+    <Card>
+      <CardContent className={clsx("py-3")}>
+        {examData.studentExamState.activeLang === "EN" && (
+          <EnglishInstructionsContent />
+        )}
+        {examData.studentExamState.activeLang === "HI" && (
+          <HindiInstructionsContent />
+        )}
       </CardContent>
       <CardFooter className="border-t px-2 py-2 flex justify-center gap-1 relative">
         <Button onClick={() => setInstructionsPage(2)} size={"lg"}>
-          Next <ChevronRight />
+          Proceed <ArrowRight size={15} className="ms-2" />
         </Button>
       </CardFooter>
     </Card>
@@ -263,16 +65,16 @@ const Instructions2 = ({
       search: searchParams.toString(),
     });
 
-    await fetch(`${examData.authUser?.api_url}/start_exam`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        test_id: examData._id.$oid,
-        webtesttoken: examData.authUser?.webtesttoken,
-      }),
-    });
+    // await fetch(`${examData.authUser?.api_url}/start_exam`, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({
+    //     test_id: examData._id.$oid,
+    //     webtesttoken: examData.authUser?.webtesttoken,
+    //   }),
+    // });
     // const res = await api.json();
   };
 
@@ -283,8 +85,8 @@ const Instructions2 = ({
   const navigate = useNavigate();
 
   return (
-    <Card className="py-2" x-chunk="dashboard-04-chunk-1">
-      <CardContent className={clsx("h-[60vh] overflow-y-auto")}>
+    <Card className="py-2">
+      <CardContent className={clsx("min-h-[200px]")}>
         <div className="tl-page1">
           <div className="tl-content">
             <div className="flex flex-col justify-end gap-4">
@@ -303,12 +105,17 @@ const Instructions2 = ({
                   htmlFor="terms"
                   className="text-sm text-gray-700 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 tracking-wide"
                 >
-                  I have read and understood the instructions. All Computer
+                  {examData.studentExamState.activeLang == "EN"
+                    ? `I have read and understood the instructions. All Computer
                   Hardwares allotted to me are in proper working condition. I
                   agree that I am not carrying any prohibited gadget like mobile
                   phone etc. / any prohibited material with me into the exam
                   hall. I agree that in case of not adhering to the
-                  instructions, I will be disqualified from taking the exam.
+                  instructions, I will be disqualified from taking the exam.`
+                    : ""}
+                  {examData.studentExamState.activeLang == "HI"
+                    ? `मैंने पढ़ा है और निर्देश समझ लिया है। मेरे लिए आवंटित सभी कंप्यूटर हार्डवेयर उचित हालत में काम कर रहे हैं। मुझे लगता है मैं परीक्षा हॉल में मेरे साथ आदि मोबाइल फोन की तरह किसी भी निषिद्ध गैजेट / किसी भी निषिद्ध सामग्री नहीं ले जा रहा है कि इस बात से सहमत । मैं निर्देशों का पालन नहीं करने के मामले में , मुझे लगता है कि परीक्षा लेने से अयोग्य घोषित कर दिया जाएगा सहमत हैं।`
+                    : ""}
                 </label>
               </div>
             </div>
@@ -323,7 +130,6 @@ const Instructions2 = ({
           size={"sm"}
         >
           <ChevronLeft />
-          {/* Previous */}
         </Button>
         <Button
           variant={"default"}
@@ -331,7 +137,7 @@ const Instructions2 = ({
           disabled={!termsChecked}
           onClick={handleStartExam}
         >
-          Start Exam
+          {"Start Exam"}
           {/* <Link to={"/take"}>Start Exam</Link> */}
         </Button>
       </CardFooter>
@@ -374,12 +180,20 @@ export function StartPage() {
 
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 bg-muted/40 p-4 md:gap-8 md:p-10">
-        <h2 className="scroll-m-20 border-b pb-2 text-xl font-semibold tracking-tight first:mt-0">
-          {examData.test_name}
-        </h2>
-        <LanguageDropdown />
-
+      <main className="flex flex-1 flex-col gap-3 md:gap-5 bg-slate-100/50 p-2 md:p-5">
+        <div className="flex items-center justify-between">
+          <h2 className="scroll-m-20 text-lg font-semibold tracking-tight first:mt-0">
+            {examData.test_name}
+          </h2>
+          <div className="w-100">
+            <LanguageDropdown />
+          </div>
+        </div>
+        <h3 className="scroll-m-20 text-center text-xl font-semibold tracking-tight">
+          {examData.studentExamState.activeLang == "EN"
+            ? "Please read the following instructions carefully"
+            : "कृपया निम्नलिखित निर्देशों को ध्यान से पढ़ें"}
+        </h3>
         {InstructionsPage == 1 ? (
           <Instructions
             InstructionsPage={1}

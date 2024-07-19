@@ -41,13 +41,13 @@ export function NAT({ index, subjectIndex }: RenderMCQOptionProps) {
     setIsSaved(true);
   };
 
-  useEffect(() => {
-    if (
-      examData.studentExamState.activeQuestion === index + 1 ||
-      examData.studentExamState.activeQuestion === index
-    )
-      saveLatestAnswer();
-  }, [examData.studentExamState.activeQuestion]);
+  // useEffect(() => {
+  //   if (
+  //     examData.studentExamState.activeQuestion === index + 1 ||
+  //     examData.studentExamState.activeQuestion === index
+  //   )
+  //     saveLatestAnswer();
+  // }, [examData.studentExamState.activeQuestion]);
 
   const [isSaved, setIsSaved] = React.useState(false);
 

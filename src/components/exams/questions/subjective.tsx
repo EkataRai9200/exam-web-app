@@ -43,11 +43,13 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
   };
 
   useEffect(() => {
-    if (
-      examData.studentExamState.activeQuestion === index + 1 ||
-      examData.studentExamState.activeQuestion === index
-    )
-      saveLatestAnswer();
+    // TODO: save answer automaticaly when leaving question window
+    // if (
+    //   examData.studentExamState.activeSubject === subjectIndex &&
+    //   examData.studentExamState.activeQuestion === index
+    // ) {
+    //   saveLatestAnswer();
+    // }
   }, [examData.studentExamState.activeQuestion]);
 
   const [isSaved, setIsSaved] = React.useState(false);

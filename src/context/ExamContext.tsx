@@ -66,7 +66,7 @@ export interface Subject {
 }
 
 export interface Answer {
-  ans: string | null | Array<string>;
+  ans?: string | null | Array<string>;
   image: Array<string>;
   pdf: string;
   qid: string;
@@ -168,6 +168,7 @@ type Action = {
     | "setActiveQuestion"
     | "start_exam"
     | "markAnswer"
+    | "markVisited"
     | "markForReview"
     | "removeMarkForReview"
     | "setActiveLang"
@@ -220,7 +221,7 @@ const initialState: ExamDetailData = {
 
 // Create the reducer function
 const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
-  // console.log("reducer action is called", action.type, action.payload);
+  console.log("reducer action is called", action.type, action.payload);
   switch (action.type) {
     case "init":
       let newState = { ...state, ...action.payload };
@@ -237,8 +238,29 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       state.studentExamState.activeQuestion = 0;
       return { ...state };
     case "setActiveQuestion":
-      state.studentExamState.activeQuestion = action.payload;
-      return { ...state };
+      const visitedState = { ...state };
+      state.studentExamState.activeSubject = action.payload.subjectIndex;
+      visitedState.studentExamState.activeQuestion = action.payload.index;
+      const vQs =
+        visitedState.subjects[visitedState.studentExamState.activeSubject]
+          .questions[action.payload.index];
+
+      if (!visitedState.studentExamState.student_answers[vQs._id.$oid]) {
+        console.log("Visited Q:", vQs);
+        console.log("Answers: ", visitedState.studentExamState.student_answers);
+        visitedState.studentExamState.student_answers[vQs._id.$oid] = {
+          ans: null,
+          image: [],
+          pdf: "",
+          qid: vQs._id.$oid,
+          qtype: vQs.question_type,
+          sub_id: visitedState.subjects[0].sub_id,
+          review: false,
+          tt: 0,
+        };
+        saveTest(visitedState);
+      }
+      return visitedState;
     case "markAnswer":
       const d = { ...state };
       d.studentExamState.student_answers[action.payload.qid] = createAnswer(
@@ -247,7 +269,7 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       saveTest(d);
       return d;
     case "deleteAnswer":
-      delete state.studentExamState.student_answers[action.payload];
+      delete state.studentExamState.student_answers[action.payload]["ans"];
       saveTest(state);
       return { ...state };
     case "markForReview":
