@@ -85,7 +85,7 @@ export function MAQ({ index, subjectIndex }: RenderMCQOptionProps) {
           <div
             key={i}
             className={cn(
-              "w-full bg-white border rounded-lg p-2 flex items-center gap-2 cursor-pointer relative border-2",
+              "w-full bg-white rounded-lg p-2 flex items-center gap-2 cursor-pointer relative border-2",
               status == "pending" ? "bg-white" : "",
               status == "answered" ? "border-green-600" : ""
             )}

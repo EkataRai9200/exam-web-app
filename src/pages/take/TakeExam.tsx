@@ -5,10 +5,9 @@ import * as React from "react";
 import {
   ArrowLeft,
   ArrowRight,
-  ChevronLeft,
   Flag,
   FlagOff,
-  Trash,
+  Trash
 } from "lucide-react";
 
 import { RenderQuestion } from "@/components/exams/questions/render";

@@ -26,8 +26,6 @@ const Instructions = ({
   InstructionsPage: any;
   setInstructionsPage: any;
 }) => {
-  const [selectedLang] = useState("EN");
-
   const { examData } = useExamData();
 
   return (
