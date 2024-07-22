@@ -15,20 +15,23 @@ export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
 
   React.useEffect(() => {
     if (activeLang == "EN") {
-      setOptions([
+      const enOptions = [
         question?.opt1,
         question?.opt2,
         question?.opt3,
         question?.opt4,
-      ]);
+      ];
+      if (question?.opt5) enOptions.push(question?.opt5);
+      setOptions(enOptions);
     } else {
       if (question?.hi_opt1) {
-        setOptions([
+        const hiOptions = [
           question?.hi_opt1,
           question?.hi_opt2,
           question?.hi_opt3,
           question?.hi_opt4,
-        ]);
+        ];
+        if (question?.hi_opt5) hiOptions.push(question?.hi_opt5);
       } else {
         setOptions([]);
       }

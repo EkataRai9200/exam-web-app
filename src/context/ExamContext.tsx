@@ -329,6 +329,9 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
           title: "Exam submitted successfully",
         });
         window.close();
+        if (typeof (window as any).Android != "undefined") {
+          (window as any).Android.testCompletedCallback();
+        }
       });
       return submitState;
     default:

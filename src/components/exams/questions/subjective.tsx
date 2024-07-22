@@ -1,19 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Question } from "@/context/ExamContext";
 import { useExamData } from "@/lib/hooks";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import {
-  Bold,
-  ClassicEditor,
-  Essentials,
-  Italic,
-  Mention,
-  Paragraph,
-  Undo,
-} from "ckeditor5";
-import { CheckCircle } from "lucide-react";
-import React, { useEffect } from "react";
+import { CheckCircle, Upload } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { QuestionTypeProps } from "./render";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { sanitize } from "@/lib/utils";
 
 interface RenderMCQOptionProps extends QuestionTypeProps {}
 
@@ -50,9 +43,14 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
     // ) {
     //   saveLatestAnswer();
     // }
-  }, [examData.studentExamState.activeQuestion]);
+    setIsSaved(false);
+  }, [content]);
 
   const [isSaved, setIsSaved] = React.useState(false);
+
+  const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(sanitize(event.target.value.trim()));
+  };
 
   return (
     <>
@@ -64,31 +62,28 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
               : question?.hi_question ?? "",
         }}
       ></div>
-      <hr />
-      <h5 className="text-md font-medium">Answer</h5>
-      <CKEditor
-        editor={ClassicEditor}
-        config={{
-          initialData: ans.toString(),
-          toolbar: {
-            items: ["undo", "redo", "|", "bold", "italic"],
-          },
-          plugins: [
-            Bold,
-            Essentials,
-            Italic,
-            Mention,
-            Paragraph,
-            // SlashCommand,
-            Undo,
-          ],
-        }}
-        onChange={(_event, editor) => {
-          setContent(editor.getData());
-          setIsSaved(false);
-          return editor;
-        }}
-      />
+      <div className="mt-5 grid w-full gap-2">
+        <Label htmlFor="message">Answer</Label>
+        <Textarea
+          onChange={handleTextChange}
+          onBlur={saveLatestAnswer}
+          placeholder="Type your message here."
+          rows={5}
+          id="message"
+        />
+        <div>
+          {/* <Button
+            type="button"
+            className="w-full md:w-auto"
+            variant={"secondary"}
+          >
+            <Upload size={15} className="me-2" /> Upload File
+          </Button> */}
+          {/* <p className="text-xs text-muted-foreground italic">
+            PDF, JPG, JPEG, PNG files are accepted. Max File Size: 20MB
+          </p> */}
+        </div>
+      </div>
 
       <div>
         <Button

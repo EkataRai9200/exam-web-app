@@ -217,12 +217,7 @@ function SubmitExam() {
   const onTestTimerExpires = () => {
     toast.dismiss();
     toast.error("Timer Expired", { position: "top-center" });
-    saveTest(examData, "Yes").then(() => {
-      setTimeout(() => {
-        window.location.reload();
-        window.close();
-      }, 1000);
-    });
+    dispatch({ type: "submit_exam", payload: examData });
   };
 
   return (
@@ -252,7 +247,9 @@ function SubmitExam() {
           <Button
             className="bg-green-600 w-full"
             size={"lg"}
-            onClick={() => dispatch({ type: "submit_exam", payload: examData })}
+            onClick={() => {
+              dispatch({ type: "submit_exam", payload: examData });
+            }}
           >
             Submit Exam
           </Button>

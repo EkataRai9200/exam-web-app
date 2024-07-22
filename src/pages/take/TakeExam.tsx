@@ -2,13 +2,7 @@ import { Button } from "@/components/ui/button";
 
 import * as React from "react";
 
-import {
-  ArrowLeft,
-  ArrowRight,
-  Flag,
-  FlagOff,
-  Trash
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Flag, FlagOff, Trash } from "lucide-react";
 
 import { RenderQuestion } from "@/components/exams/questions/render";
 import CountdownTimer from "@/components/exams/timer/countDownTimer";
@@ -21,7 +15,6 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 // modules css
 import ExamDrawerContent from "@/components/exams/drawer/examDrawerContent";
-import "ckeditor5/ckeditor5.css";
 import "react-simple-keyboard/build/css/index.css";
 import { toast } from "sonner";
 
@@ -103,17 +96,35 @@ export function TakeExam() {
     setIsLoading(true);
     toast.dismiss();
     toast.error("Timer Expired", { position: "top-center" });
-    saveTest(examData, "Yes").then(() => {
-      setTimeout(() => {
-        window.close();
-      }, 1000);
-    });
+    dispatch({ type: "submit_exam", payload: examData });
   };
+
+  const disableCopyPaste = (e: any) => {
+    e.preventDefault();
+  };
+
+  React.useEffect(() => {
+    document.addEventListener("copy", disableCopyPaste);
+    document.addEventListener("cut", disableCopyPaste);
+    document.addEventListener("paste", disableCopyPaste);
+
+    return () => {
+      document.removeEventListener("copy", disableCopyPaste);
+      document.removeEventListener("cut", disableCopyPaste);
+      document.removeEventListener("paste", disableCopyPaste);
+    };
+  }, []);
 
   return (
     <>
       {examData.subjects.length > 0 && !isLoading ? (
-        <div className="flex flex-row">
+        <div
+          className="flex flex-row"
+          onCopy={disableCopyPaste}
+          onCut={disableCopyPaste}
+          onPaste={disableCopyPaste}
+          onContextMenu={(e) => e.preventDefault()}
+        >
           <div className="flex min-h-screen w-full flex-col md:w-3/4 relative">
             <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-0 bg-muted md:gap-4 md:p-10">
               <div className="flex justify-between items-center p-2 md:p-0">

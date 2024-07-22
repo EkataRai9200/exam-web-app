@@ -28,7 +28,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-
   },
-  "include": ["src"]
+  "include": ["src", "src/components/exams/questions/sentence_arrangment.tsx"]
 }
