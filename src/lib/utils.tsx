@@ -31,6 +31,7 @@ export function saveTest(
     submitted: submitted,
     webtesttoken: examData.authUser?.webtesttoken,
     start_date: examData.studentExamState.start_date,
+    subject_times: examData.studentExamState.subject_times,
   };
   return fetch(`${examData.authUser?.api_url}/save-test-response`, {
     method: "POST",
@@ -68,4 +69,9 @@ export const sanitize = (string: string) => {
   };
   const reg = /[&<>"'/]/gi;
   return string.replace(reg, (match) => map[match]);
+};
+
+export const calcSubjectRemTime = (start_time: number, time_limit: number) => {
+  const end_time = start_time + time_limit * 1000;
+  return Math.floor(Math.max(0, end_time - Date.now()) / 1000);
 };

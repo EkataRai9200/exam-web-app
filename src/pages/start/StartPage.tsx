@@ -62,18 +62,6 @@ const Instructions2 = ({
       pathname: "/take",
       search: searchParams.toString(),
     });
-
-    // await fetch(`${examData.authUser?.api_url}/start_exam`, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     test_id: examData._id.$oid,
-    //     webtesttoken: examData.authUser?.webtesttoken,
-    //   }),
-    // });
-    // const res = await api.json();
   };
 
   const [termsChecked, setTermsChecked] = useState(false);

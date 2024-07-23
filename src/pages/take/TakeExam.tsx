@@ -10,13 +10,18 @@ import CountdownTimer from "@/components/exams/timer/countDownTimer";
 import Loader from "@/components/blocks/Loader";
 import { ExamDrawer } from "@/components/exams/drawer/drawer";
 import { useExamData } from "@/lib/hooks";
-import { cn, saveTest } from "@/lib/utils";
+import { calcSubjectRemTime, cn, saveTest } from "@/lib/utils";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 // modules css
-import ExamDrawerContent from "@/components/exams/drawer/examDrawerContent";
+import ExamDrawerContent, {
+  isAnswered,
+} from "@/components/exams/drawer/examDrawerContent";
 import "react-simple-keyboard/build/css/index.css";
 import { toast } from "sonner";
+import { Subject } from "@/context/ExamContext";
 
 export function TakeExam() {
   const { examData, dispatch } = useExamData();
@@ -26,8 +31,49 @@ export function TakeExam() {
   const activeSubject = examData.studentExamState.activeSubject ?? -1;
   const activeQuestion =
     activeSubject >= 0 ? examData.studentExamState.activeQuestion ?? -1 : -1;
+  const MySwal = withReactContent(Swal);
 
-  const setActiveSubject = (index: number) => {
+  const isAllowChangeSubject = (index: number) => {
+    const activeSubData =
+      examData.subjects[examData.studentExamState.activeSubject];
+    if (
+      examData.subject_time == "yes" &&
+      examData.studentExamState.subject_times
+    ) {
+      // const subRemTime = calcSubjectRemTime(
+      //   examData.studentExamState.subject_times[examData.subjects[index].sub_id]
+      //     .start_time,
+      //   parseInt(examData.subjects[index].subject_time)
+      // );
+      // if (subRemTime > 0) {
+      //   return false;
+      // }
+      return false;
+    }
+
+    // add subject question attempt limit
+    if (activeSubData.qlimit && parseInt(activeSubData.qlimit) > 0) {
+      const attemptedNoOfQs = Object.values(
+        examData.studentExamState.student_answers
+      ).filter((v) => v.sub_id == activeSubData.sub_id && isAnswered(v)).length;
+
+      if (attemptedNoOfQs > parseInt(activeSubData.qlimit)) {
+        MySwal.fire(
+          "You can attempt a maximum of 2 questions on this subject",
+          "",
+          "error"
+        );
+      }
+      return attemptedNoOfQs <= parseInt(activeSubData.qlimit);
+    }
+
+    return true;
+  };
+
+  const setActiveSubject = (index: number, check = true) => {
+    // TODO: if subject lock & timer is enabled, do not change
+    if (check && !isAllowChangeSubject(examData.studentExamState.activeSubject))
+      return false;
     dispatch({
       type: "setActiveQuestion",
       payload: {
@@ -37,7 +83,6 @@ export function TakeExam() {
     });
   };
   const setActiveQuestion = (index: number) => {
-    console.log("setActiveQuestion", index);
     dispatch({
       type: "setActiveQuestion",
       payload: {
@@ -94,8 +139,16 @@ export function TakeExam() {
 
   const onTestTimerExpires = () => {
     setIsLoading(true);
-    toast.dismiss();
-    toast.error("Timer Expired", { position: "top-center" });
+    MySwal.fire({
+      title: "Time is up. Your exam has been automatically submitted. ",
+      showDenyButton: false,
+      showCancelButton: false,
+      confirmButtonText: "Close Window",
+      // denyButtonText: `Don't save`,
+    }).then((result) => {
+      window.location.reload();
+      window.close();
+    });
     dispatch({ type: "submit_exam", payload: examData });
   };
 
@@ -160,24 +213,53 @@ export function TakeExam() {
                   );
                 })}
               </div>
-              {/* TODO: yet to be implemented */}
               {examData.subjects.length > 0 &&
                 examData.subject_time == "yes" && (
-                  <div className="flex bg-gray-100 items-center justify-start gap-2 p-2">
-                    <p className="text-xs font-medium">
-                      Time Left For Subject :{" "}
-                    </p>
-                    <CountdownTimer
-                      startTime={examData.studentExamState.start_date}
-                      initialSeconds={
-                        parseInt(
-                          examData?.subjects[
-                            examData.studentExamState.activeSubject
-                          ]?.subject_time
-                        ) * 60
-                      }
-                    />
-                  </div>
+                  <>
+                    {examData.studentExamState.subject_times &&
+                      Object.values(
+                        examData.studentExamState.subject_times
+                      ).map((timer) => {
+                        const subData: Subject =
+                          examData.subjects.filter(
+                            (s) => s.sub_id == timer._id
+                          )[0] ?? {};
+                        const subDataIndex =
+                          examData.subjects.findIndex(
+                            (s) => s.sub_id == timer._id
+                          ) ?? {};
+                        return (
+                          <div
+                            className={cn(
+                              "flex bg-gray-100 items-center justify-start gap-2 p-2",
+                              examData.subjects[
+                                examData.studentExamState.activeSubject
+                              ].sub_id == timer._id
+                                ? "flex"
+                                : "hidden"
+                            )}
+                          >
+                            <p className="text-xs font-medium">
+                              Time Left For Subject :
+                            </p>
+                            <CountdownTimer
+                              startTime={timer.start_time}
+                              initialSeconds={
+                                parseInt(subData.subject_time) * 60
+                              }
+                              onExpire={() => {
+                                if (
+                                  subDataIndex + 1 <=
+                                  examData.subjects.length - 1
+                                ) {
+                                  setActiveSubject(subDataIndex + 1, false);
+                                }
+                              }}
+                            />
+                          </div>
+                        );
+                      })}
+                  </>
                 )}
 
               {examData.subjects.length > 0 ? (

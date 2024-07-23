@@ -1,5 +1,4 @@
 // ExamContext.tsx
-import { toast } from "@/components/ui/use-toast";
 import { saveTest } from "@/lib/utils";
 import React, { Dispatch, createContext, useReducer } from "react";
 
@@ -99,8 +98,13 @@ export function createAnswer(obj: any): Answer {
   };
 }
 
+export interface SubjectTimer {
+  [key: string]: { _id: string; start_time: number };
+}
+
 export interface StudentExamState {
   start_date: number;
+  subject_times?: SubjectTimer;
   activeSubject: number;
   activeQuestion: number;
   activeLang: keyof typeof ExamLanguage;
@@ -137,10 +141,8 @@ export interface ExamDetailData {
   time_limit: string;
   test_time_limit: string;
   total_qs: string;
-  subject_time: string;
   max_score: number;
   test_name: string;
-  subject_lock: number;
   qlimit: string;
   is_proctoring_allow: any;
   lang: ExamLanguage;
@@ -156,6 +158,9 @@ export interface ExamDetailData {
   browserswitchsubmittest: string;
   instructions: Instruction;
   subjects: Array<Subject>;
+  subject_times?: SubjectTimer;
+  subject_time: string;
+  subject_lock: number;
   start_date?: number;
   remaining_time?: number;
   studentExamState: StudentExamState;
@@ -219,6 +224,21 @@ const initialState: ExamDetailData = {
   },
 };
 
+const startResumeSubjectTime = (state: ExamDetailData, action: Action) => {
+  const activeSubData = state.subjects[state.studentExamState.activeSubject];
+  if (
+    state.subject_time == "yes" &&
+    state.studentExamState.subject_times &&
+    !state.studentExamState.subject_times[activeSubData.sub_id]
+  ) {
+    state.studentExamState.subject_times[activeSubData.sub_id] = {
+      _id: activeSubData.sub_id,
+      start_time: Date.now(),
+    };
+    saveTest(state);
+  }
+};
+
 // Create the reducer function
 const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
   console.log("reducer action is called", action.type, action.payload);
@@ -226,6 +246,8 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
     case "init":
       let newState = { ...state, ...action.payload };
       newState.studentExamState.student_answers = action.payload.response ?? {};
+      newState.studentExamState.subject_times =
+        action.payload.subject_times ?? {};
       if (action.payload.start_date)
         state.studentExamState.start_date = action.payload.start_date;
       return newState;
@@ -239,15 +261,15 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       return { ...state };
     case "setActiveQuestion":
       const visitedState = { ...state };
-      state.studentExamState.activeSubject = action.payload.subjectIndex;
+      visitedState.studentExamState.activeSubject = action.payload.subjectIndex;
       visitedState.studentExamState.activeQuestion = action.payload.index;
       const vQs =
         visitedState.subjects[visitedState.studentExamState.activeSubject]
           .questions[action.payload.index];
 
+      startResumeSubjectTime(visitedState, action);
+
       if (!visitedState.studentExamState.student_answers[vQs._id.$oid]) {
-        console.log("Visited Q:", vQs);
-        console.log("Answers: ", visitedState.studentExamState.student_answers);
         visitedState.studentExamState.student_answers[vQs._id.$oid] = {
           ans: null,
           image: [],
@@ -325,9 +347,6 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
     case "submit_exam":
       const submitState = { ...state };
       saveTest(submitState, "Yes").then(() => {
-        toast({
-          title: "Exam submitted successfully",
-        });
         window.close();
         if (typeof (window as any).Android != "undefined") {
           (window as any).Android.testCompletedCallback();
