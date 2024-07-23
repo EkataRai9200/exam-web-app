@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Question } from "@/context/ExamContext";
-import { useExamData } from "@/lib/hooks";
-import { CheckCircle, Upload } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { QuestionTypeProps } from "./render";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Question } from "@/context/ExamContext";
+import { useExamData } from "@/lib/hooks";
 import { sanitize } from "@/lib/utils";
+import { CheckCircle } from "lucide-react";
+import React, { useEffect } from "react";
+import { QuestionTypeProps } from "./render";
 
 interface RenderMCQOptionProps extends QuestionTypeProps {}
 
@@ -16,7 +16,7 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
   const activeLang = examData.studentExamState.activeLang;
   const studentResponse =
     examData.studentExamState.student_answers[question._id.$oid] ?? {};
-  const ans = studentResponse?.ans ?? "";
+  // const _ans = studentResponse?.ans ?? "";
 
   const [content, setContent] = React.useState("");
 

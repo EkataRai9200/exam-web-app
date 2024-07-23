@@ -10,7 +10,7 @@ import CountdownTimer from "@/components/exams/timer/countDownTimer";
 import Loader from "@/components/blocks/Loader";
 import { ExamDrawer } from "@/components/exams/drawer/drawer";
 import { useExamData } from "@/lib/hooks";
-import { calcSubjectRemTime, cn, saveTest } from "@/lib/utils";
+import { cn, saveTest } from "@/lib/utils";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
@@ -19,9 +19,8 @@ import withReactContent from "sweetalert2-react-content";
 import ExamDrawerContent, {
   isAnswered,
 } from "@/components/exams/drawer/examDrawerContent";
-import "react-simple-keyboard/build/css/index.css";
-import { toast } from "sonner";
 import { Subject } from "@/context/ExamContext";
+import "react-simple-keyboard/build/css/index.css";
 
 export function TakeExam() {
   const { examData, dispatch } = useExamData();
@@ -40,6 +39,7 @@ export function TakeExam() {
       examData.subject_time == "yes" &&
       examData.studentExamState.subject_times
     ) {
+      console.log(index);
       // const subRemTime = calcSubjectRemTime(
       //   examData.studentExamState.subject_times[examData.subjects[index].sub_id]
       //     .start_time,
@@ -145,7 +145,7 @@ export function TakeExam() {
       showCancelButton: false,
       confirmButtonText: "Close Window",
       // denyButtonText: `Don't save`,
-    }).then((result) => {
+    }).then((_result) => {
       window.location.reload();
       window.close();
     });

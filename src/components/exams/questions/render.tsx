@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useExamData } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
 import React from "react";
+import Passage from "../passage/Passage";
 import { MCQ_MULTI_OPTIONS } from "./mcq_multi_options";
 import MULTI_SLCT from "./multi_slct";
 import { NAT } from "./nat";
@@ -13,9 +14,6 @@ import SLCT from "./slct";
 import { Subjective } from "./subjective";
 import { TRUEFALSE } from "./truefalse";
 import { TXT_INPUT } from "./txt_input";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Passage from "../passage/Passage";
 
 export enum QuestionType {
   MCQ = "MCQ",

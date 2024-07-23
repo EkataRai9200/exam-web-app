@@ -224,7 +224,7 @@ const initialState: ExamDetailData = {
   },
 };
 
-const startResumeSubjectTime = (state: ExamDetailData, action: Action) => {
+const startResumeSubjectTime = (state: ExamDetailData) => {
   const activeSubData = state.subjects[state.studentExamState.activeSubject];
   if (
     state.subject_time == "yes" &&
@@ -267,7 +267,7 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
         visitedState.subjects[visitedState.studentExamState.activeSubject]
           .questions[action.payload.index];
 
-      startResumeSubjectTime(visitedState, action);
+      startResumeSubjectTime(visitedState);
 
       if (!visitedState.studentExamState.student_answers[vQs._id.$oid]) {
         visitedState.studentExamState.student_answers[vQs._id.$oid] = {

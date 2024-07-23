@@ -19,7 +19,6 @@ import {
   CarouselItem,
   type CarouselApi,
 } from "@/components/ui/carousel";
-import { saveTest } from "@/lib/utils";
 import { toast } from "sonner";
 export const calcTotalQs = (subjects: ExamDetailData["subjects"]): number => {
   return subjects.reduce((acc, v) => acc + v.questions.length, 0);
