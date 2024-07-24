@@ -20,7 +20,7 @@ function Passage({
   return (
     <Card
       className={cn(
-        "w-full md:w-1/3",
+        "w-full md:w-1/2",
         isActive && examData.passage_with_qs ? "visible" : "hidden"
       )}
     >

@@ -16,8 +16,35 @@ export const formatTime = (seconds: number): string => {
   return `${h}:${m < 10 ? "0" : ""}${m}:${s < 10 ? "0" : ""}${s}`;
 };
 
+// src/utils/formatTime.ts
+export const formatTimeToJSON = (
+  seconds: number
+): { h: string; m: string; s: string } => {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  return {
+    h: `${h < 10 ? "0" : ""}${h}`,
+    m: `${m < 10 ? "0" : ""}${m}`,
+    s: `${s < 10 ? "0" : ""}${s}`,
+  };
+};
+
 export const liveTestApiURL = (authUser: ExamAuthUser, path: string) => {
   return `${authUser?.api_url}/${path}`;
+};
+
+export const openFullscreen = () => {
+  const elem = document.documentElement as any;
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.webkitRequestFullscreen) {
+    /* Safari */
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) {
+    /* IE11 */
+    elem.msRequestFullscreen();
+  }
 };
 
 export function saveTest(

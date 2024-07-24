@@ -36,9 +36,6 @@ export function ExamDrawer() {
                 Submit Exam
               </Link>
             </Button>
-            <DrawerClose asChild>
-              <Button variant="outline">Close</Button>
-            </DrawerClose>
           </DrawerFooter>
           <DrawerClose asChild>
             <Button

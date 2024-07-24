@@ -122,6 +122,7 @@ export interface ExamAuthUser {
   firstname: string;
   lastname: string;
   webtesttoken: string;
+  profile_pic: string;
   iat: number;
   institute_url: string;
   instiute_id: string;
@@ -346,8 +347,10 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       return activeLangState;
     case "submit_exam":
       const submitState = { ...state };
-      saveTest(submitState, "Yes").then(() => {
-        window.close();
+      saveTest(submitState, "Yes").then((res: any) => {
+        console.log("anything res", res);
+
+        // window.close();
         if (typeof (window as any).Android != "undefined") {
           (window as any).Android.testCompletedCallback();
         }
