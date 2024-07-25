@@ -20,6 +20,8 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { toast } from "sonner";
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
 export const calcTotalQs = (subjects: ExamDetailData["subjects"]): number => {
   return subjects.reduce((acc, v) => acc + v.questions.length, 0);
 };
@@ -218,6 +220,7 @@ function SubmitExam() {
     toast.error("Timer Expired", { position: "top-center" });
     dispatch({ type: "submit_exam", payload: examData });
   };
+  const MySwal = withReactContent(Swal);
 
   return (
     <main className="bg-muted">
@@ -248,6 +251,27 @@ function SubmitExam() {
             size={"lg"}
             onClick={() => {
               dispatch({ type: "submit_exam", payload: examData });
+              MySwal.fire({
+                title: "Your exam has been submitted.",
+                showDenyButton: false,
+                showCancelButton: false,
+                allowOutsideClick: false,
+                backdrop: "rgba(0, 0, 0, 0.5)",
+                confirmButtonText: "Close Window",
+              }).then((_result) => {
+                if (typeof (window as any).Android != "undefined") {
+                  (window as any).Android.testCompletedCallback();
+                } else {
+                  window.close();
+                }
+              });
+              setTimeout(() => {
+                if (typeof (window as any).Android != "undefined") {
+                  (window as any).Android.testCompletedCallback();
+                } else {
+                  window.close();
+                }
+              }, 1500);
             }}
           >
             Submit Exam
