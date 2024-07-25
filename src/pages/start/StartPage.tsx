@@ -133,11 +133,11 @@ export function StartPage() {
         <div className="h-[15vh] md:h-[100px] overflow-hidden">
           <div className="flex items-center justify-between px-2 pt-2">
             <div className="flex items-center">
-              <img
+              {/* <img
                 src="https://trigrexam.com/app/assets/front/images/logo.png"
                 width={100}
                 alt=""
-              />
+              /> */}
               <h2 className="scroll-m-20 text-lg font-semibold tracking-tight first:mt-0 hidden md:block">
                 {examData.test_name}
               </h2>
