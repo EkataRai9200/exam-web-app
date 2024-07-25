@@ -86,7 +86,7 @@ const Instructions2 = ({
 };
 
 export function StartPage() {
-  const [InstructionsPage, setInstructionsPage] = useState(2);
+  const [InstructionsPage, setInstructionsPage] = useState(1);
 
   const { examData, dispatch } = useExamData();
 
