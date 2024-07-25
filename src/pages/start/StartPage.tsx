@@ -3,13 +3,13 @@ import EnglishInstructionsContent from "@/components/exams/instructions/content/
 import HindiInstructionsContent from "@/components/exams/instructions/content/HindiInstructionsContent";
 import { LanguageDropdown } from "@/components/exams/language/LanguageDropdown";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ExamDetailData } from "@/context/ExamContext";
 import { useExamData } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
@@ -18,25 +18,13 @@ import { jwtDecode } from "jwt-decode";
 import { ArrowRight, ChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
   LoaderFunctionArgs,
   useLoaderData,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
 
-const Instructions = ({
-  // InstructionsPage,
-  setInstructionsPage,
-}: {
-  InstructionsPage: any;
-  setInstructionsPage: any;
-}) => {
+const Instructions = () => {
   const { examData } = useExamData();
 
   return (
@@ -139,8 +127,6 @@ export function StartPage() {
     }
   }, [data]);
 
-  const [showTooltipTerms, setShowTooltipTerms] = useState(false);
-
   return (
     <div className="flex min-h-screen w-full flex-col">
       <main className="flex flex-1 flex-col bg-slate-200/50">
@@ -171,14 +157,7 @@ export function StartPage() {
             "h-[calc(75vh)] md:h-[calc(100vh-170px)] bg-white overflow-y-auto py-2 px-2 m-0 md:mx-2"
           )}
         >
-          {InstructionsPage == 1 ? (
-            <Instructions
-              InstructionsPage={1}
-              setInstructionsPage={setInstructionsPage}
-            />
-          ) : (
-            ""
-          )}
+          {InstructionsPage == 1 ? <Instructions /> : ""}
           {InstructionsPage == 2 ? (
             <Instructions2
               termsChecked={termsChecked}

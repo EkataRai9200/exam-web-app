@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useExamData } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
-import React from "react";
 import Passage from "../passage/Passage";
 import { MCQ_MULTI_OPTIONS } from "./mcq_multi_options";
 import MULTI_SLCT from "./multi_slct";
@@ -47,8 +46,6 @@ export function RenderQuestion({
   isActive,
   subjectIndex,
 }: RenderQuestionProps) {
-  const [isMarked] = React.useState(false);
-
   const { examData } = useExamData();
   const question = examData.subjects[subjectIndex].questions[index];
 

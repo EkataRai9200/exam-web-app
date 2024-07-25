@@ -1,4 +1,4 @@
-import { formatTime, formatTimeToJSON } from "@/lib/utils";
+import { formatTimeToJSON } from "@/lib/utils";
 import { Timer } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 

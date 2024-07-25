@@ -2,14 +2,7 @@ import { Button } from "@/components/ui/button";
 
 import * as React from "react";
 
-import {
-  ArrowLeft,
-  ArrowRight,
-  Expand,
-  ExpandIcon,
-  FullscreenIcon,
-  Trash,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Trash } from "lucide-react";
 
 import { RenderQuestion } from "@/components/exams/questions/render";
 import CountdownTimer from "@/components/exams/timer/countDownTimer";
@@ -17,7 +10,7 @@ import CountdownTimer from "@/components/exams/timer/countDownTimer";
 import Loader from "@/components/blocks/Loader";
 import { ExamDrawer } from "@/components/exams/drawer/drawer";
 import { useExamData } from "@/lib/hooks";
-import { cn, openFullscreen, saveTest } from "@/lib/utils";
+import { cn, saveTest } from "@/lib/utils";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
@@ -25,36 +18,25 @@ import withReactContent from "sweetalert2-react-content";
 // modules css
 import Sidebar from "@/components/exams/drawer/Sidebar";
 import { isAnswered } from "@/components/exams/drawer/examDrawerContent";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Subject } from "@/context/ExamContext";
 import "react-simple-keyboard/build/css/index.css";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function TakeExam() {
   const { examData, dispatch } = useExamData();
 
   const [isLoading, setIsLoading] = React.useState(true);
 
-  const activeSubject = examData.studentExamState.activeSubject ?? -1;
-  const activeQuestion =
-    activeSubject >= 0 ? examData.studentExamState.activeQuestion ?? -1 : -1;
+  const activeSubject = examData.studentExamState.activeSubject;
+  const activeQuestion = examData.studentExamState.activeQuestion;
   const MySwal = withReactContent(Swal);
 
   const isAllowChangeSubject = (index: number) => {
-    const activeSubData =
-      examData.subjects[examData.studentExamState.activeSubject];
+    const activeSubData = examData.subjects[index];
     if (
       examData.subject_time == "yes" &&
       examData.studentExamState.subject_times
     ) {
-      console.log(index);
-      // const subRemTime = calcSubjectRemTime(
-      //   examData.studentExamState.subject_times[examData.subjects[index].sub_id]
-      //     .start_time,
-      //   parseInt(examData.subjects[index].subject_time)
-      // );
-      // if (subRemTime > 0) {
-      //   return false;
-      // }
       return false;
     }
 
@@ -89,6 +71,7 @@ export function TakeExam() {
       },
     });
   };
+
   const setActiveQuestion = (index: number) => {
     dispatch({
       type: "setActiveQuestion",
@@ -135,10 +118,20 @@ export function TakeExam() {
         search: searchParams.toString(),
       });
     } else {
-      setActiveQuestion(activeQuestion);
       if (examData.remaining_time && examData.remaining_time <= 0) {
         onTestTimerExpires();
       } else {
+        // check if subject timer is enabled & all subjects are submitted
+        if (
+          examData.subject_time == "yes" &&
+          examData.studentExamState.subject_times &&
+          Object.values(examData.studentExamState.subject_times).every(
+            (s) => s.submitted
+          )
+        ) {
+          onTestTimerExpires();
+        }
+
         setIsLoading(false);
       }
     }
@@ -152,7 +145,6 @@ export function TakeExam() {
       showDenyButton: false,
       showCancelButton: false,
       confirmButtonText: "Close Window",
-      // denyButtonText: `Don't save`,
     }).then((_result) => {
       setTimeout(() => {
         if (typeof (window as any).Android != "undefined") {
@@ -201,7 +193,7 @@ export function TakeExam() {
               </h5>
               <ExamDrawer key={2} />
 
-              <div className="flex w-full md:w-auto items-center justify-center mt-2 md:gap-4">
+              <div className="flex w-full md:w-auto items-center justify-center mt-2 md:mt-0 md:gap-4">
                 {examData.subjects.length > 0 &&
                 examData.subject_time == "yes" ? (
                   <>
@@ -213,37 +205,52 @@ export function TakeExam() {
                           examData.subjects.filter(
                             (s) => s.sub_id == timer._id
                           )[0] ?? {};
+                        const activeSubData: Subject =
+                          examData.subjects[
+                            examData.studentExamState.activeSubject
+                          ] ?? {};
                         const subDataIndex =
                           examData.subjects.findIndex(
                             (s) => s.sub_id == timer._id
                           ) ?? {};
                         return (
-                          <div
-                            className={cn(
-                              "flex bg-gray-100 items-center justify-start gap-2 p-2",
-                              examData.subjects[
-                                examData.studentExamState.activeSubject
-                              ].sub_id == timer._id
-                                ? "flex"
-                                : "hidden"
+                          <>
+                            {!timer.submitted && (
+                              <div
+                                className={cn(
+                                  "flex bg-gray-100 items-center justify-start gap-2",
+                                  subData.sub_id == activeSubData.sub_id &&
+                                    !timer.submitted
+                                    ? "flex"
+                                    : "hidden"
+                                )}
+                              >
+                                <CountdownTimer
+                                  startTime={timer.start_time}
+                                  initialSeconds={
+                                    parseInt(subData.subject_time) * 60
+                                  }
+                                  beforeText="Time Left For Section :"
+                                  onExpire={() => {
+                                    if (
+                                      subDataIndex + 1 <=
+                                      examData.subjects.length - 1
+                                    ) {
+                                      if (
+                                        examData.subject_times &&
+                                        !timer.submitted
+                                      ) {
+                                        dispatch({
+                                          type: "submit_section",
+                                          payload: {},
+                                        });
+                                      }
+                                    }
+                                  }}
+                                />
+                              </div>
                             )}
-                          >
-                            <CountdownTimer
-                              startTime={timer.start_time}
-                              initialSeconds={
-                                parseInt(subData.subject_time) * 60
-                              }
-                              beforeText="Time Left For Subject :"
-                              onExpire={() => {
-                                if (
-                                  subDataIndex + 1 <=
-                                  examData.subjects.length - 1
-                                ) {
-                                  setActiveSubject(subDataIndex + 1, false);
-                                }
-                              }}
-                            />
-                          </div>
+                          </>
                         );
                       })}
                   </>
@@ -262,16 +269,6 @@ export function TakeExam() {
                       )}
                   </>
                 )}
-                {/* <>
-                  <Button
-                    type="button"
-                    variant={"outline"}
-                    onClick={openFullscreen}
-                    className="hidden md:flex"
-                  >
-                    <ExpandIcon size={15} className="me-2" /> Enter Full Screen
-                  </Button>
-                </> */}
               </div>
             </div>
 
@@ -405,6 +402,7 @@ export function TakeExam() {
                     ) : (
                       <Button
                         onClick={() => {
+                          handleNextQuestion();
                           dispatch({
                             type: "removeMarkForReview",
                             payload: {
@@ -412,7 +410,6 @@ export function TakeExam() {
                               subjectIndex: activeSubject,
                             },
                           });
-                          handleNextQuestion();
                         }}
                         size={"default"}
                         className="px-3"

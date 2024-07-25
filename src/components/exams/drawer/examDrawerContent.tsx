@@ -2,12 +2,15 @@ import { useExamData } from "@/lib/hooks";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Answer } from "@/context/ExamContext";
-import { cn } from "@/lib/utils";
-import { calcTotalQs } from "@/pages/submit/SubmitExam";
-import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Check, CheckCircle, CheckCircle2 } from "lucide-react";
+import { Answer } from "@/context/ExamContext";
+import { cn, saveTest } from "@/lib/utils";
+import { calcTotalQs } from "@/pages/submit/SubmitExam";
+import { Check } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import SubjectSubmitOverview from "../submit/SubjectSubmitOverview";
 
 export const isAnswered = (a: Answer | undefined) => {
   return a && a.ans;
@@ -24,9 +27,87 @@ export const isNotAnswered = (a: Answer | undefined) => {
 };
 
 function ExamDrawerContent() {
-  // const [searchParams] = useSearchParams();
   const { examData, dispatch } = useExamData();
   const [searchParams] = useSearchParams();
+  const MySwal = withReactContent(Swal);
+
+  const canSubmitSection = () => {
+    const activeSubData =
+      examData.subjects[examData.studentExamState.activeSubject];
+    if (activeSubData.qlimit && parseInt(activeSubData.qlimit) > 0) {
+      const attemptedNoOfQs = Object.values(
+        examData.studentExamState.student_answers
+      ).filter((v) => v.sub_id == activeSubData.sub_id && isAnswered(v)).length;
+
+      if (attemptedNoOfQs > parseInt(activeSubData.qlimit)) {
+        MySwal.fire(
+          `You can attempt a maximum of ${activeSubData.qlimit} questions on this subject`,
+          "",
+          "error"
+        );
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const submitSection = async () => {
+    if (
+      examData.studentExamState.activeSubject + 1 <=
+      examData.subjects.length - 1
+    ) {
+      dispatch({
+        type: "submit_section",
+        payload: {},
+      });
+    } else {
+      saveTest(examData, "Yes").then(() => {
+        MySwal.fire({
+          title: "Your exam has been submitted.",
+          showDenyButton: false,
+          showCancelButton: false,
+          allowOutsideClick: false,
+          backdrop: "rgba(0, 0, 0, 0.5)",
+          confirmButtonText: "Close Window",
+        }).then((_result) => {
+          if (typeof (window as any).Android != "undefined") {
+            (window as any).Android.testCompletedCallback();
+          } else {
+            window.close();
+          }
+        });
+        setTimeout(() => {
+          if (typeof (window as any).Android != "undefined") {
+            (window as any).Android.testCompletedCallback();
+          } else {
+            window.close();
+          }
+        }, 1500);
+      });
+    }
+  };
+
+  const handleSubmitSection = () => {
+    if (!canSubmitSection()) return;
+    MySwal.fire({
+      title: "Are you sure you want to submit this section?",
+      html: <SubjectSubmitOverview examData={examData} />,
+      showDenyButton: true,
+      showCancelButton: false,
+      allowOutsideClick: false,
+      backdrop: "rgba(0, 0, 0, 0.5)",
+      confirmButtonText: `Yes`,
+      confirmButtonColor: "#22c55e",
+      denyButtonText: `No`,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // submit
+        submitSection();
+      }
+    });
+  };
+
   return (
     <>
       {examData.authUser && (
@@ -154,11 +235,23 @@ function ExamDrawerContent() {
           "mt-auto flex flex-col justify-center items-center gap-2 p-4 bg-gray-100 h-[100px]"
         )}
       >
-        <Button className="bg-green-600 w-full" asChild>
-          <Link to={{ pathname: "/submit", search: searchParams.toString() }}>
-            Submit Exam
-          </Link>
-        </Button>
+        {examData.subject_time == "yes" ? (
+          <Button
+            className="bg-green-600 hover:bg-green-800 uppercase font-medium w-full"
+            onClick={handleSubmitSection}
+          >
+            Submit section
+          </Button>
+        ) : (
+          <Button
+            className="bg-green-600 hover:bg-green-800 uppercase font-medium w-full"
+            asChild
+          >
+            <Link to={{ pathname: "/submit", search: searchParams.toString() }}>
+              Submit Exam
+            </Link>
+          </Button>
+        )}
       </div>
     </>
   );

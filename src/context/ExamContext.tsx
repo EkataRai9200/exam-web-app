@@ -99,7 +99,7 @@ export function createAnswer(obj: any): Answer {
 }
 
 export interface SubjectTimer {
-  [key: string]: { _id: string; start_time: number };
+  [key: string]: { _id: string; start_time: number; submitted: boolean };
 }
 
 export interface StudentExamState {
@@ -178,6 +178,7 @@ type Action = {
     | "markForReview"
     | "removeMarkForReview"
     | "setActiveLang"
+    | "submit_section"
     | "submit_exam"
     | "deleteAnswer";
   payload: any;
@@ -235,6 +236,7 @@ const startResumeSubjectTime = (state: ExamDetailData) => {
     state.studentExamState.subject_times[activeSubData.sub_id] = {
       _id: activeSubData.sub_id,
       start_time: Date.now(),
+      submitted: false,
     };
     saveTest(state);
   }
@@ -245,12 +247,31 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
   console.log("reducer action is called", action.type, action.payload);
   switch (action.type) {
     case "init":
-      let newState = { ...state, ...action.payload };
+      let newState = { ...state, ...action.payload } as ExamDetailData;
       newState.studentExamState.student_answers = action.payload.response ?? {};
       newState.studentExamState.subject_times =
         action.payload.subject_times ?? {};
       if (action.payload.start_date)
-        state.studentExamState.start_date = action.payload.start_date;
+        newState.studentExamState.start_date = action.payload.start_date;
+      startResumeSubjectTime(newState);
+
+      if (newState.subject_time == "yes" && newState.subject_times) {
+        const qsNotSubmitted = Object.values(newState.subject_times).filter(
+          (s) => !s.submitted
+        );
+        if (qsNotSubmitted.length > 0) {
+          newState.studentExamState.activeSubject = newState.subjects.findIndex(
+            (s) => s.sub_id == qsNotSubmitted[0]._id
+          );
+          newState.studentExamState.activeQuestion = 0;
+        } else {
+          console.log(
+            "all qs submitted",
+            "?token=" + new URLSearchParams(window.location.search).get("token")
+          );
+        }
+      }
+
       return newState;
     case "start_exam":
       state.start_date = action.payload;
@@ -267,17 +288,13 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       const vQs =
         visitedState.subjects[visitedState.studentExamState.activeSubject]
           .questions[action.payload.index];
-
-      startResumeSubjectTime(visitedState);
-
       if (!visitedState.studentExamState.student_answers[vQs._id.$oid]) {
         visitedState.studentExamState.student_answers[vQs._id.$oid] = {
-          ans: null,
           image: [],
           pdf: "",
           qid: vQs._id.$oid,
           qtype: vQs.question_type,
-          sub_id: visitedState.subjects[0].sub_id,
+          sub_id: visitedState.subjects[action.payload.subjectIndex].sub_id,
           review: false,
           tt: 0,
         };
@@ -345,15 +362,49 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       const activeLangState = { ...state };
       activeLangState.studentExamState.activeLang = action.payload;
       return activeLangState;
+    case "submit_section":
+      if (
+        !state.studentExamState.subject_times ||
+        state.subject_time != "yes"
+      ) {
+        return state;
+      }
+      const submitSectionState = { ...state };
+      const submitSectionSubjectData =
+        submitSectionState.subjects[
+          submitSectionState.studentExamState.activeSubject
+        ];
+      if (
+        submitSectionState.studentExamState.subject_times &&
+        submitSectionState.studentExamState.subject_times[
+          submitSectionSubjectData.sub_id
+        ]
+      )
+        submitSectionState.studentExamState.subject_times[
+          submitSectionSubjectData.sub_id
+        ].submitted = true;
+      saveTest(submitSectionState, "No");
+      if (
+        submitSectionState.studentExamState.activeSubject <
+        submitSectionState.subjects.length - 1
+      ) {
+        submitSectionState.studentExamState.activeSubject++;
+        submitSectionState.studentExamState.activeQuestion = 0;
+      }
+
+      startResumeSubjectTime(submitSectionState);
+
+      return submitSectionState;
     case "submit_exam":
       const submitState = { ...state };
-      saveTest(submitState, "Yes").then((res: any) => {
-        console.log("anything res", res);
-
-        // window.close();
-        if (typeof (window as any).Android != "undefined") {
-          (window as any).Android.testCompletedCallback();
-        }
+      saveTest(submitState, "Yes").then(() => {
+        setTimeout(() => {
+          if (typeof (window as any).Android != "undefined") {
+            (window as any).Android.testCompletedCallback();
+          } else {
+            window.close();
+          }
+        }, 1500);
       });
       return submitState;
     default:
@@ -370,9 +421,13 @@ const ExamContext = createContext<{
   dispatch: () => {},
 });
 
+function useApiCallReducer() {
+  return useReducer(examReducer, initialState);
+}
+
 // Create a Provider component
 const ExamProvider = ({ children }: { children: React.ReactNode }) => {
-  const [state, dispatch] = useReducer(examReducer, initialState);
+  const [state, dispatch] = useApiCallReducer();
 
   return (
     <ExamContext.Provider value={{ state, dispatch }}>

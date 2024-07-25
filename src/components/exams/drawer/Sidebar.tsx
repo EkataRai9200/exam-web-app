@@ -1,9 +1,6 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import React from "react";
-import ExamDrawerContent from "./examDrawerContent";
-import { Button } from "@/components/ui/button";
-import { Link, useSearchParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import ExamDrawerContent from "./examDrawerContent";
 
 function Sidebar({
   showSidebar,
@@ -12,7 +9,6 @@ function Sidebar({
   showSidebar: boolean;
   setShowSidebar: any;
 }) {
-  const [searchParams] = useSearchParams();
   return (
     <div className={cn("relative h-screen", showSidebar ? "md:w-1/4" : "")}>
       <div className="absolute left-[-15px] top-[calc(50%-60px)] h-[60px] w-[15px] hidden md:block">
