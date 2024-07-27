@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import Spinner from "../ui/spinner";
 
-function Loader({ visible }: { visible: boolean }) {
+export function Loader({ visible }: { visible: boolean }) {
   return (
     <div
       className={cn(

@@ -67,7 +67,7 @@ export function TableDemo() {
           <TableRow>
             <TableCell className="font-medium">Marked for Review</TableCell>
             <TableCell>
-              <Badge className="bg-yellow-600">
+              <Badge className="bg-purple-600">
                 {
                   Object.values(
                     examData.studentExamState.student_answers
@@ -164,7 +164,7 @@ export function SubjectOverviewBlock({
             UnAnswered
           </div>
           <div>
-            <Badge className="min-w-5 max-w-fit flex justify-center  bg-yellow-600">
+            <Badge className="min-w-5 max-w-fit flex justify-center  bg-purple-600">
               {
                 Object.values(examData.studentExamState.student_answers).filter(
                   (a) => a.sub_id == s.sub_id && isMarkedReview(a)

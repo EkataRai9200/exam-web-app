@@ -76,9 +76,9 @@ export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
           <div
             key={i}
             className={cn(
-              "w-full rounded-lg p-2 flex items-center gap-2 cursor-pointer relative border-2 bg-white",
+              "w-full rounded-lg p-1 flex items-center gap-2 cursor-pointer relative border  bg-white hover:bg-gray-100/50",
               status == "pending" ? "" : "",
-              status == "answered" ? "border-green-600" : ""
+              status == "answered" ? "border-green-600 " : ""
             )}
             onClick={() => {
               markAnswer(i);
@@ -86,7 +86,7 @@ export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
           >
             <div
               className={cn(
-                "border w-10 h-10 flex items-center justify-center text-center rounded-full",
+                "border w-7 h-7 text-sm font-medium flex items-center justify-center text-center rounded-full",
                 status == "answered" ? "bg-green-600 text-white" : ""
               )}
             >

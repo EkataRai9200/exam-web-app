@@ -47,18 +47,18 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
 
   return (
     <>
-      <p className="flex items-center w-full md:w-auto bg-gray-100 md:bg-white rounded-sm md:rounded-md p-1 md:p-2 gap-2 text-sm">
+      <p className="flex items-center w-full md:w-auto bg-gray-100  rounded-sm p-1 md:p-2 gap-2 text-sm">
         <Timer size={20} />
         {beforeText && (
           <span className="font-medium text-sm">{beforeText}</span>
         )}
-        <span className="font-medium rounded-md w-6 h-6 flex items-center justify-center bg-gray-300">
+        <span className="font-medium w-7 h-6 flex items-center justify-center bg-gray-300">
           {formatTimeToJSON(timeLeft).h}
         </span>
-        <span className="font-medium rounded-md w-6 h-6 flex items-center justify-center bg-gray-300">
+        <span className="font-medium w-7 h-6 flex items-center justify-center bg-gray-300">
           {formatTimeToJSON(timeLeft).m}
         </span>
-        <span className="font-medium rounded-md w-6 h-6 flex items-center justify-center bg-gray-300">
+        <span className="font-medium w-7 h-6 flex items-center justify-center bg-gray-300">
           {formatTimeToJSON(timeLeft).s}
         </span>
       </p>

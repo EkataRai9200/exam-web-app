@@ -26,7 +26,7 @@ export function ExamDrawer() {
         </Button>
       </DrawerTrigger>
       <DrawerContent>
-        <div className="mx-auto h-screen w-full md:w-1/4 relative">
+        <div className="mx-auto h-screen w-full md:w-1/4 relative bg-blue-100">
           <ExamDrawerContent />
           <DrawerFooter>
             <Button className="bg-green-600" asChild>

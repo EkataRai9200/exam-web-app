@@ -1,5 +1,6 @@
 // Importing components for different routes
 import Layout from "@/pages/Layout";
+import { Dashboard } from "@/pages/dashboard/Dashboard";
 import { StartPage, StartPageLoaderData } from "@/pages/start/StartPage.tsx";
 import SubmitExam from "@/pages/submit/SubmitExam";
 import { TakeExam } from "@/pages/take/TakeExam.tsx";
@@ -15,6 +16,10 @@ export const routes: RouteObject[] = [
       {
         path: "/",
         Component: TakeExam,
+      },
+      {
+        path: "/dashboard",
+        Component: Dashboard,
       },
       {
         path: "/start",

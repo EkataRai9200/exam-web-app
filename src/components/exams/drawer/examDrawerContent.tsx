@@ -1,15 +1,18 @@
 import { useExamData } from "@/lib/hooks";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Answer } from "@/context/ExamContext";
 import { cn, saveTest } from "@/lib/utils";
 import { calcTotalQs } from "@/pages/submit/SubmitExam";
-import { Check } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import Answered from "../status/Answered";
+import Marked from "../status/Marked";
+import MarkedAnswered from "../status/MarkedAnswered";
+import NotAnswered from "../status/NotAnswered";
+import NotVisited from "../status/NotVisited";
 import SubjectSubmitOverview from "../submit/SubjectSubmitOverview";
 
 export const isAnswered = (a: Answer | undefined) => {
@@ -111,7 +114,7 @@ function ExamDrawerContent() {
   return (
     <>
       {examData.authUser && (
-        <div className="flex flex-row gap-2 justify-start h-[50px] items-center p-2 bg-white">
+        <div className="flex flex-row gap-2 justify-start h-[50px] items-center p-2 ">
           <Avatar className="w-8 h-8">
             <AvatarImage
               src={examData.authUser.profile_pic}
@@ -125,55 +128,66 @@ function ExamDrawerContent() {
         </div>
       )}
 
-      <div className="grid grid-cols-3 font-medium text-xs gap-1 justify-between p-2 h-[85px] bg-slate-100">
+      <div className="grid grid-cols-3 font-medium text-xs gap-1 justify-between p-2 h-[85px] bg-blue-200">
         <div className="flex gap-1 items-center">
-          <Badge className="min-w-5 justify-center px-1 bg-green-600 rounded-md">
+          {/* <Badge className="min-w-5 justify-center px-1 bg-green-600 rounded-md">
             {
               Object.values(examData.studentExamState.student_answers).filter(
                 (a) => isAnswered(a)
               ).length
             }
-          </Badge>
+          </Badge> */}
+          <Answered
+            className="w-5 h-5"
+            value={
+              Object.values(examData.studentExamState.student_answers).filter(
+                (a) => isAnswered(a)
+              ).length
+            }
+          />
           Answered
         </div>
         <div className="flex gap-1 items-center">
-          <Badge className="min-w-5 justify-center px-1 bg-red-600 rounded-md">
-            {
+          <NotAnswered
+            className="w-5 h-5"
+            value={
               Object.values(examData.studentExamState.student_answers).filter(
                 (a) => isNotAnswered(a)
               ).length
             }
-          </Badge>
+          />
           Not Answered
         </div>
         <div className="flex gap-1 items-center">
-          <Badge className="min-w-5 justify-center px-1 bg-purple-600 rounded-md">
-            {
+          <Marked
+            className="w-5 h-5"
+            value={
               Object.values(examData.studentExamState.student_answers).filter(
-                (v) => isMarkedReview(v)
+                (v) => isMarkedReview(v) && !isAnswered(v)
               ).length
             }
-          </Badge>
+          />
           Marked
         </div>
         <div className="flex gap-1 items-center">
-          <Badge className="min-w-5 justify-center px-1 bg-purple-600 rounded-md relative">
-            {
+          <MarkedAnswered
+            className="w-5 h-5"
+            value={
               Object.values(examData.studentExamState.student_answers).filter(
                 (a) => isMarkedAndAnswered(a)
               ).length
             }
-            <span className="bg-green-700 w-2 h-2 flex items-center justify-center rounded-full right-[-3px] bottom-[-3px] absolute">
-              <Check size={8} />
-            </span>
-          </Badge>
+          />
           Marked Answer
         </div>
         <div className="flex gap-1 items-center">
-          <Badge className="min-w-5 justify-center px-1 text-dark bg-slate-200 rounded-md">
-            {calcTotalQs(examData.subjects) -
-              Object.values(examData.studentExamState.student_answers).length}
-          </Badge>
+          <NotVisited
+            className="w-5 h-5"
+            value={
+              calcTotalQs(examData.subjects) -
+              Object.values(examData.studentExamState.student_answers).length
+            }
+          />
           Not Visited
         </div>
       </div>
@@ -184,7 +198,7 @@ function ExamDrawerContent() {
           {examData.subjects[examData.studentExamState.activeSubject]?.name}
         </h3>
       </div>
-      <div className="p-3 pb-0 grid grid-cols-6 auto-rows-max gap-2 mb-5 h-[calc(100%-300px)] overflow-y-auto">
+      <div className="p-3 pb-0 grid grid-cols-6 auto-rows-max gap-2 mb-5 h-[calc(100%-350px)] overflow-y-auto">
         {examData?.subjects[
           examData.studentExamState.activeSubject
         ]?.questions?.map((_v, i) => {
@@ -206,45 +220,46 @@ function ExamDrawerContent() {
               }}
               className="flex items-start justify-start cursor-pointer"
             >
-              <div
-                className={cn(
-                  "bg-slate-200 w-8 h-8 flex items-center rounded-lg justify-center",
-                  notAnswered ? "bg-red-600 text-white" : "",
-                  isAns ? "bg-green-600 text-white" : "",
-                  isMarkedForReview ? "bg-purple-600 text-white" : "",
-                  isMarkedForReview && isAns
-                    ? "bg-purple-600 text-white relative"
-                    : ""
-                )}
-              >
-                {i + 1}
-                {isMarkedForReview && isAns ? (
-                  <span className="bg-green-700 w-3 h-3 flex items-center justify-center rounded-full right-[-3px] bottom-[-3px] absolute">
-                    <Check size={12} />
-                  </span>
-                ) : (
-                  " "
-                )}
-              </div>
+              {!sAns && !isMarkedForReview && !isAns && (
+                <NotVisited value={i + 1} />
+              )}
+              {sAns && notAnswered && <NotAnswered value={i + 1} />}
+              {!isMarkedForReview && isAns && <Answered value={i + 1} />}
+              {isMarkedForReview && !isAns && <Marked value={i + 1} />}
+              {isMarkedForReview && isAns && <MarkedAnswered value={i + 1} />}
             </div>
           );
         })}
       </div>
       <div
         className={cn(
-          "mt-auto flex flex-col justify-center items-center gap-2 p-4 bg-gray-100 h-[100px]"
+          "mt-auto flex flex-col justify-center items-center gap-2 p-4 py-0 border-t-2 border-blue-200 h-[100px]"
         )}
       >
+        <div className="flex gap-2 justify-between w-full">
+          <Button
+            size={"sm"}
+            className="w-full bg-blue-300 font-normal text-dark"
+          >
+            Question Paper
+          </Button>
+          <Button
+            size={"sm"}
+            className="w-full bg-blue-300 font-normal text-dark"
+          >
+            Instructions
+          </Button>
+        </div>
         {examData.subject_time == "yes" ? (
           <Button
-            className="bg-green-600 hover:bg-green-800 uppercase font-medium w-full"
+            className="bg-green-600 hover:bg-green-800 uppercase shadow-md font-medium w-full"
             onClick={handleSubmitSection}
           >
             Submit section
           </Button>
         ) : (
           <Button
-            className="bg-green-600 hover:bg-green-800 uppercase font-medium w-full"
+            className="bg-green-600 hover:bg-green-800 uppercase shadow-md font-medium w-full"
             asChild
           >
             <Link to={{ pathname: "/submit", search: searchParams.toString() }}>

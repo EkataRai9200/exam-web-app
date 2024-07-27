@@ -35,7 +35,7 @@ function HindiInstructionsContent() {
               <span>आप प्रश्न का उत्तर दे चुके हैं।</span>
             </div>
             <div className="flex flex-nowrap gap-2 items-center">
-              <Badge className="w-7 h-7 rounded-lg flex items-center justify-center bg-yellow-600">
+              <Badge className="w-7 h-7 rounded-lg flex items-center justify-center bg-purple-600">
                 1
               </Badge>
               <span>

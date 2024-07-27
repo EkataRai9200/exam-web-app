@@ -63,7 +63,6 @@ export function NAT({ index, subjectIndex }: RenderMCQOptionProps) {
               : question?.hi_question ?? "",
         }}
       ></div>
-      <hr />
       <h5 className="text-md font-medium">Answer</h5>
       <div className="md:w-[300px] flex flex-col gap-4">
         <Input

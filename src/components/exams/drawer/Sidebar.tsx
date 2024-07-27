@@ -22,7 +22,7 @@ function Sidebar({
       </div>
       <div
         className={cn(
-          "hidden pt-5 md:pt-0 bg-white w-full border-l-2 h-screen overflow-y-clip",
+          "hidden pt-5 md:pt-0 bg-blue-100 w-full border-l-2 h-screen overflow-y-clip",
           showSidebar ? "md:block" : "hidden"
         )}
       >

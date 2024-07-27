@@ -126,6 +126,7 @@ export interface ExamAuthUser {
   iat: number;
   institute_url: string;
   instiute_id: string;
+  institute: { logo: string };
   name: string;
   package_id: string;
   student_token: string;

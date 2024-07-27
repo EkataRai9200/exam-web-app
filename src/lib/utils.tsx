@@ -102,3 +102,24 @@ export const calcSubjectRemTime = (start_time: number, time_limit: number) => {
   const end_time = start_time + time_limit * 1000;
   return Math.floor(Math.max(0, end_time - Date.now()) / 1000);
 };
+
+export function requestFullScreen() {
+  let element = (document as any).body;
+  // Supports most browsers and their versions.
+  var requestMethod =
+    element.requestFullScreen ||
+    element.webkitRequestFullScreen ||
+    element.mozRequestFullScreen ||
+    element.msRequestFullScreen;
+
+  if (requestMethod) {
+    // Native full screen.
+    requestMethod.call(element);
+  } else if (typeof (window as any).ActiveXObject !== "undefined") {
+    // Older IE.
+    var wscript = new (window as any).ActiveXObject("WScript.Shell");
+    if (wscript !== null) {
+      wscript.SendKeys("{F11}");
+    }
+  }
+}

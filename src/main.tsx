@@ -11,11 +11,11 @@ import { ThemeProvider } from "./components/theme-provider";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   // <React.StrictMode>
-    <ThemeProvider defaultTheme="exam-theme" storageKey="vite-ui-theme">
-      <RouterProvider
-        router={router}
-        fallbackElement={<Loader visible={true} />}
-      />
-    </ThemeProvider>
+  <ThemeProvider defaultTheme="exam-theme" storageKey="vite-ui-theme">
+    <RouterProvider
+      router={router}
+      fallbackElement={<Loader visible={true} />}
+    />
+  </ThemeProvider>
   // </React.StrictMode>
 );

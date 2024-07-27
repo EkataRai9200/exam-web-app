@@ -1,4 +1,8 @@
-import { Badge } from "@/components/ui/badge";
+import Answered from "../../status/Answered";
+import Marked from "../../status/Marked";
+import MarkedAnswered from "../../status/MarkedAnswered";
+import NotAnswered from "../../status/NotAnswered";
+import NotVisited from "../../status/NotVisited";
 
 function EnglishInstructionsContent() {
   return (
@@ -17,36 +21,26 @@ function EnglishInstructionsContent() {
           following statuses of each of the questions numbered:
           <div className="flex flex-col gap-2">
             <div className="flex flex-nowrap gap-2 items-center">
-              <Badge className="w-7 h-7 rounded-lg flex items-center justify-center bg-slate-200 text-dark">
-                1
-              </Badge>
+              <NotVisited value={1} />
               <span>You have not visited the question yet.</span>
             </div>
             <div className="flex flex-nowrap gap-2 items-center">
-              <Badge className="w-7 h-7 rounded-lg flex items-center justify-center bg-red-600">
-                1
-              </Badge>
+              <NotAnswered value={3} />
               <span>You have not answered the question.</span>
             </div>
             <div className="flex flex-nowrap gap-2 items-center">
-              <Badge className="w-7 h-7 rounded-lg flex items-center justify-center bg-green-600">
-                1
-              </Badge>
+              <Answered value={5} />
               <span>You have answered the question.</span>
             </div>
             <div className="flex flex-nowrap gap-2 items-center">
-              <Badge className="w-7 h-7 rounded-lg flex items-center justify-center bg-yellow-600">
-                1
-              </Badge>
+              <Marked value={7} />
               <span>
                 You have NOT answered the question but have marked the question
                 for review.
               </span>
             </div>
             <div className="flex flex-nowrap gap-2 items-center">
-              <Badge className="w-7 h-7 rounded-lg flex items-center justify-center bg-purple-600">
-                1
-              </Badge>
+              <MarkedAnswered value={7} />
               <span>
                 You have answered the question but marked it for review.
               </span>

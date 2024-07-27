@@ -176,24 +176,15 @@ export function TakeExam() {
   return (
     <>
       {examData.subjects.length > 0 && !isLoading ? (
-        <div className="flex md:flex-row md:h-screen bg-white md:bg-slate-100 md:overflow-y-hidden">
-          <main
-            className={cn(
-              "flex flex-col w-full h-full md:gap-0 relative items-stretch",
-              showSidebar ? "md:w-3/4" : ""
-            )}
-            onCopy={disableCopyPaste}
-            onCut={disableCopyPaste}
-            onPaste={disableCopyPaste}
-            onContextMenu={(e) => e.preventDefault()}
-          >
-            <div className="flex flex-wrap justify-between items-center px-3 py-2 md:bg-gray-100">
-              <h5 className="scroll-m-20 text-md font-medium text-muted-foreground tracking-normal">
+        <div className="flex flex-col md:h-screen">
+          <div className="flex w-full justify-between items-center px-5 py-1 shadow z-10 bg-white">
+            <div className="flex justify-between items-center w-3/4">
+              <h5 className="scroll-m-20 text-sm font-medium text-muted-foreground tracking-normal">
                 {examData.test_name}
               </h5>
               <ExamDrawer key={2} />
 
-              <div className="flex w-full md:w-auto items-center justify-center mt-2 md:mt-0 md:gap-4">
+              <div className="flex w-full md:w-auto items-end justify-end mt-2 md:mt-0 md:gap-4">
                 {examData.subjects.length > 0 &&
                 examData.subject_time == "yes" ? (
                   <>
@@ -271,158 +262,176 @@ export function TakeExam() {
                 )}
               </div>
             </div>
-
-            <div className="flex max-w-full overflow-x-auto md:overflow-y-clip gap-2 px-3 py-2 bg-white">
-              {examData.subjects.map((v, i) => {
-                return (
-                  <Button
-                    key={v.sub_id}
-                    size={"sm"}
-                    disabled={
-                      examData.subject_time == "yes" && i != activeSubject
-                    }
-                    variant={activeSubject == i ? "default" : "secondary"}
-                    onClick={() => setActiveSubject(i)}
-                  >
-                    {v.name}
-                  </Button>
-                );
-              })}
-            </div>
-
-            {examData.subjects.length > 0 ? (
-              <>
-                <ScrollArea className="md:my-2 px-3 h-full py-2 pb-[100px] md:pb-[70px]">
-                  {examData.subjects.map((subject, subjectIndex) => (
-                    <div
-                      className={cn({
-                        hidden: activeSubject != subjectIndex,
-                        block: activeSubject == subjectIndex,
-                      })}
-                    >
-                      {subject.questions?.map((v, i) => {
-                        return (
-                          <RenderQuestion
-                            index={i}
-                            subjectIndex={subjectIndex}
-                            isActive={activeQuestion == i}
-                            setActive={setActiveQuestion}
-                            key={v._id.$oid}
-                          />
-                        );
-                      })}
-                    </div>
-                  ))}
-                </ScrollArea>
-              </>
-            ) : (
-              ""
-            )}
-
-            <div
+            <div className="w-1/4"></div>
+          </div>
+          <div className="flex md:flex-row max-h-full md:overflow-y-hidden">
+            <main
               className={cn(
-                "flex justify-between items-center fixed bg-slate-100 bottom-0 w-full md:mt-5",
-                showSidebar ? "md:w-3/4 left-0 p-2" : ""
+                "flex flex-col w-full h-full md:gap-0 relative items-stretch bg-white",
+                showSidebar ? "md:w-3/4" : ""
               )}
+              onCopy={disableCopyPaste}
+              onCut={disableCopyPaste}
+              onPaste={disableCopyPaste}
+              onContextMenu={(e) => e.preventDefault()}
             >
-              <div className="flex justify-start gap-2">
-                <Button
-                  size={"icon"}
-                  // variant="outline"
-                  onClick={handlePreviousQuestion}
-                >
-                  <ArrowLeft size={18} />
-                </Button>
-                <Button
-                  size={"default"}
-                  variant="default"
-                  className="bg-purple-800 px-2"
-                  onClick={() => {
-                    dispatch({
-                      type: "markForReview",
-                      payload: {
-                        index: activeQuestion,
-                        subjectIndex: activeSubject,
-                      },
-                    });
-                    handleNextQuestion();
-                  }}
-                >
-                  {/* <Flag size={18} className="me-2" /> */}
-                  Mark for Review
-                </Button>
+              <div className="flex items-center w-full overflow-x-auto md:overflow-y-hidden gap-2 px-3 pt-2 pb-2 bg-gray-100 border-b-2">
+                <p className="text-sm border-r-2 pr-2">Sections</p>
+                {examData.subjects.map((v, i) => {
+                  return (
+                    <Button
+                      key={v.sub_id}
+                      size={"sm"}
+                      disabled={
+                        examData.subject_time == "yes" && i != activeSubject
+                      }
+                      variant={activeSubject == i ? "default" : "outline"}
+                      onClick={() => setActiveSubject(i)}
+                    >
+                      {v.name}
+                    </Button>
+                  );
+                })}
+              </div>
 
-                {isAnswered(
-                  examData.studentExamState.student_answers[
-                    examData.subjects[activeSubject].questions[activeQuestion]
-                      ._id.$oid
-                  ]
-                ) && (
+              {examData.subjects.length > 0 ? (
+                <>
+                  <ScrollArea className="md:my-0 px-2 h-full pt-0 pb-[100px] md:pb-[70px]">
+                    {examData.subjects.map((subject, subjectIndex) => (
+                      <div
+                        className={cn({
+                          hidden: activeSubject != subjectIndex,
+                          block: activeSubject == subjectIndex,
+                        })}
+                      >
+                        {subject.questions?.map((v, i) => {
+                          return (
+                            <RenderQuestion
+                              index={i}
+                              subjectIndex={subjectIndex}
+                              isActive={activeQuestion == i}
+                              setActive={setActiveQuestion}
+                              key={v._id.$oid}
+                            />
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </ScrollArea>
+                </>
+              ) : (
+                ""
+              )}
+
+              <div
+                className={cn(
+                  "flex justify-between items-center fixed bg-slate-100 bottom-0 w-full md:mt-5",
+                  showSidebar ? "md:w-3/4 left-0 p-2" : ""
+                )}
+              >
+                <div className="flex justify-start gap-2">
                   <Button
                     size={"icon"}
+                    // variant="outline"
+                    onClick={handlePreviousQuestion}
+                  >
+                    <ArrowLeft size={18} />
+                  </Button>
+                  <Button
+                    size={"default"}
                     variant="default"
-                    className="bg-red-200 text-red-500"
+                    className="bg-purple-800 px-2"
                     onClick={() => {
                       dispatch({
-                        type: "deleteAnswer",
-                        payload:
-                          examData.subjects[activeSubject].questions[
-                            activeQuestion
-                          ]._id.$oid,
+                        type: "markForReview",
+                        payload: {
+                          index: activeQuestion,
+                          subjectIndex: activeSubject,
+                        },
                       });
+                      handleNextQuestion();
                     }}
                   >
-                    <Trash size={18} />
+                    {/* <Flag size={18} className="me-2" /> */}
+                    Mark for Review
                   </Button>
-                )}
-              </div>
-              <div className="flex justify-between">
-                {examData.subjects.length >= 0 && (
-                  <>
-                    {activeSubject == examData.subjects.length - 1 &&
-                    examData.studentExamState.activeSubject >= 0 &&
-                    activeQuestion ==
-                      examData.subjects[examData.studentExamState.activeSubject]
-                        .questions.length -
-                        1 ? (
-                      <Button
-                        onClick={() => {
-                          saveTest(examData).then(() => {
-                            navigate({
-                              pathname: "/submit",
-                              search: searchParams.toString(),
+
+                  {isAnswered(
+                    examData.studentExamState.student_answers[
+                      examData.subjects[activeSubject].questions[activeQuestion]
+                        ._id.$oid
+                    ]
+                  ) && (
+                    <Button
+                      size={"icon"}
+                      variant="default"
+                      className="bg-red-200 text-red-500"
+                      onClick={() => {
+                        dispatch({
+                          type: "deleteAnswer",
+                          payload:
+                            examData.subjects[activeSubject].questions[
+                              activeQuestion
+                            ]._id.$oid,
+                        });
+                      }}
+                    >
+                      <Trash size={18} />
+                    </Button>
+                  )}
+                </div>
+                <div className="flex justify-between">
+                  {examData.subjects.length >= 0 && (
+                    <>
+                      {activeSubject == examData.subjects.length - 1 &&
+                      examData.studentExamState.activeSubject >= 0 &&
+                      activeQuestion ==
+                        examData.subjects[
+                          examData.studentExamState.activeSubject
+                        ].questions.length -
+                          1 ? (
+                        <Button
+                          onClick={() => {
+                            saveTest(examData).then(() => {
+                              navigate({
+                                pathname: "/submit",
+                                search: searchParams.toString(),
+                              });
                             });
-                          });
-                        }}
-                        className="bg-green-600 hover:bg-green-800"
-                        size={"lg"}
-                      >
-                        Submit
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={() => {
-                          handleNextQuestion();
-                          dispatch({
-                            type: "removeMarkForReview",
-                            payload: {
-                              index: activeQuestion,
-                              subjectIndex: activeSubject,
-                            },
-                          });
-                        }}
-                        size={"default"}
-                        className="px-3"
-                      >
-                        Next <ArrowRight size={15} className="ms-1" />
-                      </Button>
-                    )}
-                  </>
-                )}
+                          }}
+                          className="bg-green-600 hover:bg-green-800"
+                          size={"lg"}
+                        >
+                          Submit
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={() => {
+                            handleNextQuestion();
+                            dispatch({
+                              type: "removeMarkForReview",
+                              payload: {
+                                index: activeQuestion,
+                                subjectIndex: activeSubject,
+                              },
+                            });
+                          }}
+                          size={"default"}
+                          className="px-3"
+                        >
+                          Next <ArrowRight size={15} className="ms-1" />
+                        </Button>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
-          </main>
-          <Sidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
+            </main>
+            <Sidebar
+              showSidebar={showSidebar}
+              setShowSidebar={setShowSidebar}
+            />
+          </div>
         </div>
       ) : (
         <Loader visible={true} />

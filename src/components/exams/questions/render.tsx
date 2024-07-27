@@ -62,12 +62,12 @@ export function RenderQuestion({
 
         <Card
           className={cn(
-            "w-full md:min-h-[300px]",
+            "w-full md:min-h-[300px] border-none",
             isActive ? "visible" : "hidden",
             question.show_qs_passage ? "md:w-1/2" : ""
           )}
         >
-          <CardHeader className="flex md:flex-row md:items-center justify-between space-y-0 relative px-3 py-1">
+          <CardHeader className="flex md:flex-row md:items-center justify-between space-y-0 relative px-3 py-1 border-b">
             <div className="pt-1">
               <p className="text-sm text-muted-foreground font-medium">
                 Question No. {index + 1}.
@@ -86,7 +86,7 @@ export function RenderQuestion({
               <LanguageDropdown />
             </div>
           </CardHeader>
-          <CardContent className="px-3">
+          <CardContent className="px-3 pt-3">
             <div className="flex flex-col gap-3">
               {question.question_type == QuestionType.MCQ && (
                 <MCQ subjectIndex={subjectIndex} index={index} />
