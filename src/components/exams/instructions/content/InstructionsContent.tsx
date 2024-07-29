@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useExamData } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
-import React from "react";
 import EnglishInstructionsContent from "./EnglishInstructionsContent";
 import HindiInstructionsContent from "./HindiInstructionsContent";
 

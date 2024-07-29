@@ -1,7 +1,6 @@
 import { useExamData } from "@/lib/hooks";
 
 import CountdownTimer from "@/components/exams/timer/countDownTimer";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
@@ -13,6 +12,11 @@ import {
   isAnswered,
   isMarkedReview,
 } from "@/components/exams/drawer/examDrawerContent";
+import Answered from "@/components/exams/status/Answered";
+import Marked from "@/components/exams/status/Marked";
+import MarkedAnswered from "@/components/exams/status/MarkedAnswered";
+import NotAnswered from "@/components/exams/status/NotAnswered";
+import NotVisited from "@/components/exams/status/NotVisited";
 import {
   Carousel,
   CarouselContent,
@@ -20,13 +24,8 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { toast } from "sonner";
-import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
-import NotVisited from "@/components/exams/status/NotVisited";
-import Answered from "@/components/exams/status/Answered";
-import NotAnswered from "@/components/exams/status/NotAnswered";
-import Marked from "@/components/exams/status/Marked";
-import MarkedAnswered from "@/components/exams/status/MarkedAnswered";
+import withReactContent from "sweetalert2-react-content";
 export const calcTotalQs = (subjects: ExamDetailData["subjects"]): number => {
   return subjects.reduce((acc, v) => acc + v.questions.length, 0);
 };

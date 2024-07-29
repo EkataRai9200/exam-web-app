@@ -117,12 +117,10 @@ function ExamDrawerContent({
     });
   };
 
-  const showQuestionPaper = () => {};
-
   return (
     <>
       {examData.authUser && (
-        <div className="flex flex-row gap-2 justify-start h-[50px] items-center p-2 ">
+        <div className="flex flex-row gap-2 justify-start md:h-[50px] items-center p-2 ">
           <Avatar className="w-8 h-8">
             <AvatarImage
               src={examData.authUser.profile_pic}
@@ -136,7 +134,7 @@ function ExamDrawerContent({
         </div>
       )}
 
-      <div className="grid grid-cols-3 font-medium text-xs gap-1 justify-between p-2 h-[85px] bg-blue-200">
+      <div className="grid grid-cols-3 font-medium text-xs gap-1 justify-between p-2 md:h-[85px] bg-blue-200">
         <div className="flex gap-1 items-center">
           {/* <Badge className="min-w-5 justify-center px-1 bg-green-600 rounded-md">
             {
@@ -206,7 +204,7 @@ function ExamDrawerContent({
           {examData.subjects[examData.studentExamState.activeSubject]?.name}
         </h3>
       </div>
-      <div className="p-3 pb-0 grid grid-cols-6 auto-rows-max gap-2 mb-5 h-[calc(100%-350px)] overflow-y-auto">
+      <div className="p-3 pb-0 grid grid-cols-6 auto-rows-max gap-2 mb-5 h-[calc(100%-300px)] md:h-[calc(100%-350px)] overflow-y-auto">
         {examData?.subjects[
           examData.studentExamState.activeSubject
         ]?.questions?.map((_v, i) => {
@@ -241,7 +239,7 @@ function ExamDrawerContent({
       </div>
       <div
         className={cn(
-          "mt-auto flex flex-col justify-center items-center gap-2 p-4 py-0 border-t-2 border-blue-200 h-[100px]"
+          "mt-auto flex flex-col justify-center items-center gap-2 p-4 py-0 border-t-2 border-blue-200 h-[100px] md:h-[100px]"
         )}
       >
         <div className="flex gap-2 justify-between w-full">
