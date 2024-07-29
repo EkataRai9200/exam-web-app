@@ -21,6 +21,8 @@ import { isAnswered } from "@/components/exams/drawer/examDrawerContent";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Subject } from "@/context/ExamContext";
 import "react-simple-keyboard/build/css/index.css";
+import QuestionPaperContent from "@/components/exams/questions/QuestionPaperContent";
+import InstructionsContent from "@/components/exams/instructions/content/InstructionsContent";
 
 export function TakeExam() {
   const { examData, dispatch } = useExamData();
@@ -173,16 +175,24 @@ export function TakeExam() {
   }, []);
 
   const [showSidebar, setShowSidebar] = React.useState(true);
+
+  const [showQuestionPaper, setShowQuestionPaper] = React.useState(false);
+  const [showInstructions, setShowInstructions] = React.useState(false);
+
   return (
     <>
       {examData.subjects.length > 0 && !isLoading ? (
         <div className="flex flex-col md:h-screen">
-          <div className="flex w-full justify-between items-center px-5 py-1 shadow z-10 bg-white">
-            <div className="flex justify-between items-center w-3/4">
+          <div className="flex w-full justify-between items-center px-2 md:px-5 py-1 shadow z-10 bg-white">
+            <div className="flex flex-wrap justify-between items-center w-full md:w-3/4">
               <h5 className="scroll-m-20 text-sm font-medium text-muted-foreground tracking-normal">
                 {examData.test_name}
               </h5>
-              <ExamDrawer key={2} />
+              <ExamDrawer
+                key={2}
+                setShowQuestionPaper={setShowQuestionPaper}
+                setShowInstructions={setShowInstructions}
+              />
 
               <div className="flex w-full md:w-auto items-end justify-end mt-2 md:mt-0 md:gap-4">
                 {examData.subjects.length > 0 &&
@@ -262,7 +272,7 @@ export function TakeExam() {
                 )}
               </div>
             </div>
-            <div className="w-1/4"></div>
+            <div className="hidden md:block md:w-1/4"></div>
           </div>
           <div className="flex md:flex-row max-h-full md:overflow-y-hidden">
             <main
@@ -426,10 +436,20 @@ export function TakeExam() {
                   )}
                 </div>
               </div>
+              <QuestionPaperContent
+                open={showQuestionPaper}
+                setOpen={setShowQuestionPaper}
+              />
+              <InstructionsContent
+                open={showInstructions}
+                setOpen={setShowInstructions}
+              />
             </main>
             <Sidebar
               showSidebar={showSidebar}
               setShowSidebar={setShowSidebar}
+              setShowQuestionPaper={setShowQuestionPaper}
+              setShowInstructions={setShowInstructions}
             />
           </div>
         </div>

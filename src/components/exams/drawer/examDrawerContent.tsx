@@ -29,7 +29,13 @@ export const isNotAnswered = (a: Answer | undefined) => {
   return !isAnswered(a) && !isMarkedReview(a) ? true : false;
 };
 
-function ExamDrawerContent() {
+function ExamDrawerContent({
+  setShowQuestionPaper,
+  setShowInstructions,
+}: {
+  setShowQuestionPaper: any;
+  setShowInstructions: any;
+}) {
   const { examData, dispatch } = useExamData();
   const [searchParams] = useSearchParams();
   const MySwal = withReactContent(Swal);
@@ -110,6 +116,8 @@ function ExamDrawerContent() {
       }
     });
   };
+
+  const showQuestionPaper = () => {};
 
   return (
     <>
@@ -192,8 +200,8 @@ function ExamDrawerContent() {
         </div>
       </div>
 
-      <div className="flex max-w-full overflow-x-auto gap-2 p-2 h-[40px] bg-slate-200">
-        <h3 className="font-medium text-md">
+      <div className="flex max-w-full overflow-x-auto gap-2 p-2 h-[32px] bg-blue-300">
+        <h3 className="font-medium text-sm">
           {"Section: "}
           {examData.subjects[examData.studentExamState.activeSubject]?.name}
         </h3>
@@ -239,13 +247,21 @@ function ExamDrawerContent() {
         <div className="flex gap-2 justify-between w-full">
           <Button
             size={"sm"}
-            className="w-full bg-blue-300 font-normal text-dark"
+            onClick={() => {
+              setShowInstructions(false);
+              setShowQuestionPaper(true);
+            }}
+            className="w-full h-auto py-2 text-xs bg-blue-300 font-normal text-dark"
           >
             Question Paper
           </Button>
           <Button
             size={"sm"}
-            className="w-full bg-blue-300 font-normal text-dark"
+            onClick={() => {
+              setShowQuestionPaper(false);
+              setShowInstructions(true);
+            }}
+            className="w-full h-auto py-2 text-xs bg-blue-300 font-normal text-dark"
           >
             Instructions
           </Button>

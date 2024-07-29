@@ -11,7 +11,13 @@ import { Menu, X } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import ExamDrawerContent from "./examDrawerContent";
 
-export function ExamDrawer() {
+export function ExamDrawer({
+  setShowQuestionPaper,
+  setShowInstructions,
+}: {
+  setShowQuestionPaper: any;
+  setShowInstructions: any;
+}) {
   const [searchParams] = useSearchParams();
 
   return (
@@ -27,7 +33,10 @@ export function ExamDrawer() {
       </DrawerTrigger>
       <DrawerContent>
         <div className="mx-auto h-screen w-full md:w-1/4 relative bg-blue-100">
-          <ExamDrawerContent />
+          <ExamDrawerContent
+            setShowQuestionPaper={setShowQuestionPaper}
+            setShowInstructions={setShowInstructions}
+          />
           <DrawerFooter>
             <Button className="bg-green-600" asChild>
               <Link

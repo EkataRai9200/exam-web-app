@@ -18,7 +18,7 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        PublicSans: ["Public Sans", "sans-serif"],
+        Roboto: ["Roboto", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

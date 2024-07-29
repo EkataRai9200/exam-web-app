@@ -73,7 +73,7 @@ export function RenderQuestion({
                 Question No. {index + 1}.
               </p>
             </div>
-            <div className="flex w-min items-center gap-2">
+            <div className="flex w-full md:w-min items-center gap-2">
               <Badge className="bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium uppercase px-1">
                 {question.question_type}
               </Badge>

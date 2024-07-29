@@ -20,7 +20,7 @@ function Passage({
   return (
     <Card
       className={cn(
-        "w-full md:w-1/2",
+        "w-full md:w-1/2 mt-2",
         isActive && examData.passage_with_qs ? "visible" : "hidden"
       )}
     >
@@ -39,11 +39,7 @@ function Passage({
         </div>
       </CardHeader>
       <CardContent
-        className={cn(
-          "px-3",
-          showPassage ? "block" : "hidden",
-          "md:!block"
-        )}
+        className={cn("px-3", showPassage ? "block" : "hidden", "md:!block")}
       >
         <div className="">
           {question.passage_desc.length > 0 &&

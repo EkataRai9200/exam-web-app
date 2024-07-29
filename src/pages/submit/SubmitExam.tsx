@@ -22,6 +22,11 @@ import {
 import { toast } from "sonner";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
+import NotVisited from "@/components/exams/status/NotVisited";
+import Answered from "@/components/exams/status/Answered";
+import NotAnswered from "@/components/exams/status/NotAnswered";
+import Marked from "@/components/exams/status/Marked";
+import MarkedAnswered from "@/components/exams/status/MarkedAnswered";
 export const calcTotalQs = (subjects: ExamDetailData["subjects"]): number => {
   return subjects.reduce((acc, v) => acc + v.questions.length, 0);
 };
@@ -37,43 +42,50 @@ export function TableDemo() {
         <TableBody>
           <TableRow>
             <TableCell className="font-medium">Total Questions</TableCell>
-            <TableCell>
-              <Badge className="bg-gray-600">{totalQs}</Badge>
-            </TableCell>
+            <TableCell>{totalQs}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="font-medium">Answered Questions</TableCell>
             <TableCell>
-              <Badge className="bg-green-600">
-                {
+              <Answered
+                value={
                   Object.values(
                     examData.studentExamState.student_answers
                   ).filter((a) => isAnswered(a)).length
                 }
-              </Badge>
+              />
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="font-medium">UnAnswered Questions</TableCell>
             <TableCell>
-              <Badge className="bg-red-600">
-                {totalQs -
+              <NotAnswered
+                value={
                   Object.values(
                     examData.studentExamState.student_answers
-                  ).filter((a) => isAnswered(a)).length}
-              </Badge>
+                  ).filter((a) => !isAnswered(a) && !isMarkedReview(a)).length
+                }
+              />
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell className="font-medium">Not Visited Questions</TableCell>
+            <TableCell>
+              <NotVisited
+                value={totalQs - Object.values(examData.subjects).length}
+              />
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="font-medium">Marked for Review</TableCell>
             <TableCell>
-              <Badge className="bg-purple-600">
-                {
+              <Marked
+                value={
                   Object.values(
                     examData.studentExamState.student_answers
                   ).filter((a) => isMarkedReview(a)).length
                 }
-              </Badge>
+              />
             </TableCell>
           </TableRow>
         </TableBody>
@@ -136,62 +148,64 @@ export function SubjectOverviewBlock({
   return (
     <Card key={`card_${s.sub_id}`} className="w-full">
       <CardContent className="px-3 py-2">
-        <h3 className="text-lg font-medium mb-2">{s.name}</h3>
-        <div className="grid grid-cols-3 font-medium text-xs gap-1 justify-between tracking-tight">
-          <div>
-            <Badge className="min-w-5 max-w-fit flex justify-center  bg-gray-600">
+        <h3 className="text-md font-medium mb-2 border-b">{s.name}</h3>
+        <div className="grid grid-cols-2 font-medium text-xs gap-2 justify-between tracking-tight">
+          <div className="flex gap-2 items-center">
+            <div className="w-7 h-7 flex items-center justify-center bg-gray-100">
               {s.questions.length}
-            </Badge>
+            </div>
             Total Questions
           </div>
-          <div>
-            <Badge className="min-w-5 max-w-fit flex justify-center  bg-green-600">
-              {
+          <div className="flex gap-2 items-center">
+            <Answered
+              value={
                 Object.values(examData.studentExamState.student_answers).filter(
                   (a) => a.sub_id == s.sub_id && isAnswered(a)
                 ).length
               }
-            </Badge>
+            />
             Answered
           </div>
-          <div>
-            <Badge className="min-w-5 max-w-fit flex justify-center  bg-red-600">
-              {s.questions.length -
+          <div className="flex gap-2 items-center">
+            <NotAnswered
+              value={
+                s.questions.length -
                 Object.values(examData.studentExamState.student_answers).filter(
                   (a) => a.sub_id == s.sub_id && isAnswered(a)
-                ).length}
-            </Badge>
+                ).length
+              }
+            />
             UnAnswered
           </div>
-          <div>
-            <Badge className="min-w-5 max-w-fit flex justify-center  bg-purple-600">
-              {
+          <div className="flex gap-2 items-center">
+            <Marked
+              value={
                 Object.values(examData.studentExamState.student_answers).filter(
                   (a) => a.sub_id == s.sub_id && isMarkedReview(a)
                 ).length
               }
-            </Badge>
+            />
             Marked
           </div>
-          <div>
-            <Badge className="min-w-5 max-w-fit flex justify-center  bg-purple-600">
-              {
+          <div className="flex gap-2 items-center">
+            <MarkedAnswered
+              value={
                 Object.values(examData.studentExamState.student_answers).filter(
                   (a) =>
                     a.sub_id == s.sub_id && isMarkedReview(a) && isAnswered(a)
                 ).length
               }
-            </Badge>
+            />
             Marked Answer
           </div>
-          <div>
-            <Badge className="min-w-5 max-w-fit flex justify-center  bg-gray-200 text-black">
-              {
+          <div className="flex gap-2 items-center">
+            <NotVisited
+              value={
                 Object.values(examData.studentExamState.student_answers).filter(
                   (a) => a.sub_id == s.sub_id && a.review
                 ).length
               }
-            </Badge>
+            />
             Not Visited
           </div>
         </div>

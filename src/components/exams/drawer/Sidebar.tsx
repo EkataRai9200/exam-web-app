@@ -5,9 +5,13 @@ import ExamDrawerContent from "./examDrawerContent";
 function Sidebar({
   showSidebar,
   setShowSidebar,
+  setShowQuestionPaper,
+  setShowInstructions,
 }: {
   showSidebar: boolean;
   setShowSidebar: any;
+  setShowQuestionPaper: any;
+  setShowInstructions: any;
 }) {
   return (
     <div className={cn("relative h-screen", showSidebar ? "md:w-1/4" : "")}>
@@ -26,7 +30,10 @@ function Sidebar({
           showSidebar ? "md:block" : "hidden"
         )}
       >
-        <ExamDrawerContent />
+        <ExamDrawerContent
+          setShowQuestionPaper={setShowQuestionPaper}
+          setShowInstructions={setShowInstructions}
+        />
       </div>
     </div>
   );
