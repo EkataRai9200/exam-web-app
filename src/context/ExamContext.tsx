@@ -112,6 +112,7 @@ export interface StudentExamState {
     [key: string]: Answer;
   };
   marked_for_review: Array<{ index: number; activeSubject: number }>;
+  windowSwitch: number;
 }
 
 export interface ObjectID {
@@ -224,6 +225,7 @@ const initialState: ExamDetailData = {
     activeLang: "EN",
     student_answers: {},
     marked_for_review: [],
+    windowSwitch: 0,
   },
 };
 
@@ -255,6 +257,7 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       if (action.payload.start_date)
         newState.studentExamState.start_date = action.payload.start_date;
       startResumeSubjectTime(newState);
+      console.log("newState", newState);
 
       if (newState.subject_time == "yes" && newState.subject_times) {
         const qsNotSubmitted = Object.values(newState.subject_times).filter(
@@ -271,6 +274,9 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
             "?token=" + new URLSearchParams(window.location.search).get("token")
           );
         }
+      } else {
+        newState.studentExamState.activeSubject = 0;
+        newState.studentExamState.activeQuestion = 0;
       }
 
       return newState;

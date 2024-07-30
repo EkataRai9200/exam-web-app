@@ -3,6 +3,7 @@ import { useExamData } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
 import React from "react";
 import { QuestionTypeProps } from "./render";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface RenderMCQOptionProps extends QuestionTypeProps {}
 
@@ -85,7 +86,7 @@ export function MAQ({ index, subjectIndex }: RenderMCQOptionProps) {
           <div
             key={i}
             className={cn(
-              "w-full rounded-lg p-1 flex items-center gap-2 cursor-pointer relative border-2 bg-white",
+              "w-full rounded-lg p-1 flex items-center gap-2 cursor-pointer relative border bg-white",
               status == "pending" ? "bg-white" : "",
               status == "answered" ? "border-green-600" : ""
             )}
@@ -93,14 +94,22 @@ export function MAQ({ index, subjectIndex }: RenderMCQOptionProps) {
               markAnswer(i);
             }}
           >
-            <div
+            <Checkbox
+              className={
+                status == "answered"
+                  ? "border-green-600 data-[state=checked]:bg-green-600"
+                  : ""
+              }
+              checked={status == "answered"}
+            />
+            {/* <div
               className={cn(
                 "border w-7 h-7 text-sm font-medium flex items-center justify-center text-center rounded-full",
                 status == "answered" ? "bg-green-600 text-white" : ""
               )}
             >
               {String.fromCharCode(65 + i)}
-            </div>
+            </div> */}
             {_v && <div dangerouslySetInnerHTML={{ __html: _v }}></div>}
           </div>
         );

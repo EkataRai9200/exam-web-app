@@ -15,11 +15,17 @@ function QuestionPaperContent({
   return (
     <div
       className={cn(
-        "absolute flex flex-col h-full w-full top-0 left-0 bg-white z-20",
+        "fixed md:absolute  flex flex-col h-screen md:h-full w-full top-0 left-0 bg-white z-50 md:z-20",
         open ? "visible" : "hidden"
       )}
     >
       <h1 className="w-full text-center py-2 font-medium">
+        <>
+          {console.log(
+            examData.studentExamState.activeSubject,
+            examData.subjects[examData.studentExamState.activeSubject]
+          )}
+        </>
         {examData.subjects[examData.studentExamState.activeSubject].name}
       </h1>
       <ScrollArea className="pb-5 px-5">

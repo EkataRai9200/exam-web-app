@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useExamData } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
 import Passage from "../passage/Passage";
+import { FILL_BLANKS } from "./fill_blanks";
 import { MCQ_MULTI_OPTIONS } from "./mcq_multi_options";
 import MULTI_SLCT from "./multi_slct";
 import { NAT } from "./nat";
@@ -115,6 +116,9 @@ export function RenderQuestion({
               )}
               {question.question_type == QuestionType.TXT_INPUT && (
                 <TXT_INPUT subjectIndex={subjectIndex} index={index} />
+              )}
+              {question.question_type == QuestionType.FILL_BLANKS && (
+                <FILL_BLANKS subjectIndex={subjectIndex} index={index} />
               )}
               {/* {question.question_type == QuestionType.SENTENCE_ARRANGMENT && (
               <SENTENCE_ARRANGMENT subjectIndex={subjectIndex} index={index} />

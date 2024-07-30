@@ -17,7 +17,7 @@ function InstructionsContent({
   return (
     <div
       className={cn(
-        "absolute flex flex-col h-full w-full top-0 left-0 bg-white z-20",
+        "fixed md:absolute  flex flex-col h-screen md:h-full w-full top-0 left-0 bg-white z-50 md:z-20",
         open ? "visible" : "hidden"
       )}
     >

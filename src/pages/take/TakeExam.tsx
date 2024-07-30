@@ -9,7 +9,7 @@ import CountdownTimer from "@/components/exams/timer/countDownTimer";
 
 import Loader from "@/components/blocks/Loader";
 import { ExamDrawer } from "@/components/exams/drawer/drawer";
-import { useExamData } from "@/lib/hooks";
+import { useExamData, useExamWindowSwitch } from "@/lib/hooks";
 import { cn, saveTest } from "@/lib/utils";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -18,14 +18,18 @@ import withReactContent from "sweetalert2-react-content";
 // modules css
 import Sidebar from "@/components/exams/drawer/Sidebar";
 import { isAnswered } from "@/components/exams/drawer/examDrawerContent";
+import InstructionsContent from "@/components/exams/instructions/content/InstructionsContent";
+import QuestionPaperContent from "@/components/exams/questions/QuestionPaperContent";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Subject } from "@/context/ExamContext";
 import "react-simple-keyboard/build/css/index.css";
-import QuestionPaperContent from "@/components/exams/questions/QuestionPaperContent";
-import InstructionsContent from "@/components/exams/instructions/content/InstructionsContent";
 
 export function TakeExam() {
   const { examData, dispatch } = useExamData();
+
+  const examWindow = useExamWindowSwitch();
+
+  React.useEffect(() => {}, [examWindow.isVisible]);
 
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -62,7 +66,6 @@ export function TakeExam() {
   };
 
   const setActiveSubject = (index: number, check = true) => {
-    // TODO: if subject lock & timer is enabled, do not change
     if (check && !isAllowChangeSubject(examData.studentExamState.activeSubject))
       return false;
     dispatch({
@@ -87,7 +90,7 @@ export function TakeExam() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const isLoaded = !examData.test_name || examData.test_name == "";
+  const isLoaded = examData._id && examData.subjects.length > 0;
 
   const handleNextQuestion = () => {
     if (
@@ -114,26 +117,30 @@ export function TakeExam() {
   };
 
   React.useEffect(() => {
-    if (isLoaded) {
+    if (!isLoaded) {
       navigate({
         pathname: "/start",
         search: searchParams.toString(),
       });
     } else {
-      if (examData.remaining_time && examData.remaining_time <= 0) {
-        onTestTimerExpires();
-      } else {
-        // check if subject timer is enabled & all subjects are submitted
+      if (examData.is_proctoring_allow) {
+        examWindow.activate();
+      }
+      if (examData.subject_time == "yes") {
         if (
-          examData.subject_time == "yes" &&
           examData.studentExamState.subject_times &&
           Object.values(examData.studentExamState.subject_times).every(
             (s) => s.submitted
           )
         ) {
+          // test already submitted message !
           onTestTimerExpires();
         }
-
+        setIsLoading(false);
+      } else {
+        if (examData.remaining_time && examData.remaining_time <= 0) {
+          onTestTimerExpires();
+        }
         setIsLoading(false);
       }
     }
@@ -366,29 +373,32 @@ export function TakeExam() {
                     Mark for Review
                   </Button>
 
-                  {isAnswered(
-                    examData.studentExamState.student_answers[
-                      examData.subjects[activeSubject].questions[activeQuestion]
-                        ._id.$oid
-                    ]
-                  ) && (
-                    <Button
-                      size={"icon"}
-                      variant="default"
-                      className="bg-red-200 text-red-500"
-                      onClick={() => {
-                        dispatch({
-                          type: "deleteAnswer",
-                          payload:
-                            examData.subjects[activeSubject].questions[
-                              activeQuestion
-                            ]._id.$oid,
-                        });
-                      }}
-                    >
-                      <Trash size={18} />
-                    </Button>
-                  )}
+                  {examData.subjects.length > 0 &&
+                    activeSubject >= 0 &&
+                    isAnswered(
+                      examData.studentExamState.student_answers[
+                        examData.subjects[activeSubject].questions[
+                          activeQuestion
+                        ]._id.$oid
+                      ]
+                    ) && (
+                      <Button
+                        size={"icon"}
+                        variant="default"
+                        className="bg-red-200 text-red-500"
+                        onClick={() => {
+                          dispatch({
+                            type: "deleteAnswer",
+                            payload:
+                              examData.subjects[activeSubject].questions[
+                                activeQuestion
+                              ]._id.$oid,
+                          });
+                        }}
+                      >
+                        <Trash size={18} />
+                      </Button>
+                    )}
                 </div>
                 <div className="flex justify-between">
                   {examData.subjects.length >= 0 && (
@@ -436,14 +446,20 @@ export function TakeExam() {
                   )}
                 </div>
               </div>
-              <QuestionPaperContent
-                open={showQuestionPaper}
-                setOpen={setShowQuestionPaper}
-              />
-              <InstructionsContent
-                open={showInstructions}
-                setOpen={setShowInstructions}
-              />
+              {examData.subjects.length > 0 &&
+                examData.studentExamState.activeSubject >= 0 && (
+                  <QuestionPaperContent
+                    open={showQuestionPaper}
+                    setOpen={setShowQuestionPaper}
+                  />
+                )}
+              {examData.subjects.length > 0 &&
+                examData.studentExamState.activeSubject >= 0 && (
+                  <InstructionsContent
+                    open={showInstructions}
+                    setOpen={setShowInstructions}
+                  />
+                )}
             </main>
             <Sidebar
               showSidebar={showSidebar}
