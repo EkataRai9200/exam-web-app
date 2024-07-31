@@ -68,7 +68,6 @@ export function RenderQuestion({
           )}
         >
           <CardHeader className="flex md:flex-row md:items-center justify-between space-y-0 relative px-3 py-1 border-b">
-            <p>Time Taken : {questionTimeTaken.current}</p>
             <div className="pt-1">
               <p className="text-sm text-muted-foreground font-medium">
                 Question No. {index + 1}.
