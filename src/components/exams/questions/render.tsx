@@ -47,7 +47,7 @@ export function RenderQuestion({
   isActive,
   subjectIndex,
 }: RenderQuestionProps) {
-  const { examData } = useExamData();
+  const { examData, questionTimeTaken } = useExamData();
   const question = examData.subjects[subjectIndex].questions[index];
 
   return (
@@ -60,7 +60,6 @@ export function RenderQuestion({
             subjectIndex={subjectIndex}
           />
         )}
-
         <Card
           className={cn(
             "w-full md:min-h-[300px] border-none",
@@ -69,6 +68,7 @@ export function RenderQuestion({
           )}
         >
           <CardHeader className="flex md:flex-row md:items-center justify-between space-y-0 relative px-3 py-1 border-b">
+            <p>Time Taken : {questionTimeTaken.current}</p>
             <div className="pt-1">
               <p className="text-sm text-muted-foreground font-medium">
                 Question No. {index + 1}.

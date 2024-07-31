@@ -1,6 +1,6 @@
 import { Answer, ExamContext } from "@/context/ExamContext";
 import { authenticateToken, getTestDetails } from "@/pages/start/StartPage";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { getBrowserInfo, saveTest, showSaveTestError } from "./utils";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
@@ -9,6 +9,13 @@ import withReactContent from "sweetalert2-react-content";
 
 export function useExamData() {
   const { state, dispatch } = useContext(ExamContext);
+  const [isLoaded, setIsLoaded] = React.useState(
+    state._id && state.subjects.length > 0
+  );
+
+  useEffect(() => {
+    setIsLoaded(state._id && state.subjects.length > 0);
+  }, [state]);
 
   const fetchExamData = async () => {
     const url = new URL(window.location.href);
@@ -42,7 +49,53 @@ export function useExamData() {
     return res;
   };
 
-  return { examData: state, dispatch, fetchExamData, saveBrowserActivity };
+  const qTimeTakenRef = React.useRef<number>(0);
+  const qTimerRef = React.useRef<any>();
+  // const [qTimeTaken, setqTimeTaken] = React.useState(0);
+
+  const recordQuestionTime = () => {
+    if (qTimerRef.current) clearInterval(qTimerRef.current);
+    qTimeTakenRef.current = 0;
+    qTimerRef.current = setInterval(() => {
+      qTimeTakenRef.current++;
+    }, 1000);
+  };
+
+  const setActiveQuestion = (index: number) => {
+    dispatch({
+      type: "setActiveQuestion",
+      payload: {
+        index,
+        subjectIndex: state.studentExamState.activeSubject,
+        tt: qTimeTakenRef.current,
+      },
+    });
+    recordQuestionTime();
+  };
+
+  const setActiveSubject = (subjectIndex: number) => {
+    dispatch({
+      type: "setActiveQuestion",
+      payload: {
+        index: 0,
+        subjectIndex: subjectIndex,
+      },
+    });
+    console.log("setActiveSubject", subjectIndex);
+
+    recordQuestionTime();
+  };
+
+  return {
+    examData: state,
+    dispatch,
+    fetchExamData,
+    saveBrowserActivity,
+    setActiveQuestion,
+    setActiveSubject,
+    isLoaded,
+    questionTimeTaken: qTimeTakenRef,
+  };
 }
 
 export function useSaveExam() {

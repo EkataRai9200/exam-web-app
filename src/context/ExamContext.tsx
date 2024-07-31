@@ -245,6 +245,52 @@ const startResumeSubjectTime = (state: ExamDetailData) => {
   }
 };
 
+const setActiveQuestion = async (
+  state: ExamDetailData,
+  questionIndex: number,
+  subjectIndex: number,
+  tt?: number
+) => {
+  if (tt) {
+    saveQuestionTimeTaken(state, tt);
+  }
+  state.studentExamState.activeSubject = subjectIndex;
+  state.studentExamState.activeQuestion = questionIndex;
+  markVisitedQuestion(state, questionIndex, subjectIndex);
+};
+
+const saveQuestionTimeTaken = (state: ExamDetailData, sec: number) => {
+  const vQs =
+    state.subjects[state.studentExamState.activeSubject].questions[
+      state.studentExamState.activeQuestion
+    ];
+  state.studentExamState.student_answers[vQs._id.$oid].tt =
+    (state.studentExamState.student_answers[vQs._id.$oid].tt ?? 0) + sec;
+};
+
+const markVisitedQuestion = async (
+  state: ExamDetailData,
+  questionIndex: number,
+  subjectIndex: number
+) => {
+  const vQs =
+    state.subjects[state.studentExamState.activeSubject].questions[
+      questionIndex
+    ];
+  if (!state.studentExamState.student_answers[vQs._id.$oid]) {
+    state.studentExamState.student_answers[vQs._id.$oid] = {
+      image: [],
+      pdf: "",
+      qid: vQs._id.$oid,
+      qtype: vQs.question_type,
+      sub_id: state.subjects[subjectIndex].sub_id,
+      review: false,
+      tt: 0,
+    };
+    await saveTest(state);
+  }
+};
+
 // Create the reducer function
 const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
   console.log("reducer action is called", action.type, action.payload);
@@ -257,26 +303,23 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       if (action.payload.start_date)
         newState.studentExamState.start_date = action.payload.start_date;
       startResumeSubjectTime(newState);
-      console.log("newState", newState);
-
       if (newState.subject_time == "yes" && newState.subject_times) {
         const qsNotSubmitted = Object.values(newState.subject_times).filter(
           (s) => !s.submitted
         );
         if (qsNotSubmitted.length > 0) {
-          newState.studentExamState.activeSubject = newState.subjects.findIndex(
-            (s) => s.sub_id == qsNotSubmitted[0]._id
+          setActiveQuestion(
+            newState,
+            0,
+            newState.subjects.findIndex(
+              (s) => s.sub_id == qsNotSubmitted[0]._id
+            )
           );
-          newState.studentExamState.activeQuestion = 0;
         } else {
-          console.log(
-            "all qs submitted",
-            "?token=" + new URLSearchParams(window.location.search).get("token")
-          );
+          // code...
         }
       } else {
-        newState.studentExamState.activeSubject = 0;
-        newState.studentExamState.activeQuestion = 0;
+        setActiveQuestion(newState, 0, 0);
       }
 
       return newState;
@@ -285,28 +328,19 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       state.studentExamState.start_date = action.payload;
       return { ...state };
     case "setActiveSubject":
-      state.studentExamState.activeSubject = action.payload;
-      state.studentExamState.activeQuestion = 0;
+      setActiveQuestion(state, 0, action.payload);
       return { ...state };
     case "setActiveQuestion":
       const visitedState = { ...state };
-      visitedState.studentExamState.activeSubject = action.payload.subjectIndex;
-      visitedState.studentExamState.activeQuestion = action.payload.index;
-      const vQs =
-        visitedState.subjects[visitedState.studentExamState.activeSubject]
-          .questions[action.payload.index];
-      if (!visitedState.studentExamState.student_answers[vQs._id.$oid]) {
-        visitedState.studentExamState.student_answers[vQs._id.$oid] = {
-          image: [],
-          pdf: "",
-          qid: vQs._id.$oid,
-          qtype: vQs.question_type,
-          sub_id: visitedState.subjects[action.payload.subjectIndex].sub_id,
-          review: false,
-          tt: 0,
-        };
-        saveTest(visitedState);
-      }
+      console.log("action.payload.tt", action.payload.tt);
+
+      setActiveQuestion(
+        visitedState,
+        action.payload.index,
+        action.payload.subjectIndex,
+        action.payload.tt ?? false
+      );
+
       return visitedState;
     case "markAnswer":
       const d = { ...state };
@@ -352,11 +386,6 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       return markedState;
     case "removeMarkForReview":
       let removeMarkState = { ...state };
-      const isMarkedAns = state.studentExamState.marked_for_review.findIndex(
-        (v) => v.index == action.payload.index
-      );
-      if (isMarkedAns >= 0)
-        state.studentExamState.marked_for_review.splice(isMarkedAns, 1);
       let removeMarkQs =
         removeMarkState.subjects[action.payload.subjectIndex].questions[
           action.payload.index
@@ -395,8 +424,11 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
         submitSectionState.studentExamState.activeSubject <
         submitSectionState.subjects.length - 1
       ) {
-        submitSectionState.studentExamState.activeSubject++;
-        submitSectionState.studentExamState.activeQuestion = 0;
+        setActiveQuestion(
+          submitSectionState,
+          0,
+          submitSectionState.studentExamState.activeSubject + 1
+        );
       }
 
       startResumeSubjectTime(submitSectionState);

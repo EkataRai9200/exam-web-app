@@ -25,72 +25,19 @@ import { Subject } from "@/context/ExamContext";
 import "react-simple-keyboard/build/css/index.css";
 
 export function TakeExam() {
-  const { examData, dispatch } = useExamData();
+  const { examData, dispatch, setActiveQuestion, setActiveSubject, isLoaded } =
+    useExamData();
+  const [isLoading, setIsLoading] = React.useState(true);
 
   const examWindow = useExamWindowSwitch();
-
   React.useEffect(() => {}, [examWindow.isVisible]);
-
-  const [isLoading, setIsLoading] = React.useState(true);
 
   const activeSubject = examData.studentExamState.activeSubject;
   const activeQuestion = examData.studentExamState.activeQuestion;
   const MySwal = withReactContent(Swal);
 
-  const isAllowChangeSubject = (index: number) => {
-    const activeSubData = examData.subjects[index];
-    if (
-      examData.subject_time == "yes" &&
-      examData.studentExamState.subject_times
-    ) {
-      return false;
-    }
-
-    // add subject question attempt limit
-    if (activeSubData.qlimit && parseInt(activeSubData.qlimit) > 0) {
-      const attemptedNoOfQs = Object.values(
-        examData.studentExamState.student_answers
-      ).filter((v) => v.sub_id == activeSubData.sub_id && isAnswered(v)).length;
-
-      if (attemptedNoOfQs > parseInt(activeSubData.qlimit)) {
-        MySwal.fire(
-          `You can attempt a maximum of ${activeSubData.qlimit} questions on this subject`,
-          "",
-          "error"
-        );
-      }
-      return attemptedNoOfQs <= parseInt(activeSubData.qlimit);
-    }
-
-    return true;
-  };
-
-  const setActiveSubject = (index: number, check = true) => {
-    if (check && !isAllowChangeSubject(examData.studentExamState.activeSubject))
-      return false;
-    dispatch({
-      type: "setActiveQuestion",
-      payload: {
-        index: 0,
-        subjectIndex: index,
-      },
-    });
-  };
-
-  const setActiveQuestion = (index: number) => {
-    dispatch({
-      type: "setActiveQuestion",
-      payload: {
-        index,
-        subjectIndex: activeSubject,
-      },
-    });
-  };
-
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-
-  const isLoaded = examData._id && examData.subjects.length > 0;
 
   const handleNextQuestion = () => {
     if (
