@@ -5,7 +5,7 @@ function Answered({ className, value }: { className?: string; value: number }) {
   return (
     <Badge
       className={cn(
-        "w-7 h-7 rounded-none rounded-t-full flex items-center justify-center bg-green-600",
+        "w-8 h-8 rounded-none rounded-t-full flex items-center justify-center bg-green-600",
         className
       )}
     >

@@ -11,7 +11,7 @@ function NotVisited({
   return (
     <Badge
       className={cn(
-        "w-7 h-7 rounded-none flex items-center justify-center bg-white border border-gray-400 text-dark",
+        "w-8 h-8 rounded-none flex items-center justify-center bg-white border border-gray-400 text-dark",
         className
       )}
     >

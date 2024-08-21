@@ -279,13 +279,6 @@ export function TakeExam() {
               >
                 <div className="flex justify-start gap-2">
                   <Button
-                    size={"icon"}
-                    // variant="outline"
-                    onClick={handlePreviousQuestion}
-                  >
-                    <ArrowLeft size={18} />
-                  </Button>
-                  <Button
                     size={"default"}
                     variant="default"
                     className="bg-purple-800 px-2"
@@ -331,7 +324,11 @@ export function TakeExam() {
                       </Button>
                     )}
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between gap-2">
+                  <Button variant="outline" onClick={handlePreviousQuestion}>
+                    <ArrowLeft size={15} />{" "}
+                    <span className="hidden md:ps-1 md:block">Previous</span>
+                  </Button>
                   {examData.subjects.length >= 0 && (
                     <>
                       {activeSubject == examData.subjects.length - 1 &&

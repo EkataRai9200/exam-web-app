@@ -12,7 +12,7 @@ function MarkedAnswered({
   return (
     <Badge
       className={cn(
-        "w-7 h-7 rounded-full flex items-center justify-center bg-purple-600 relative",
+        "w-8 h-8 rounded-full flex items-center justify-center bg-purple-600 relative",
         className
       )}
     >

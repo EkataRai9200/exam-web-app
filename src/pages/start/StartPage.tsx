@@ -213,7 +213,7 @@ export function StartPage() {
           <div className="w-full overflow-hidden flex items-center justify-center gap-1 relative">
             {InstructionsPage == 1 ? (
               <Button
-                className="bg-green-600 hover:bg-green-800"
+                className="bg-blue-600 hover:bg-blue-800"
                 onClick={() => setInstructionsPage(2)}
                 size={"default"}
               >
@@ -237,7 +237,7 @@ export function StartPage() {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
-                        className="z-10 bg-green-600 hover:bg-green-800"
+                        className="z-10 bg-blue-600 hover:bg-blue-800"
                         variant={"default"}
                         disabled={!termsChecked}
                         onClick={handleStartExam}
