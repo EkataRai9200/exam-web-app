@@ -61,7 +61,7 @@ export function FILL_BLANKS({ index, subjectIndex }: RenderMCQOptionProps) {
         const newAnsArr = [...userAnswers];
         newAnsArr[blank.id] = ansString.join("");
         setUserAnswers(newAnsArr);
-        console.log(userAnswers, newAnsArr, blank, ansString);
+        // console.log(userAnswers, newAnsArr, blank, ansString);
       });
       const inputEl = el as HTMLInputElement;
       inputEl.value = inputEl.value.toUpperCase();
@@ -146,11 +146,7 @@ export function FILL_BLANKS({ index, subjectIndex }: RenderMCQOptionProps) {
       ></div>
       <div>
         <span>{userAnswers.length}</span>
-        {userAnswers.map((a) => (
-          <div>
-            {a} <br />
-          </div>
-        ))}
+        {userAnswers}
       </div>
 
       <div>

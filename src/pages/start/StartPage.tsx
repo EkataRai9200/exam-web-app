@@ -116,6 +116,7 @@ export function StartPage() {
     dispatch({ type: "start_exam", payload: Date.now() });
 
     if (examData.is_proctoring_allow) {
+      requestFullScreen();
       let win = window.open(
         examData.authUser?.api_url + "/launch-webcam/" + examData._id.$oid,
         "Trigrexam Procter",
@@ -124,7 +125,6 @@ export function StartPage() {
       window.onunload = function () {
         win?.close();
       };
-      requestFullScreen();
     }
 
     navigate({

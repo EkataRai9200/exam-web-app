@@ -209,7 +209,7 @@ const initialState: ExamDetailData = {
   passage_with_qs: "",
   featured: "",
   testresume: 0,
-  browserswitchsubmittest: "",
+  browserswitchsubmittest: "no",
   instructions: {
     _id: {
       $oid: "",

@@ -23,9 +23,6 @@ import {
   CarouselItem,
   type CarouselApi,
 } from "@/components/ui/carousel";
-import { toast } from "sonner";
-import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
 export const calcTotalQs = (subjects: ExamDetailData["subjects"]): number => {
   return subjects.reduce((acc, v) => acc + v.questions.length, 0);
 };
@@ -214,7 +211,7 @@ export function SubjectOverviewBlock({
 }
 
 function SubmitExam() {
-  const { examData, dispatch } = useExamData();
+  const { examData, submitExam, onTimerExpires } = useExamData();
   const [searchParams] = useSearchParams();
 
   const navigate = useNavigate();
@@ -228,13 +225,6 @@ function SubmitExam() {
     }
   }, []);
 
-  const onTestTimerExpires = () => {
-    toast.dismiss();
-    toast.error("Timer Expired", { position: "top-center" });
-    dispatch({ type: "submit_exam", payload: examData });
-  };
-  const MySwal = withReactContent(Swal);
-
   return (
     <main className="bg-muted">
       <div className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 p-2 md:gap-8 md:p-10 w-full md:w-1/2 m-auto">
@@ -247,7 +237,7 @@ function SubmitExam() {
               <CountdownTimer
                 startTime={examData.start_date}
                 initialSeconds={parseInt(examData.test_time_limit) * 60}
-                onExpire={onTestTimerExpires}
+                onExpire={onTimerExpires}
               />
             ) : (
               ""
@@ -262,30 +252,7 @@ function SubmitExam() {
           <Button
             className="bg-green-600 w-full"
             size={"lg"}
-            onClick={() => {
-              dispatch({ type: "submit_exam", payload: examData });
-              MySwal.fire({
-                title: "Your exam has been submitted.",
-                showDenyButton: false,
-                showCancelButton: false,
-                allowOutsideClick: false,
-                backdrop: "rgba(0, 0, 0, 0.5)",
-                confirmButtonText: "Close Window",
-              }).then((_result) => {
-                if (typeof (window as any).Android != "undefined") {
-                  (window as any).Android.testCompletedCallback();
-                } else {
-                  window.close();
-                }
-              });
-              setTimeout(() => {
-                if (typeof (window as any).Android != "undefined") {
-                  (window as any).Android.testCompletedCallback();
-                } else {
-                  window.close();
-                }
-              }, 1500);
-            }}
+            onClick={() => submitExam()}
           >
             Submit Exam
           </Button>

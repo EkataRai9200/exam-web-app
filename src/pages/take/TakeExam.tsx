@@ -12,8 +12,6 @@ import { ExamDrawer } from "@/components/exams/drawer/drawer";
 import { useExamData, useExamWindowSwitch } from "@/lib/hooks";
 import { cn, saveTest } from "@/lib/utils";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
 
 // modules css
 import Sidebar from "@/components/exams/drawer/Sidebar";
@@ -25,8 +23,14 @@ import { Subject } from "@/context/ExamContext";
 import "react-simple-keyboard/build/css/index.css";
 
 export function TakeExam() {
-  const { examData, dispatch, setActiveQuestion, setActiveSubject, isLoaded } =
-    useExamData();
+  const {
+    examData,
+    dispatch,
+    setActiveQuestion,
+    setActiveSubject,
+    isLoaded,
+    onTimerExpires,
+  } = useExamData();
   const [isLoading, setIsLoading] = React.useState(true);
 
   const examWindow = useExamWindowSwitch();
@@ -34,7 +38,6 @@ export function TakeExam() {
 
   const activeSubject = examData.studentExamState.activeSubject;
   const activeQuestion = examData.studentExamState.activeQuestion;
-  const MySwal = withReactContent(Swal);
 
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -81,36 +84,17 @@ export function TakeExam() {
           )
         ) {
           // test already submitted message !
-          onTestTimerExpires();
+          // onTimerExpires();
         }
         setIsLoading(false);
       } else {
         if (examData.remaining_time && examData.remaining_time <= 0) {
-          onTestTimerExpires();
+          // onTimerExpires();
         }
         setIsLoading(false);
       }
     }
   }, []);
-
-  const onTestTimerExpires = () => {
-    setIsLoading(true);
-    dispatch({ type: "submit_exam", payload: examData });
-    MySwal.fire({
-      title: "Time is up. Your exam has been automatically submitted. ",
-      showDenyButton: false,
-      showCancelButton: false,
-      confirmButtonText: "Close Window",
-    }).then((_result) => {
-      setTimeout(() => {
-        if (typeof (window as any).Android != "undefined") {
-          (window as any).Android.testCompletedCallback();
-        } else {
-          window.close();
-        }
-      }, 1500);
-    });
-  };
 
   const disableCopyPaste = (e: any) => {
     e.preventDefault();
@@ -215,7 +199,7 @@ export function TakeExam() {
                       examData.studentExamState.start_date > 0 && (
                         <CountdownTimer
                           startTime={examData.studentExamState.start_date}
-                          onExpire={onTestTimerExpires}
+                          onExpire={onTimerExpires}
                           initialSeconds={
                             parseInt(examData.test_time_limit) * 60
                           }

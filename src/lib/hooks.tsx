@@ -1,11 +1,12 @@
+import { ToastAction } from "@/components/ui/toast";
+import { toast } from "@/components/ui/use-toast";
 import { Answer, ExamContext } from "@/context/ExamContext";
 import { authenticateToken, getTestDetails } from "@/pages/start/StartPage";
 import React, { useContext, useEffect } from "react";
-import { getBrowserInfo, saveTest, showSaveTestError } from "./utils";
-import { toast } from "@/components/ui/use-toast";
-import { ToastAction } from "@/components/ui/toast";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import { getBrowserInfo, saveTest, showSaveTestError } from "./utils";
 
 export function useExamData() {
   const { state, dispatch } = useContext(ExamContext);
@@ -81,9 +82,34 @@ export function useExamData() {
         subjectIndex: subjectIndex,
       },
     });
-    console.log("setActiveSubject", subjectIndex);
 
     recordQuestionTime();
+  };
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const MySwal = withReactContent(Swal);
+
+  const submitExam = ({ message }: { message?: string } = {}) => {
+    dispatch({ type: "submit_exam", payload: {} });
+    MySwal.fire({
+      title: message ?? "Your exam has been submitted.",
+      showDenyButton: false,
+      showCancelButton: false,
+      allowOutsideClick: false,
+      backdrop: "rgba(0, 0, 0, 0.5)",
+      confirmButtonText: "Close Window",
+    }).then((_result) => {
+      navigate({
+        pathname: "/feedback",
+        search: searchParams.toString(),
+      });
+    });
+  };
+
+  const onTimerExpires = () => {
+    submitExam({
+      message: "Time is up. Your exam has been automatically submitted. ",
+    });
   };
 
   return {
@@ -95,6 +121,8 @@ export function useExamData() {
     setActiveSubject,
     isLoaded,
     questionTimeTaken: qTimeTakenRef,
+    submitExam,
+    onTimerExpires,
   };
 }
 
@@ -130,8 +158,6 @@ const usePageVisibility = () => {
   React.useEffect(() => {
     const handleVisibilityChange = () => {
       setIsVisible(document.visibilityState === "visible");
-      // console.log("Changed visibility", document);
-
       if (document.visibilityState === "visible") setTimes((t) => t + 1);
     };
 
@@ -147,7 +173,7 @@ const usePageVisibility = () => {
 
 const useExamWindowSwitch = () => {
   const { isVisible, times: windowSwitch } = usePageVisibility();
-  const { saveBrowserActivity, dispatch, examData } = useExamData();
+  const { saveBrowserActivity, examData, onTimerExpires } = useExamData();
   const [active, setActive] = React.useState(false);
 
   const activate = () => {
@@ -160,39 +186,35 @@ const useExamWindowSwitch = () => {
 
     if (isVisible && windowSwitch > 0) {
       saveBrowserActivity();
-      if (windowSwitch >= 3 && examData.browserswitchsubmittest == "yes") {
-        dispatch({ type: "submit_exam", payload: {} });
-        MySwal.fire({
-          title:
-            "You have switched windows multiple times. Your exam has been automatically submitted.",
-          showDenyButton: false,
-          showCancelButton: false,
-          confirmButtonText: "Close Window",
-        }).then((_result) => {
-          setTimeout(() => {
-            if (typeof (window as any).Android != "undefined") {
-              (window as any).Android.testCompletedCallback();
-            } else {
-              window.location.reload();
-              window.close();
-            }
-          }, 1500);
-        });
+      if (windowSwitch > 3 && examData.browserswitchsubmittest == "yes") {
+        onTimerExpires();
         return;
       } else {
-        MySwal.fire(
-          "",
-          <div>
-            <p className="text-md font-medium">
-              Attention: Please refrain from leaving this window. Leaving the
-              window will trigger an automatic submission of the exam test.
-            </p>
-            <p className="text-md text-red-500 mt-2 font-medium">
-              You have left the test window {windowSwitch} time(s).
-            </p>
-          </div>,
-          "error"
-        );
+        MySwal.fire({
+          title: <span className="text-md">Navigated Away</span>,
+          html: (
+            <>
+              <div className="text-start">
+                <p className="text-sm">
+                  You had navigated away from the test window. This will be
+                  reported to Moderator
+                </p>
+                <p className="text-sm">
+                  <span className="text-red-500">
+                    Do Not repeat this behaviour
+                  </span>{" "}
+                  Otherwise you may get disqualified
+                </p>
+                <p className="text-sm">Browser Switch : {windowSwitch}</p>
+              </div>
+            </>
+          ),
+          showDenyButton: false,
+          showCancelButton: false,
+          allowOutsideClick: false,
+          backdrop: "rgba(0, 0, 0, 0.5)",
+          confirmButtonText: "Continue",
+        });
       }
     }
   };

@@ -47,7 +47,7 @@ export function RenderQuestion({
   isActive,
   subjectIndex,
 }: RenderQuestionProps) {
-  const { examData, questionTimeTaken } = useExamData();
+  const { examData } = useExamData();
   const question = examData.subjects[subjectIndex].questions[index];
 
   return (

@@ -2,6 +2,8 @@ import { ToastAction } from "@/components/ui/toast";
 import { toast } from "@/components/ui/use-toast";
 import { ExamAuthUser, ExamDetailData } from "@/context/ExamContext";
 import { clsx, type ClassValue } from "clsx";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -51,6 +53,7 @@ export function saveTest(
   examData: ExamDetailData,
   submitted: "Yes" | "No" = "No"
 ) {
+  const MySwal = withReactContent(Swal);
   const requestBody = {
     response: { ...examData.studentExamState.student_answers },
     remaining_time: 0,
@@ -66,9 +69,25 @@ export function saveTest(
       "Content-Type": "application/json",
     },
     body: JSON.stringify(requestBody),
-  }).catch(() => {
-    showSaveTestError(() => saveTest(examData), examData);
-  });
+  })
+    .then(async (res: any) => {
+      const response = await res.json();
+      if (!response.status) {
+        MySwal.fire({
+          title: "Session Expired, Start test again to continue.",
+          showDenyButton: false,
+          showCancelButton: false,
+          allowOutsideClick: false,
+          backdrop: "rgba(0, 0, 0, 0.5)",
+          confirmButtonText: "Start Test",
+        }).then((_result) => {
+          window.location.reload();
+        });
+      }
+    })
+    .catch(() => {
+      showSaveTestError(() => saveTest(examData), examData);
+    });
 }
 
 export const showSaveTestError = (
