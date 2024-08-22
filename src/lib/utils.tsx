@@ -81,9 +81,12 @@ export function saveTest(
           backdrop: "rgba(0, 0, 0, 0.5)",
           confirmButtonText: "Start Test",
         }).then((_result) => {
-          window.location.reload();
+          if (_result.isConfirmed) {
+            window.location.reload();
+          }
         });
       }
+      return response;
     })
     .catch(() => {
       showSaveTestError(() => saveTest(examData), examData);
@@ -123,7 +126,7 @@ export const calcSubjectRemTime = (start_time: number, time_limit: number) => {
 };
 
 export function requestFullScreen() {
-  let element = (document as any).body;
+  let element = window.document.documentElement as any;
   // Supports most browsers and their versions.
   let requestMethod =
     element.requestFullScreen ||

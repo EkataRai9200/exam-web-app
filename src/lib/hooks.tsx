@@ -89,21 +89,27 @@ export function useExamData() {
   const navigate = useNavigate();
   const MySwal = withReactContent(Swal);
 
-  const submitExam = ({ message }: { message?: string } = {}) => {
-    dispatch({ type: "submit_exam", payload: {} });
-    MySwal.fire({
-      title: message ?? "Your exam has been submitted.",
-      showDenyButton: false,
-      showCancelButton: false,
-      allowOutsideClick: false,
-      backdrop: "rgba(0, 0, 0, 0.5)",
-      confirmButtonText: "Close Window",
-    }).then((_result) => {
-      navigate({
-        pathname: "/feedback",
-        search: searchParams.toString(),
-      });
+  const submitExam = async ({ message }: { message?: string } = {}) => {
+    saveTest(state, "Yes").then((res) => {
+      if (res.status) {
+        MySwal.fire({
+          title: message ?? "Your exam has been submitted.",
+          showDenyButton: false,
+          showCancelButton: false,
+          allowOutsideClick: false,
+          backdrop: "rgba(0, 0, 0, 0.5)",
+          confirmButtonText: "Close Window",
+        }).then((_result) => {
+          navigate({
+            pathname: "/feedback",
+            search: searchParams.toString(),
+          });
+        });
+      } else {
+        alert("We were unable to submit your exam. Try Again !");
+      }
     });
+    return;
   };
 
   const onTimerExpires = () => {

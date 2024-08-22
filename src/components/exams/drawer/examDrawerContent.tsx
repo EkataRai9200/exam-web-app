@@ -3,7 +3,7 @@ import { useExamData } from "@/lib/hooks";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Answer } from "@/context/ExamContext";
-import { cn, saveTest } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { calcTotalQs } from "@/pages/submit/SubmitExam";
 import { Link, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -36,7 +36,7 @@ function ExamDrawerContent({
   setShowQuestionPaper: any;
   setShowInstructions: any;
 }) {
-  const { examData, dispatch } = useExamData();
+  const { examData, dispatch, submitExam } = useExamData();
   const [searchParams] = useSearchParams();
   const MySwal = withReactContent(Swal);
 
@@ -70,30 +70,8 @@ function ExamDrawerContent({
         type: "submit_section",
         payload: {},
       });
-    } else {
-      saveTest(examData, "Yes").then(() => {
-        MySwal.fire({
-          title: "Your exam has been submitted.",
-          showDenyButton: false,
-          showCancelButton: false,
-          allowOutsideClick: false,
-          backdrop: "rgba(0, 0, 0, 0.5)",
-          confirmButtonText: "Close Window",
-        }).then((_result) => {
-          if (typeof (window as any).Android != "undefined") {
-            (window as any).Android.testCompletedCallback();
-          } else {
-            window.close();
-          }
-        });
-        setTimeout(() => {
-          if (typeof (window as any).Android != "undefined") {
-            (window as any).Android.testCompletedCallback();
-          } else {
-            window.close();
-          }
-        }, 1500);
-      });
+    } else {  
+      submitExam();
     }
   };
 

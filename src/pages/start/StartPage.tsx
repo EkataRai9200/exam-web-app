@@ -117,14 +117,6 @@ export function StartPage() {
 
     if (examData.is_proctoring_allow) {
       requestFullScreen();
-      let win = window.open(
-        examData.authUser?.api_url + "/launch-webcam/" + examData._id.$oid,
-        "Trigrexam Procter",
-        "width=400,height=400,scrollbars=no,location=no"
-      );
-      window.onunload = function () {
-        win?.close();
-      };
     }
 
     navigate({
@@ -214,7 +206,21 @@ export function StartPage() {
             {InstructionsPage == 1 ? (
               <Button
                 className="bg-blue-600 hover:bg-blue-800"
-                onClick={() => setInstructionsPage(2)}
+                onClick={() => {
+                  setInstructionsPage(2);
+                  if (examData.is_proctoring_allow) {
+                    let win = window.open(
+                      examData.authUser?.api_url +
+                        "/launch-webcam/" +
+                        examData._id.$oid,
+                      "Trigrexam Procter",
+                      "width=400,height=400,scrollbars=no,location=no"
+                    );
+                    window.onunload = function () {
+                      win?.close();
+                    };
+                  }
+                }}
                 size={"default"}
               >
                 Proceed <ArrowRight size={15} className="ms-2" />
@@ -310,7 +316,11 @@ export const getTestDetails = async (
   const decoded = jwtDecode(token as string) as ExamTokenData;
 
   const examReq = await fetch(
-    `${decoded.api_url}/get-test-details/${decoded.package_id}/${decoded.test_series_id}/${decoded.test_id}/undefined?webtesttoken=${webtesttoken}`
+    `${decoded.api_url}/get-test-details/${decoded.package_id}/${
+      decoded.test_series_id
+    }/${decoded.test_id}/${
+      decoded.is_preview ? "preview" : "undefined"
+    }?webtesttoken=${webtesttoken}`
   );
 
   const examData = await examReq.json();

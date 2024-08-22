@@ -4,7 +4,7 @@ import {
   SelectGroup,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@/components/ui/select";
 import { ExamLanguage } from "@/context/ExamContext";
 import { useExamData } from "@/lib/hooks";
@@ -38,8 +38,10 @@ export function LanguageDropdown() {
       <SelectContent>
         <SelectGroup>
           {/* <SelectLabel>Language</SelectLabel> */}
-          {examData.available_languages.map((v) => (
-            <SelectItem value={v}>{ExamLanguage[v]}</SelectItem>
+          {examData.available_languages.map((v, i) => (
+            <SelectItem key={"lang_key_" + i} value={v}>
+              {ExamLanguage[v]}
+            </SelectItem>
           ))}
         </SelectGroup>
       </SelectContent>

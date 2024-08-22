@@ -8,7 +8,7 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useExamData } from "@/lib/hooks";
@@ -32,11 +32,13 @@ export function CardWithForm() {
     question_level: number;
     difficulty_level: number;
     techlevel: number;
+    technical_level: number;
     suggestion: string;
   }>({
     question_level: 5,
     difficulty_level: 5,
     techlevel: 5,
+    technical_level: 5,
     suggestion: "",
   });
 
@@ -47,7 +49,11 @@ export function CardWithForm() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(FormData),
+      body: JSON.stringify({
+        feedback: FormData,
+        test_id: examData._id.$oid,
+        webtesttoken: examData.authUser?.webtesttoken,
+      }),
     });
     if (examData.featured == "1") {
       alert("Thank You for your feedback. Test Result is not yet Published");
@@ -106,7 +112,11 @@ export function CardWithForm() {
               <Slider
                 className="!mt-0"
                 onValueChange={(n) =>
-                  setFormData({ ...FormData, techlevel: n[0] })
+                  setFormData({
+                    ...FormData,
+                    techlevel: n[0],
+                    technical_level: n[0],
+                  })
                 }
                 defaultValue={[5]}
                 max={10}

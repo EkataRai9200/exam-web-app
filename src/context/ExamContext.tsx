@@ -113,6 +113,7 @@ export interface StudentExamState {
   };
   marked_for_review: Array<{ index: number; activeSubject: number }>;
   windowSwitch: number;
+  showKeyboard: boolean;
 }
 
 export interface ObjectID {
@@ -151,7 +152,7 @@ export interface ExamDetailData {
   lang: ExamLanguage;
   available_languages: Array<keyof typeof ExamLanguage>;
   is_calc_allow: string;
-  is_keyboard_allow: any;
+  is_keyboard_allow: 0 | 1 | null;
   passage_alignment: string;
   qorder: string;
   plt_window: string;
@@ -182,6 +183,7 @@ type Action = {
     | "setActiveLang"
     | "submit_section"
     | "submit_exam"
+    | "showHideKeyboard"
     | "deleteAnswer";
   payload: any;
 };
@@ -202,7 +204,7 @@ const initialState: ExamDetailData = {
   lang: ExamLanguage.EN,
   available_languages: [],
   is_calc_allow: "",
-  is_keyboard_allow: "",
+  is_keyboard_allow: null,
   passage_alignment: "",
   qorder: "",
   plt_window: "",
@@ -226,6 +228,7 @@ const initialState: ExamDetailData = {
     student_answers: {},
     marked_for_review: [],
     windowSwitch: 0,
+    showKeyboard: true,
   },
 };
 
@@ -293,7 +296,7 @@ const markVisitedQuestion = async (
 
 // Create the reducer function
 const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
-  console.log("reducer action is called", action.type, action.payload);
+  // console.log("reducer action is called", action.type, action.payload);
   switch (action.type) {
     case "init":
       let newState = { ...state, ...action.payload } as ExamDetailData;
@@ -446,6 +449,14 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
         }, 1500);
       });
       return submitState;
+    case "showHideKeyboard":
+      return {
+        ...state,
+        studentExamState: {
+          ...state.studentExamState,
+          showKeyboard: action.payload,
+        },
+      };
     default:
       return state;
   }

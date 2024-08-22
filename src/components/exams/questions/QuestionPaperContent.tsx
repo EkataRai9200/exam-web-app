@@ -33,7 +33,7 @@ function QuestionPaperContent({
           examData.studentExamState.activeSubject
         ].questions.map((question, index) => {
           return (
-            <div className="mt-2 border-b pb-2">
+            <div key={`question_${index}`} className="mt-2 border-b pb-2">
               <h3 className="font-bold">{`Q. ${index}`}</h3>
               <div
                 dangerouslySetInnerHTML={{ __html: question.question }}

@@ -9,4 +9,5 @@ export interface ExamTokenData {
   test_id: string;
   api_url: string;
   student_token: string;
+  is_preview: boolean;
 }

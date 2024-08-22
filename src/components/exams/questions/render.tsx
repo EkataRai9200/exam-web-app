@@ -14,6 +14,8 @@ import SLCT from "./slct";
 import { Subjective } from "./subjective";
 import { TRUEFALSE } from "./truefalse";
 import { TXT_INPUT } from "./txt_input";
+import { Keyboard } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export enum QuestionType {
   MCQ = "MCQ",
@@ -47,7 +49,7 @@ export function RenderQuestion({
   isActive,
   subjectIndex,
 }: RenderQuestionProps) {
-  const { examData } = useExamData();
+  const { examData, dispatch } = useExamData();
   const question = examData.subjects[subjectIndex].questions[index];
 
   return (
@@ -84,9 +86,32 @@ export function RenderQuestion({
                 -{question.marks_negative}
               </Badge>
               <LanguageDropdown />
+              {examData.is_keyboard_allow ? (
+                <Button
+                  onClick={() => {
+                    dispatch({
+                      type: "showHideKeyboard",
+                      payload: !examData.studentExamState.showKeyboard,
+                    });
+                  }}
+                  variant={"ghost"}
+                  className="px-1 py-1"
+                >
+                  <Keyboard size={20} />
+                </Button>
+              ) : (
+                ""
+              )}
             </div>
           </CardHeader>
           <CardContent className="px-3 pt-3">
+            {question.find_hint && question.find_hint != "DOCQ" ? (
+              <div className="text-sm font-normal pb-3">
+                <span>Hint: {question.find_hint}</span>
+              </div>
+            ) : (
+              ""
+            )}
             <div className="flex flex-col gap-3">
               {question.question_type == QuestionType.MCQ && (
                 <MCQ subjectIndex={subjectIndex} index={index} />
