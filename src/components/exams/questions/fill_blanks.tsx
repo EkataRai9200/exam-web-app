@@ -38,6 +38,7 @@ export function FILL_BLANKS({ index, subjectIndex }: RenderMCQOptionProps) {
   }, [userAnswers]);
 
   useEffect(() => {
+    console.log("init called fil_blanks");
     let els = document.querySelectorAll(
       `.filled-blank-input-${question._id.$oid}`
     );
@@ -52,16 +53,24 @@ export function FILL_BLANKS({ index, subjectIndex }: RenderMCQOptionProps) {
 
         const charVal = e.target.value as string;
         const ansString = (
-          (studentResponse.ans && studentResponse.ans[blank.id]) ||
+          (studentResponse.ans &&
+            (studentResponse.ans as Array<any>)[blank.id]) ||
           ""
         ).split("");
         ansString[charIndex] = charVal.toUpperCase();
 
-        // TODO: still not working fine, cannot populate data on page load !, doesnt provides latest userAns on change
-        const newAnsArr = [...userAnswers];
-        newAnsArr[blank.id] = ansString.join("");
+        const newAnsArr: Array<any> = [];
+        // check and get answers from dom
+        const elems = document.querySelectorAll(
+          `.filled-blank-input-${question._id.$oid}`
+        );
+
+        elems.forEach((elem: any) => {
+          newAnsArr[elem.getAttribute("data-blank")] = elem.value;
+        });
+        setIsSaved(false);
+
         setUserAnswers(newAnsArr);
-        // console.log(userAnswers, newAnsArr, blank, ansString);
       });
       const inputEl = el as HTMLInputElement;
       inputEl.value = inputEl.value.toUpperCase();
@@ -106,14 +115,22 @@ export function FILL_BLANKS({ index, subjectIndex }: RenderMCQOptionProps) {
       result.push('<span class="inline-flex">');
       {
         blank &&
-          Array.from({ length: blank.char_count }).map((_v, charIndex) => {
-            result.push(`<input
-              class="border w-7 h-7 p-0 text-sm uppercase text-center hover:ring-0 hover:ring-offset-0 filled-blank-input-${question._id.$oid}"
+          Array.from({ length: blank.char_count }).map(
+            (_v, charIndex: number) => {
+              result.push(`<input
+              class="border w-7 h-7 p-0 text-sm text-center hover:ring-0 hover:ring-offset-0 filled-blank-input-${
+                question._id.$oid
+              }"
               maxLength="1"
+              value="${
+                (studentResponse.ans as Array<any>)?.[blank.id]?.[charIndex] ||
+                ""
+              }"
               data-blank="${blank.id}"
               data-char="${charIndex}"
             />`);
-          });
+            }
+          );
       }
       result.push("</span>");
 
@@ -144,10 +161,6 @@ export function FILL_BLANKS({ index, subjectIndex }: RenderMCQOptionProps) {
           __html: htmlWithInputs,
         }}
       ></div>
-      <div>
-        <span>{userAnswers.length}</span>
-        {userAnswers}
-      </div>
 
       <div>
         <Button

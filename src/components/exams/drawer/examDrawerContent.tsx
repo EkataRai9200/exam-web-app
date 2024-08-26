@@ -16,7 +16,7 @@ import NotVisited from "../status/NotVisited";
 import SubjectSubmitOverview from "../submit/SubjectSubmitOverview";
 
 export const isAnswered = (a: Answer | undefined) => {
-  return a && a.ans;
+  return a && a.ans && a.ans.length > 0;
 };
 export const isMarkedReview = (a: Answer | undefined) => {
   return a && a.review;

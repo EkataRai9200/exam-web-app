@@ -1,4 +1,5 @@
 // ExamContext.tsx
+import { MTQStudentAnsArray } from "@/components/exams/questions/mtq";
 import { saveTest } from "@/lib/utils";
 import React, { Dispatch, createContext, useReducer } from "react";
 
@@ -27,6 +28,11 @@ export interface Question {
   opt3?: string;
   opt4?: string;
   opt5?: string;
+  pques?: string;
+  qques?: string;
+  rques?: string;
+  sques?: string;
+  tques?: string;
   slct_options?: Array<{ value: string } | undefined>;
   blanks?:
     | Array<{
@@ -49,6 +55,7 @@ export interface Question {
     $oid: string;
   };
   show_qs_passage?: boolean;
+  sentences?: Array<{ id: number; value: string }>;
 }
 
 export interface PassageDesc {
@@ -65,7 +72,15 @@ export interface Subject {
 }
 
 export interface Answer {
-  ans?: string | null | Array<string>;
+  ans?:
+    | string
+    | null
+    | MTQStudentAnsArray
+    | Array<string>
+    | Array<{ id: number; value: string }>
+    | Array<string[]>
+    | Array<any>
+    | any;
   image: Array<string>;
   pdf: string;
   qid: string;
@@ -114,6 +129,7 @@ export interface StudentExamState {
   marked_for_review: Array<{ index: number; activeSubject: number }>;
   windowSwitch: number;
   showKeyboard: boolean;
+  showCalculator: boolean;
 }
 
 export interface ObjectID {
@@ -168,6 +184,7 @@ export interface ExamDetailData {
   start_date?: number;
   remaining_time?: number;
   studentExamState: StudentExamState;
+  audio_base_url: string;
 }
 
 type Action = {
@@ -184,6 +201,7 @@ type Action = {
     | "submit_section"
     | "submit_exam"
     | "showHideKeyboard"
+    | "showHideCalculator"
     | "deleteAnswer";
   payload: any;
 };
@@ -229,7 +247,9 @@ const initialState: ExamDetailData = {
     marked_for_review: [],
     windowSwitch: 0,
     showKeyboard: true,
+    showCalculator: true,
   },
+  audio_base_url: "",
 };
 
 const startResumeSubjectTime = (state: ExamDetailData) => {
@@ -450,6 +470,14 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       });
       return submitState;
     case "showHideKeyboard":
+      return {
+        ...state,
+        studentExamState: {
+          ...state.studentExamState,
+          showKeyboard: action.payload,
+        },
+      };
+    case "showHideCalculator":
       return {
         ...state,
         studentExamState: {

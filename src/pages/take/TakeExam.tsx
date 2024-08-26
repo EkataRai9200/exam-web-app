@@ -410,6 +410,7 @@ export function TakeExam() {
             </div>
           </div>
           {examData.is_keyboard_allow ? <KeyboardBlock /> : ""}
+          {/* {examData.is_calc_allow ? <CalculatorBlock /> : ""} */}
         </>
       ) : (
         <Loader visible={true} />

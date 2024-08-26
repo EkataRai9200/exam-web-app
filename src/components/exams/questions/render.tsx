@@ -2,20 +2,23 @@ import { LanguageDropdown } from "@/components/exams/language/LanguageDropdown";
 import { MAQ } from "@/components/exams/questions/maq";
 import { MCQ } from "@/components/exams/questions/mcq";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useExamData } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
+import { Keyboard } from "lucide-react";
 import Passage from "../passage/Passage";
+import { AUDIO_TYPE } from "./AUDIO_TYPE";
+import { SENTENCE_ARRANGMENT } from "./SENTENCE_ARRANGMENT";
 import { FILL_BLANKS } from "./fill_blanks";
 import { MCQ_MULTI_OPTIONS } from "./mcq_multi_options";
+import { MTQ } from "./mtq";
 import MULTI_SLCT from "./multi_slct";
 import { NAT } from "./nat";
 import SLCT from "./slct";
 import { Subjective } from "./subjective";
 import { TRUEFALSE } from "./truefalse";
 import { TXT_INPUT } from "./txt_input";
-import { Keyboard } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export enum QuestionType {
   MCQ = "MCQ",
@@ -30,6 +33,8 @@ export enum QuestionType {
   TXT_INPUT = "TXT_INPUT",
   FILL_BLANKS = "FILL_BLANKS",
   SENTENCE_ARRANGMENT = "SENTENCE_ARRANGMENT",
+  AUDIO_TYPE = "AUDIO_TYPE",
+  MTQ = "MTQ",
 }
 
 interface RenderQuestionProps {
@@ -102,6 +107,22 @@ export function RenderQuestion({
               ) : (
                 ""
               )}
+              {/* {examData.is_calc_allow ? (
+                <Button
+                  onClick={() => {
+                    dispatch({
+                      type: "showHideKeyboard",
+                      payload: !examData.studentExamState.showKeyboard,
+                    });
+                  }}
+                  variant={"ghost"}
+                  className="px-1 py-1"
+                >
+                  <Calculator size={20} />
+                </Button>
+              ) : (
+                ""
+              )} */}
             </div>
           </CardHeader>
           <CardContent className="px-3 pt-3">
@@ -144,9 +165,18 @@ export function RenderQuestion({
               {question.question_type == QuestionType.FILL_BLANKS && (
                 <FILL_BLANKS subjectIndex={subjectIndex} index={index} />
               )}
-              {/* {question.question_type == QuestionType.SENTENCE_ARRANGMENT && (
-              <SENTENCE_ARRANGMENT subjectIndex={subjectIndex} index={index} />
-            )} */}
+              {question.question_type == QuestionType.SENTENCE_ARRANGMENT && (
+                <SENTENCE_ARRANGMENT
+                  subjectIndex={subjectIndex}
+                  index={index}
+                />
+              )}
+              {question.question_type == QuestionType.AUDIO_TYPE && (
+                <AUDIO_TYPE subjectIndex={subjectIndex} index={index} />
+              )}
+              {question.question_type == QuestionType.MTQ && (
+                <MTQ subjectIndex={subjectIndex} index={index} />
+              )}
             </div>
           </CardContent>
         </Card>

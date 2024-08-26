@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Question } from "@/context/ExamContext";
 import { useExamData } from "@/lib/hooks";
 import { sanitize } from "@/lib/utils";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Trash } from "lucide-react";
 import React, { useEffect } from "react";
 import { QuestionTypeProps } from "./render";
 
@@ -18,6 +19,10 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
     examData.studentExamState.student_answers[question._id.$oid] ?? {};
   // const _ans = studentResponse?.ans ?? "";
 
+  const [subjectiveimages, setSubjectiveimages] = React.useState<string[]>(
+    studentResponse.image ?? []
+  );
+
   const [content, setContent] = React.useState("");
 
   const saveLatestAnswer = () => {
@@ -27,6 +32,7 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
       sub_id: examData.subjects[subjectIndex].sub_id,
       qid: question._id.$oid,
       qtype: question.question_type,
+      image: subjectiveimages,
     };
     dispatch({
       type: "markAnswer",
@@ -36,13 +42,6 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
   };
 
   useEffect(() => {
-    // TODO: save answer automaticaly when leaving question window
-    // if (
-    //   examData.studentExamState.activeSubject === subjectIndex &&
-    //   examData.studentExamState.activeQuestion === index
-    // ) {
-    //   saveLatestAnswer();
-    // }
     setIsSaved(false);
   }, [content]);
 
@@ -50,6 +49,59 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
 
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(sanitize(event.target.value.trim()));
+  };
+
+  const uploadFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] as any;
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("webtesttoken", examData.authUser?.webtesttoken ?? "");
+    fetch(
+      `${examData.authUser?.api_url}/save-subjective-image/${question._id.$oid}`,
+      {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      }
+    ).then(async (response) => {
+      const json = await response.json();
+      if (json.status) {
+        setSubjectiveimages([...subjectiveimages, json.filename]);
+        setIsSaved(false);
+        return json.data;
+      } else {
+        throw new Error("File upload failed");
+      }
+    });
+  };
+
+  const removeImage = (index: number) => {
+    if (confirm("Do you really want to remove this image?")) {
+      if (subjectiveimages[index] == null) {
+        setSubjectiveimages(subjectiveimages.filter((_v, i) => i !== index));
+        return false;
+      }
+      fetch(`${examData.authUser?.api_url}/remove-image/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          qid: question._id.$oid,
+          image: subjectiveimages[index],
+          webtesttoken: examData.authUser?.webtesttoken,
+        }),
+      }).then(async (response) => {
+        const json = await response.json();
+        if (json.status) {
+          setSubjectiveimages(subjectiveimages.filter((_v, i) => i !== index));
+          setIsSaved(false);
+          return json.data;
+        } else {
+          throw new Error("File upload failed");
+        }
+      });
+    }
   };
 
   return (
@@ -69,22 +121,43 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
           onBlur={saveLatestAnswer}
           placeholder="Type your message here."
           rows={5}
+          defaultValue={(studentResponse.ans as string) ?? ""}
           id="message"
         />
         <div>
-          {/* <Button
-            type="button"
-            className="w-full md:w-auto"
-            variant={"secondary"}
-          >
-            <Upload size={15} className="me-2" /> Upload File
-          </Button> */}
-          {/* <p className="text-xs text-muted-foreground italic">
-            PDF, JPG, JPEG, PNG files are accepted. Max File Size: 20MB
-          </p> */}
+          <Input
+            type="file"
+            accept="image/*,application/pdf"
+            onChange={uploadFile}
+          />
+          <p className="text-xs text-muted-foreground italic">
+            PDF, JPG, JPEG, PNG files are accepted.
+          </p>
         </div>
       </div>
-
+      <div className="flex gap-2">
+        {subjectiveimages.map((s, i) => {
+          return (
+            <div
+              className="relative"
+              key={`subjective_image_${question._id.$oid}_${i}`}
+            >
+              <img
+                src={`https://d3bioexaf647f4.cloudfront.net/${s}`}
+                width={60}
+                className="border"
+              />
+              <Button
+                variant={"ghost"}
+                onClick={() => removeImage(i)}
+                className="text-red-600 px-1 py-0 absolute h-5 top-0 right-0 bg-gray-100"
+              >
+                <Trash size={15} />
+              </Button>
+            </div>
+          );
+        })}
+      </div>
       <div>
         <Button
           disabled={isSaved}
