@@ -56,7 +56,7 @@ export function MTQ({ index, subjectIndex }: RenderMTQOptionProps) {
           Array(4).fill("_"),
         ];
 
-        const _oldAns = studentResponse?.ans as MTQStudentAnsArray;
+        const _oldAns = (studentResponse?.ans as MTQStudentAnsArray) ?? {};
 
         Object.keys(_oldAns).map((k, i) => {
           _arr[i].map((_a, j) => {
@@ -184,7 +184,6 @@ export function MTQ({ index, subjectIndex }: RenderMTQOptionProps) {
               {char}
             </div>
 
-            {/* <>{console.log("ansArr", ansArr)}</> */}
 
             <div className="flex gap-2">
               {options2.map((_v, j) => {
@@ -193,7 +192,6 @@ export function MTQ({ index, subjectIndex }: RenderMTQOptionProps) {
                   ansArr[i] && ansArr[i][j] == char2.toLowerCase()
                     ? "answered"
                     : "pending";
-                console.log(ansArr, status);
                 return (
                   <div
                     key={`checkbox_${question._id.$oid}_${char}_${char2}`}

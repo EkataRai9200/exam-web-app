@@ -19,9 +19,24 @@ export function FILL_BLANKS({ index, subjectIndex }: RenderMCQOptionProps) {
   );
 
   const saveLatestAnswer = () => {
+    const newAnsArr: Array<any> = [];
+    // check and get answers from dom
+    const elems = document.querySelectorAll(
+      `.filled-blank-input-${question._id.$oid}`
+    );
+
+    elems.forEach((elem: any) => {
+      if (!newAnsArr[elem.getAttribute("data-blank")]) {
+        newAnsArr[elem.getAttribute("data-blank")] = "";
+      }
+      let str = newAnsArr[elem.getAttribute("data-blank")].split("");
+      str[elem.getAttribute("data-char")] = elem.value == "" ? " " : elem.value;
+      newAnsArr[elem.getAttribute("data-blank")] = str.join("");
+    });
+
     const payload = {
       ...studentResponse,
-      ans: userAnswers,
+      ans: newAnsArr,
       sub_id: examData.subjects[subjectIndex].sub_id,
       qid: question._id.$oid,
       qtype: question.question_type,
@@ -66,8 +81,15 @@ export function FILL_BLANKS({ index, subjectIndex }: RenderMCQOptionProps) {
         );
 
         elems.forEach((elem: any) => {
-          newAnsArr[elem.getAttribute("data-blank")] = elem.value;
+          if (!newAnsArr[elem.getAttribute("data-blank")]) {
+            newAnsArr[elem.getAttribute("data-blank")] = "";
+          }
+          let str = newAnsArr[elem.getAttribute("data-blank")].split("");
+          str[elem.getAttribute("data-char")] =
+            elem.value == "" ? " " : elem.value;
+          newAnsArr[elem.getAttribute("data-blank")] = str.join("");
         });
+
         setIsSaved(false);
 
         setUserAnswers(newAnsArr);
@@ -84,6 +106,12 @@ export function FILL_BLANKS({ index, subjectIndex }: RenderMCQOptionProps) {
   }, []);
 
   const [isSaved, setIsSaved] = React.useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsSaved(false);
+    }, 1000);
+  }, [isSaved]);
 
   const replacePlaceholdersWithInputs = (html: string) => {
     const placeholderPattern = /{option_(\d+)}/g;
