@@ -36,7 +36,7 @@ export function SENTENCE_ARRANGMENT({
     });
     setState(sentences?.map((s) => ({ id: s.id, name: s.value })) ?? []);
     setState2(ans?.map((s) => ({ id: s.id, name: s.value })) ?? []);
-  }, [examData]);
+  }, [examData.studentExamState.student_answers[question._id.$oid]?.ans]);
 
   const markAnswer = (newState: SortableItemType[]) => {
     const ans: ItemType[] = [];
@@ -57,7 +57,11 @@ export function SENTENCE_ARRANGMENT({
   };
 
   const [state, setState] = useState<SortableItemType[]>([]);
-  const [state2, setState2] = useState<SortableItemType[]>([]);
+  const [state2, setState2] = useState<SortableItemType[]>(
+    examData.studentExamState.student_answers[question._id.$oid].ans?.map(
+      (s: any) => ({ id: s.id, name: s.value })
+    )
+  );
   useEffect(() => {
     if (
       examData.studentExamState.activeSubject == subjectIndex &&
