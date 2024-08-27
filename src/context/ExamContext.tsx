@@ -247,7 +247,7 @@ const initialState: ExamDetailData = {
     marked_for_review: [],
     windowSwitch: 0,
     showKeyboard: true,
-    showCalculator: true,
+    showCalculator: false,
   },
   audio_base_url: "",
 };
@@ -482,7 +482,7 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
         ...state,
         studentExamState: {
           ...state.studentExamState,
-          showKeyboard: action.payload,
+          showCalculator: action.payload,
         },
       };
     default:

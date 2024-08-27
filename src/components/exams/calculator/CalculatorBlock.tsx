@@ -10,7 +10,7 @@ function CalculatorBlock() {
     <div
       className={cn(
         "fixed max-w-full w-[250px] top-[10px] right-[10px] md:top-[10%] md:right-[100px] z-20 bg-gray-100",
-        examData.studentExamState.showKeyboard ? "block" : "hidden"
+        examData.studentExamState.showCalculator ? "block" : "hidden"
       )}
     >
       <Button
@@ -20,7 +20,7 @@ function CalculatorBlock() {
         onClick={() => {
           setValue("");
           dispatch({
-            type: "showHideKeyboard",
+            type: "showHideCalculator",
             payload: false,
           });
         }}

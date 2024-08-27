@@ -111,8 +111,8 @@ export function RenderQuestion({
                 <Button
                   onClick={() => {
                     dispatch({
-                      type: "showHideKeyboard",
-                      payload: !examData.studentExamState.showKeyboard,
+                      type: "showHideCalculator",
+                      payload: !examData.studentExamState.showCalculator,
                     });
                   }}
                   variant={"ghost"}
