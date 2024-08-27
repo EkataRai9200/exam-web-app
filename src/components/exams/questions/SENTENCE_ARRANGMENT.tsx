@@ -58,9 +58,9 @@ export function SENTENCE_ARRANGMENT({
 
   const [state, setState] = useState<SortableItemType[]>([]);
   const [state2, setState2] = useState<SortableItemType[]>(
-    examData.studentExamState.student_answers[question._id.$oid].ans?.map(
+    examData.studentExamState.student_answers[question._id.$oid]?.ans?.map(
       (s: any) => ({ id: s.id, name: s.value })
-    )
+    ) ?? []
   );
   useEffect(() => {
     if (

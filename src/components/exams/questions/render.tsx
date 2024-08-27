@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useExamData } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
-import { Keyboard } from "lucide-react";
+import { Calculator, Keyboard } from "lucide-react";
 import Passage from "../passage/Passage";
 import { AUDIO_TYPE } from "./AUDIO_TYPE";
 import { SENTENCE_ARRANGMENT } from "./SENTENCE_ARRANGMENT";
@@ -107,7 +107,7 @@ export function RenderQuestion({
               ) : (
                 ""
               )}
-              {/* {examData.is_calc_allow ? (
+              {examData.is_calc_allow ? (
                 <Button
                   onClick={() => {
                     dispatch({
@@ -122,7 +122,7 @@ export function RenderQuestion({
                 </Button>
               ) : (
                 ""
-              )} */}
+              )}
             </div>
           </CardHeader>
           <CardContent className="px-3 pt-3">

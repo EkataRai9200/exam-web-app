@@ -22,6 +22,7 @@ import QuestionPaperContent from "@/components/exams/questions/QuestionPaperCont
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Subject } from "@/context/ExamContext";
 import "react-simple-keyboard/build/css/index.css";
+import CalculatorBlock from "@/components/exams/calculator/CalculatorBlock";
 
 export function TakeExam() {
   const {
@@ -410,7 +411,7 @@ export function TakeExam() {
             </div>
           </div>
           {examData.is_keyboard_allow ? <KeyboardBlock /> : ""}
-          {/* {examData.is_calc_allow ? <CalculatorBlock /> : ""} */}
+          {examData.is_calc_allow ? <CalculatorBlock /> : ""}
         </>
       ) : (
         <Loader visible={true} />
