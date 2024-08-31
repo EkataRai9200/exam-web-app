@@ -10,19 +10,18 @@ import CountdownTimer from "@/components/exams/timer/countDownTimer";
 import Loader from "@/components/blocks/Loader";
 import { ExamDrawer } from "@/components/exams/drawer/drawer";
 import { useExamData, useExamWindowSwitch } from "@/lib/hooks";
-import { cn, saveTest } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 // modules css
+import CalculatorBlock from "@/components/exams/calculator/CalculatorBlock";
 import Sidebar from "@/components/exams/drawer/Sidebar";
 import { isAnswered } from "@/components/exams/drawer/examDrawerContent";
 import InstructionsContent from "@/components/exams/instructions/content/InstructionsContent";
 import KeyboardBlock from "@/components/exams/keyboard/KeyboardBlock";
 import QuestionPaperContent from "@/components/exams/questions/QuestionPaperContent";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Subject } from "@/context/ExamContext";
 import "react-simple-keyboard/build/css/index.css";
-import CalculatorBlock from "@/components/exams/calculator/CalculatorBlock";
 
 export function TakeExam() {
   const {
