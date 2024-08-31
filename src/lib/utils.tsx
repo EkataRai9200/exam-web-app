@@ -62,6 +62,7 @@ export function saveTest(
     webtesttoken: examData.authUser?.webtesttoken,
     start_date: examData.studentExamState.start_date,
     subject_times: examData.studentExamState.subject_times,
+    timeSpent: examData.studentExamState.timeSpent,
   };
   return fetch(`${examData.authUser?.api_url}/save-test-response`, {
     method: "POST",

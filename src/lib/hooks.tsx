@@ -1,6 +1,6 @@
 import { ToastAction } from "@/components/ui/toast";
 import { toast } from "@/components/ui/use-toast";
-import { Answer, ExamContext } from "@/context/ExamContext";
+import { Answer, ExamContext, Subject } from "@/context/ExamContext";
 import { authenticateToken, getTestDetails } from "@/pages/start/StartPage";
 import React, { useContext, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -52,8 +52,6 @@ export function useExamData() {
 
   const qTimeTakenRef = React.useRef<number>(0);
   const qTimerRef = React.useRef<any>();
-  // const [qTimeTaken, setqTimeTaken] = React.useState(0);
-
   const recordQuestionTime = () => {
     if (qTimerRef.current) clearInterval(qTimerRef.current);
     qTimeTakenRef.current = 0;
@@ -85,6 +83,44 @@ export function useExamData() {
 
     recordQuestionTime();
   };
+
+  const getRemainingTime = () => {
+    let timeSpent = 0;
+
+    const endTimeLeft = state.test_end_date
+      ? Math.round((state.test_end_date - Date.now()) / 1000)
+      : 0;
+
+    if (state.test_end_date && state.test_end_date < Date.now()) {
+      return 0;
+    }
+    if (state.subject_time == "yes" && state.studentExamState.subject_times) {
+      const activeSubData =
+        state.subjects[state.studentExamState.activeSubject] ?? {};
+      const activeSubTime =
+        state.studentExamState.subject_times[activeSubData.sub_id] ?? {};
+      if (!activeSubTime.start_time) {
+        return parseInt(activeSubData.subject_time) * 60;
+      }
+      const endTime =
+        activeSubTime.start_time +
+        parseInt(activeSubData.subject_time) * 60 * 1000;
+      if (activeSubTime.submitted) return 0;
+      return Math.round((endTime - Date.now()) / 1000);
+    } else {
+      timeSpent = Math.round(
+        (Date.now() - state.studentExamState.startTimeLocal) / 1000
+      );
+      const timeLeft =
+        parseInt(state.test_time_limit) * 60 -
+        timeSpent -
+        (state.elapsed_time ?? 0);
+      return state.test_end_date
+        ? Math.min(timeLeft, endTimeLeft ?? 0)
+        : timeLeft;
+    }
+  };
+
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const MySwal = withReactContent(Swal);
@@ -129,6 +165,7 @@ export function useExamData() {
     questionTimeTaken: qTimeTakenRef,
     submitExam,
     onTimerExpires,
+    getRemainingTime,
   };
 }
 

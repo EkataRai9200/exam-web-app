@@ -4,42 +4,52 @@ import { Timer } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
 interface CountdownTimerProps {
+  startTime: number;
+  initialSeconds: number;
+  onStart?: () => void;
   onExpire?: () => void;
   beforeText?: string;
 }
 
 const CountdownTimer: React.FC<CountdownTimerProps> = ({
+  initialSeconds,
+  onStart,
   onExpire,
+  startTime,
   beforeText,
 }) => {
   const {
-    examData: { test_time_limit, subject_time },
-    getRemainingTime,
-    isLoaded,
+    examData: { test_end_date },
   } = useExamData();
 
-  const timeLimit = parseInt(test_time_limit) * 60;
+  const [timeLeft, setTimeLeft] = useState<number>(initialSeconds);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  const [timeLeft, setTimeLeft] = useState<number>(timeLimit);
+  // check if test_end_date is less than
+  const endTimeRef = useRef<number>(
+    test_end_date && test_end_date < startTime + initialSeconds * 1000
+      ? test_end_date
+      : startTime + initialSeconds * 1000
+  );
 
   useEffect(() => {
-    if (!isLoaded) {
-      return;
-    }
     const updateRemainingTime = () => {
-      const timeLeft = Math.max(0, getRemainingTime());
-      if (timeLeft <= 0 && intervalRef.current) {
-        if (subject_time != "yes") clearInterval(intervalRef.current);
-        onExpire && onExpire();
+      const now = Date.now();
+      const timeLeft = Math.max(0, endTimeRef.current - now);
+      if (timeLeft / 1000 <= 0) {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          onExpire && onExpire();
+        }
       }
-      setTimeLeft(timeLeft);
+      setTimeLeft(Math.floor(timeLeft / 1000));
     };
+
     intervalRef.current = setInterval(updateRemainingTime, 1000);
+    onStart && onStart();
     updateRemainingTime();
 
     return () => {
-      if (intervalRef.current && subject_time != "yes") {
+      if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
     };

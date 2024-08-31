@@ -235,8 +235,6 @@ function SubmitExam() {
           <div className="flex gap-4">
             {examData.subjects.length > 0 && examData.start_date ? (
               <CountdownTimer
-                startTime={examData.start_date}
-                initialSeconds={parseInt(examData.test_time_limit) * 60}
                 onExpire={onTimerExpires}
               />
             ) : (

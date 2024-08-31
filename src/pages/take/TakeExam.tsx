@@ -100,12 +100,13 @@ export function TakeExam() {
         ) {
           // test already submitted message !
           // onTimerExpires();
+        } else {
         }
         setIsLoading(false);
       } else {
-        if (examData.remaining_time && examData.remaining_time <= 0) {
-          // onTimerExpires();
-        }
+        // if (examData.remaining_time && examData.remaining_time <= 0) {
+        //   // onTimerExpires();
+        // }
         setIsLoading(false);
       }
     }
@@ -146,75 +147,35 @@ export function TakeExam() {
 
                 <div className="flex w-full md:w-auto items-end justify-end mt-2 md:mt-0 md:gap-4">
                   {examData.subjects.length > 0 &&
-                  examData.subject_time == "yes" ? (
+                  examData.subject_time == "yes" &&
+                  examData.studentExamState.subject_times ? (
                     <>
-                      {examData.studentExamState.subject_times &&
-                        Object.values(
-                          examData.studentExamState.subject_times
-                        ).map((timer) => {
-                          const subData: Subject =
-                            examData.subjects.filter(
-                              (s) => s.sub_id == timer._id
-                            )[0] ?? {};
-                          const activeSubData: Subject =
-                            examData.subjects[
-                              examData.studentExamState.activeSubject
-                            ] ?? {};
-                          const subDataIndex =
-                            examData.subjects.findIndex(
-                              (s) => s.sub_id == timer._id
-                            ) ?? {};
-                          return (
-                            <>
-                              {!timer.submitted && (
-                                <div
-                                  className={cn(
-                                    "flex bg-gray-100 items-center justify-start gap-2",
-                                    subData.sub_id == activeSubData.sub_id &&
-                                      !timer.submitted
-                                      ? "flex"
-                                      : "hidden"
-                                  )}
-                                >
-                                  <CountdownTimer
-                                    startTime={timer.start_time}
-                                    initialSeconds={
-                                      parseInt(subData.subject_time) * 60
-                                    }
-                                    beforeText="Time Left For Section :"
-                                    onExpire={() => {
-                                      if (
-                                        subDataIndex + 1 <=
-                                        examData.subjects.length - 1
-                                      ) {
-                                        if (
-                                          examData.subject_times &&
-                                          !timer.submitted
-                                        ) {
-                                          dispatch({
-                                            type: "submit_section",
-                                            payload: {},
-                                          });
-                                        }
-                                      }
-                                    }}
-                                  />
-                                </div>
-                              )}
-                            </>
-                          );
-                        })}
+                      <div
+                        className={cn(
+                          "flex bg-gray-100 items-center justify-start gap-2"
+                        )}
+                      >
+                        <CountdownTimer
+                          beforeText="Time Left For Section :"
+                          onExpire={() => {
+                            dispatch({
+                              type: "submit_section",
+                              payload: {},
+                            });
+                          }}
+                        />
+                      </div>
                     </>
                   ) : (
                     <>
                       {parseInt(examData.test_time_limit) > 0 &&
                         examData.studentExamState.start_date > 0 && (
                           <CountdownTimer
-                            startTime={examData.studentExamState.start_date}
+                            // startTime={examData.studentExamState.start_date}
                             onExpire={onTimerExpires}
-                            initialSeconds={
-                              parseInt(examData.test_time_limit) * 60
-                            }
+                            // initialSeconds={
+                            //   parseInt(examData.test_time_limit) * 60
+                            // }
                             beforeText="Time left :"
                           />
                         )}
@@ -351,19 +312,8 @@ export function TakeExam() {
                             examData.studentExamState.activeSubject
                           ].questions.length -
                             1 ? (
-                          <Button
-                            onClick={() => {
-                              saveTest(examData).then(() => {
-                                navigate({
-                                  pathname: "/submit",
-                                  search: searchParams.toString(),
-                                });
-                              });
-                            }}
-                            className="bg-green-600 hover:bg-green-800"
-                            size={"lg"}
-                          >
-                            Submit
+                          <Button size={"default"} disabled className="px-3">
+                            Next <ArrowRight size={15} className="ms-1" />
                           </Button>
                         ) : (
                           <Button

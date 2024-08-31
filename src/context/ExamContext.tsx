@@ -114,7 +114,13 @@ export function createAnswer(obj: any): Answer {
 }
 
 export interface SubjectTimer {
-  [key: string]: { _id: string; start_time: number; submitted: boolean };
+  [key: string]: {
+    _id: string;
+    start_time?: number;
+    elapsed_time?: number;
+    submitted: boolean;
+    timeSpent?: number;
+  };
 }
 
 export interface StudentExamState {
@@ -130,6 +136,8 @@ export interface StudentExamState {
   windowSwitch: number;
   showKeyboard: boolean;
   showCalculator: boolean;
+  timeSpent: number;
+  startTimeLocal: number;
 }
 
 export interface ObjectID {
@@ -157,6 +165,7 @@ export interface ExamAuthUser {
 
 export interface ExamDetailData {
   _id: ObjectID;
+  elapsed_time?: number;
   authUser?: ExamAuthUser;
   time_limit: string;
   test_time_limit: string;
@@ -182,6 +191,7 @@ export interface ExamDetailData {
   subject_time: string;
   subject_lock: number;
   start_date?: number;
+  test_end_date?: number;
   remaining_time?: number;
   studentExamState: StudentExamState;
   audio_base_url: string;
@@ -202,7 +212,8 @@ type Action = {
     | "submit_exam"
     | "showHideKeyboard"
     | "showHideCalculator"
-    | "deleteAnswer";
+    | "deleteAnswer"
+    | "updateTimer";
   payload: any;
 };
 
@@ -246,25 +257,32 @@ const initialState: ExamDetailData = {
     student_answers: {},
     marked_for_review: [],
     windowSwitch: 0,
+    timeSpent: 0,
     showKeyboard: true,
     showCalculator: false,
+    startTimeLocal: 0,
   },
   audio_base_url: "",
 };
 
 const startResumeSubjectTime = (state: ExamDetailData) => {
   const activeSubData = state.subjects[state.studentExamState.activeSubject];
+
   if (
     state.subject_time == "yes" &&
     state.studentExamState.subject_times &&
     !state.studentExamState.subject_times[activeSubData.sub_id]
   ) {
-    state.studentExamState.subject_times[activeSubData.sub_id] = {
-      _id: activeSubData.sub_id,
-      start_time: Date.now(),
-      submitted: false,
-    };
-    saveTest(state);
+    state.subjects.map((subject) => {
+      if (
+        state.studentExamState.subject_times &&
+        !state.studentExamState.subject_times[subject.sub_id]
+      )
+        state.studentExamState.subject_times[subject.sub_id] = {
+          _id: subject.sub_id,
+          submitted: false,
+        };
+    });
   }
 };
 
@@ -279,7 +297,30 @@ const setActiveQuestion = async (
   }
   state.studentExamState.activeSubject = subjectIndex;
   state.studentExamState.activeQuestion = questionIndex;
-  markVisitedQuestion(state, questionIndex, subjectIndex);
+  if (state.start_date) markVisitedQuestion(state, questionIndex, subjectIndex);
+};
+
+const calcTimeSpent = (state: ExamDetailData) => {
+  const timeSpent = Math.round(
+    (Date.now() - state.studentExamState.startTimeLocal) / 1000
+  );
+  return timeSpent;
+};
+
+const resetTimeSpent = (d: ExamDetailData) => {
+  d.elapsed_time = (d.elapsed_time ?? 0) + d.studentExamState.timeSpent ?? 0;
+  // if (d.subject_time == "yes" && d.studentExamState.subject_times) {
+  //   const activeSubData = d.subjects[d.studentExamState.activeSubject];
+  //   const activeSubTimer =
+  //     d.studentExamState.subject_times[activeSubData.sub_id];
+  //   d.studentExamState.subject_times[activeSubData.sub_id] = {
+  //     ...d.studentExamState.subject_times[activeSubData.sub_id],
+  //     elapsed_time:
+  //       (activeSubTimer.elapsed_time ?? 0) + d.studentExamState.timeSpent,
+  //     timeSpent: 0,
+  //   };
+  // }
+  d.studentExamState.timeSpent = 0;
 };
 
 const saveQuestionTimeTaken = (state: ExamDetailData, sec: number) => {
@@ -316,30 +357,42 @@ const markVisitedQuestion = async (
 
 // Create the reducer function
 const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
-  // console.log("reducer action is called", action.type, action.payload);
+  console.log("reducer action is called", action.type, action.payload);
   switch (action.type) {
     case "init":
       let newState = { ...state, ...action.payload } as ExamDetailData;
       newState.studentExamState.student_answers = action.payload.response ?? {};
       newState.studentExamState.subject_times =
         action.payload.subject_times ?? {};
-      if (action.payload.start_date)
+      if (action.payload.start_date) {
         newState.studentExamState.start_date = action.payload.start_date;
+        newState.studentExamState.startTimeLocal = Date.now();
+      }
       startResumeSubjectTime(newState);
-      if (newState.subject_time == "yes" && newState.subject_times) {
-        const qsNotSubmitted = Object.values(newState.subject_times).filter(
-          (s) => !s.submitted
-        );
-        if (qsNotSubmitted.length > 0) {
+      if (
+        newState.subject_time == "yes" &&
+        newState.studentExamState.subject_times
+      ) {
+        const subjectsNotSubmitted = Object.values(
+          newState.studentExamState.subject_times
+        ).filter((s) => !s.submitted);
+        if (subjectsNotSubmitted.length > 0) {
+          if (
+            !newState.studentExamState.subject_times[
+              subjectsNotSubmitted[0]._id
+            ].start_time
+          ) {
+            newState.studentExamState.subject_times[
+              subjectsNotSubmitted[0]._id
+            ].start_time = Date.now();
+          }
           setActiveQuestion(
             newState,
             0,
             newState.subjects.findIndex(
-              (s) => s.sub_id == qsNotSubmitted[0]._id
+              (s) => s.sub_id == subjectsNotSubmitted[0]._id
             )
           );
-        } else {
-          // code...
         }
       } else {
         setActiveQuestion(newState, 0, 0);
@@ -347,15 +400,25 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
 
       return newState;
     case "start_exam":
-      state.start_date = action.payload;
-      state.studentExamState.start_date = action.payload;
+      state.start_date = state.studentExamState.start_date = action.payload;
+      state.studentExamState.startTimeLocal = Date.now();
+      if (state.subject_time == "yes" && state.studentExamState.subject_times) {
+        const activeSubData =
+          state.subjects[state.studentExamState.activeSubject];
+        state.studentExamState.subject_times[activeSubData.sub_id] = {
+          ...state.studentExamState.subject_times[activeSubData.sub_id],
+          start_time: action.payload,
+          timeSpent: 0,
+          elapsed_time: 0,
+        };
+      }
+      saveTest(state);
       return { ...state };
     case "setActiveSubject":
       setActiveQuestion(state, 0, action.payload);
       return { ...state };
     case "setActiveQuestion":
       const visitedState = { ...state };
-      console.log("action.payload.tt", action.payload.tt);
 
       setActiveQuestion(
         visitedState,
@@ -370,7 +433,9 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       d.studentExamState.student_answers[action.payload.qid] = createAnswer(
         action.payload
       );
+      d.studentExamState.timeSpent = calcTimeSpent(d);
       saveTest(d);
+      resetTimeSpent(d);
       return d;
     case "deleteAnswer":
       delete state.studentExamState.student_answers[action.payload]["ans"];
@@ -447,14 +512,28 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
         submitSectionState.studentExamState.activeSubject <
         submitSectionState.subjects.length - 1
       ) {
+        submitSectionState.studentExamState.activeSubject += 1;
+        const newSubData =
+          submitSectionState.subjects[
+            submitSectionState.studentExamState.activeSubject
+          ];
+
+        if (submitSectionState.studentExamState.subject_times) {
+          submitSectionState.studentExamState.subject_times[
+            newSubData.sub_id
+          ].start_time = Date.now();
+          submitSectionState.studentExamState.subject_times[
+            newSubData.sub_id
+          ].elapsed_time = 0;
+
+          submitSectionState.studentExamState.startTimeLocal = Date.now();
+        }
         setActiveQuestion(
           submitSectionState,
           0,
-          submitSectionState.studentExamState.activeSubject + 1
+          submitSectionState.studentExamState.activeSubject
         );
       }
-
-      startResumeSubjectTime(submitSectionState);
 
       return submitSectionState;
     case "submit_exam":
