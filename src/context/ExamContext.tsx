@@ -311,7 +311,7 @@ const calcTimeSpent = (state: ExamDetailData) => {
 };
 
 const resetTimeSpent = (d: ExamDetailData) => {
-  d.elapsed_time = (d.elapsed_time ?? 0) + d.studentExamState.timeSpent ?? 0;
+  d.elapsed_time = (d.elapsed_time ?? 0) + d.studentExamState.timeSpent;
   // if (d.subject_time == "yes" && d.studentExamState.subject_times) {
   //   const activeSubData = d.subjects[d.studentExamState.activeSubject];
   //   const activeSubTimer =
