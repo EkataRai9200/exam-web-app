@@ -5,7 +5,7 @@ pipeline {
         git_credential = "bitbucket_pesslab_secret_password"
         aws_credential = "AWS_S3_TRIGREXAM"
         repo_url = "https://pesslab@bitbucket.org/pesslab/test_repo.git"
-        bucket = "onlinetestpanel-exam-app"
+        bucket = "examapp.onlinetestpanel.com"
         region = "ap-south-1"
         notify_text = "code uploaded to s3"
     }
