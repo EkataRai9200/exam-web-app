@@ -19,13 +19,7 @@ function QuestionPaperContent({
         open ? "visible" : "hidden"
       )}
     >
-      <h1 className="w-full text-center py-2 font-medium">
-        <>
-          {console.log(
-            examData.studentExamState.activeSubject,
-            examData.subjects[examData.studentExamState.activeSubject]
-          )}
-        </>
+      <h1 className="w-full text-center py-2 font-medium bg-gray-50">
         {examData.subjects[examData.studentExamState.activeSubject].name}
       </h1>
       <ScrollArea className="pb-5 px-5">
@@ -34,9 +28,14 @@ function QuestionPaperContent({
         ].questions.map((question, index) => {
           return (
             <div key={`question_${index}`} className="mt-2 border-b pb-2">
-              <h3 className="font-bold">{`Q. ${index}`}</h3>
+              <h3 className="font-bold">{`Q${index + 1}.`}</h3>
               <div
-                dangerouslySetInnerHTML={{ __html: question.question }}
+                dangerouslySetInnerHTML={{
+                  __html:
+                    examData.studentExamState.activeLang == "EN"
+                      ? question.question
+                      : question.hi_question ?? "",
+                }}
                 className="text-sm"
               ></div>
             </div>

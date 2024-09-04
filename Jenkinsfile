@@ -2,8 +2,8 @@ pipeline {
     agent any
     
     environment {
-        git_credential = "bitbucket_android_trigrexam_raman"
-        aws_credential = "awskey"
+        git_credential = "bitbucket_pesslab_secret_password"
+        aws_credential = "AWS_S3_TRIGREXAM"
         repo_url = "https://ramansaluja849@bitbucket.org/pesslab/test_repo.git"
         bucket = "onlinetestpanel-exam-app"
         region = "ap-south-1"

@@ -6,6 +6,13 @@ import { QuestionTypeProps } from "./render";
 
 interface RenderMCQOptionProps extends QuestionTypeProps {}
 
+export const MCQ_Style = {
+  wrapper:
+    "w-full rounded-lg p-1 flex items-center gap-2 cursor-pointer relative bg-white hover:bg-gray-100/50",
+  label:
+    "border w-7 h-7 text-sm font-medium flex items-center justify-center text-center rounded-full",
+};
+
 export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
   const { examData, dispatch } = useExamData();
   const [options, setOptions] = React.useState<Array<string | undefined>>([]);
@@ -76,7 +83,7 @@ export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
           <div
             key={i}
             className={cn(
-              "w-full rounded-lg p-1 flex items-center gap-2 cursor-pointer relative border  bg-white hover:bg-gray-100/50",
+              MCQ_Style.wrapper,
               status == "pending" ? "" : "",
               status == "answered" ? "border-green-600 " : ""
             )}
@@ -86,7 +93,7 @@ export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
           >
             <div
               className={cn(
-                "border w-7 h-7 text-sm font-medium flex items-center justify-center text-center rounded-full",
+                MCQ_Style.label,
                 status == "answered" ? "bg-green-600 text-white" : ""
               )}
             >

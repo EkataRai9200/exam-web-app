@@ -29,7 +29,7 @@ function CalculatorBlock() {
       </Button>
       <div className="p-2">
         <iframe
-          src={`http://${examData.authUser?.institute_url}/calculator.html`}
+          src={`http://${examData.authUser?.institute_url}/calculator.html?version=${examData.is_calc_allow}`}
           height={350}
         ></iframe>
       </div>

@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import React from "react";
 import { QuestionTypeProps } from "./render";
 import { Checkbox } from "@/components/ui/checkbox";
+import { MCQ_Style } from "./mcq";
 
 interface RenderMCQOptionProps extends QuestionTypeProps {}
 
@@ -86,7 +87,7 @@ export function MAQ({ index, subjectIndex }: RenderMCQOptionProps) {
           <div
             key={i}
             className={cn(
-              "w-full rounded-lg p-1 flex items-center gap-2 cursor-pointer relative border bg-white",
+              MCQ_Style.wrapper,
               status == "pending" ? "bg-white" : "",
               status == "answered" ? "border-green-600" : ""
             )}

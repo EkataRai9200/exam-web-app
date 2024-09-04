@@ -1,9 +1,9 @@
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Question } from "@/context/ExamContext";
 import { useExamData } from "@/lib/hooks";
@@ -35,9 +35,9 @@ export default function SLCT({ index, subjectIndex }: RenderSLCTOptionProps) {
 
   useEffect(() => {
     if (!examData.studentExamState.student_answers[question._id.$oid]) {
-    //   
+      //
     }
-  }, [question])
+  }, [question]);
 
   const markAnswer = (i: string) => {
     const payload = {
@@ -72,7 +72,9 @@ export default function SLCT({ index, subjectIndex }: RenderSLCTOptionProps) {
           {options.map((o, i) => {
             return (
               <SelectItem key={i} value={i.toString()}>
-                {o?.value ?? ""}
+                <span
+                  dangerouslySetInnerHTML={{ __html: o?.value ?? "" }}
+                ></span>
               </SelectItem>
             );
           })}

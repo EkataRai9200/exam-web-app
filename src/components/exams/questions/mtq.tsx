@@ -184,7 +184,6 @@ export function MTQ({ index, subjectIndex }: RenderMTQOptionProps) {
               {char}
             </div>
 
-
             <div className="flex gap-2">
               {options2.map((_v, j) => {
                 const char2 = String.fromCharCode(80 + j);

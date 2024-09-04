@@ -52,14 +52,16 @@ const Instructions2 = ({
 
   return (
     <>
-      <div className="flex flex-col justify-start h-full relative">
-        <div
-          className="h-[70%] md:h-[80%] md:p-5 prose overflow-y-auto"
-          dangerouslySetInnerHTML={{
-            __html: examData.instructions.description,
-          }}
-        ></div>
-        <div className="h-[30%] md:h-[20%] flex flex-col md:items-start items-start gap-4 border-t-2 rounded-lg overflow-y-auto p-2 md:p-5">
+      <div className="justify-start h-[calc(100vh-250px)] relative">
+        <div className="h-[70%] w-full md:p-5 overflow-y-auto">
+          <div
+            className="prose"
+            dangerouslySetInnerHTML={{
+              __html: examData.instructions.description,
+            }}
+          ></div>
+        </div>
+        <div className="h-[30%] flex flex-col md:items-start items-start gap-4 border-t-2 rounded-lg overflow-y-visible p-2 md:p-5">
           <div className="flex items-center gap-2 text-slate-700">
             <div>
               <p className="text-sm">Choose your default language: </p>
@@ -130,6 +132,7 @@ export function StartPage() {
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
+    document.title = `${examData.test_name}`;
     if (data.examData._id.$oid) {
       dispatch({
         type: "init",
@@ -169,7 +172,7 @@ export function StartPage() {
             <img
               src={`${examData.authUser.institute.logo}`}
               width={100}
-              className="me-3 hidden md:block"
+              className="h-[50px] object-scale-down me-3 hidden md:block"
               alt=""
             />
           )}

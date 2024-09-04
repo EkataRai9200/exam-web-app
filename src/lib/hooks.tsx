@@ -6,7 +6,7 @@ import React, { useContext, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { getBrowserInfo, saveTest, showSaveTestError } from "./utils";
+import { saveTest } from "./utils";
 
 export function useExamData() {
   const { state, dispatch } = useContext(ExamContext);
@@ -29,23 +29,42 @@ export function useExamData() {
     return { ...examData, authUser };
   };
 
-  const saveBrowserActivity = async () => {
+  const saveBrowserActivity = async (windowSwitch: number) => {
+    console.log("state", state);
     if (!state.authUser) return;
-    const url = state.authUser.api_url + "/update_activity/" + state._id.$oid;
+
+    const url =
+      state?.authUser?.api_url + "/save-browser-activity/" + state._id.$oid;
     const res = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        browser: {
-          info: getBrowserInfo(),
-          windowSwitch: state.studentExamState.windowSwitch,
-        },
+        test_id: state._id.$oid,
+        webtesttoken: state.authUser?.webtesttoken,
       }),
     }).catch(() => {
-      showSaveTestError(() => saveTest(state), state);
+      setTimeout(() => {
+        saveBrowserActivity(windowSwitch);
+      }, 2000);
     });
+
+    // const url = state.authUser.api_url + "/update_activity/" + state._id.$oid;
+    // const res = await fetch(url, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({
+    //     browser: {
+    //       info: getBrowserInfo(),
+    //       windowSwitch,
+    //     },
+    //   }),
+    // }).catch(() => {
+    //   showSaveTestError(() => saveTest(state), state);
+    // });
 
     return res;
   };
@@ -221,6 +240,8 @@ const useExamWindowSwitch = () => {
 
   const activate = () => {
     setActive(true);
+    const initbrowserActivity = async function () {};
+    initbrowserActivity();
   };
   const MySwal = withReactContent(Swal);
 
@@ -228,8 +249,11 @@ const useExamWindowSwitch = () => {
     if (!active) return false;
 
     if (isVisible && windowSwitch > 0) {
-      saveBrowserActivity();
-      if (windowSwitch > 3 && examData.browserswitchsubmittest == "yes") {
+      saveBrowserActivity(windowSwitch);
+      if (
+        windowSwitch > (examData.proctoring_allowed_browser_switches ?? 3) &&
+        examData.browserswitchsubmittest == "yes"
+      ) {
         onTimerExpires();
         return;
       } else {

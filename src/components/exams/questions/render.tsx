@@ -80,14 +80,20 @@ export function RenderQuestion({
                 Question No. {index + 1}.
               </p>
             </div>
-            <div className="flex w-full md:w-min items-center gap-2">
-              <Badge className="bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium uppercase px-1">
+            <div className="flex w-auto items-center gap-2">
+              <Badge className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium uppercase px-1">
                 {question.question_type}
               </Badge>
-              <Badge className="bg-green-100 hover:bg-green-200 text-green-500 font-medium px-1">
+              <Badge
+                className="bg-green-100 hover:bg-green-200 text-green-500 font-medium px-1"
+                style={{ width: "-webkit-fill-available" }}
+              >
                 +{question.marks_positive}
               </Badge>
-              <Badge className="bg-red-100 hover:bg-red-200 text-red-500 font-medium px-1">
+              <Badge
+                className="bg-red-100 hover:bg-red-200 text-red-500 font-medium px-1"
+                style={{ width: "-webkit-fill-available" }}
+              >
                 -{question.marks_negative}
               </Badge>
               <LanguageDropdown />

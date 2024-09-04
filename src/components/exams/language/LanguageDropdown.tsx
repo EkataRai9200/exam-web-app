@@ -40,7 +40,7 @@ export function LanguageDropdown() {
           {/* <SelectLabel>Language</SelectLabel> */}
           {examData.available_languages.map((v, i) => (
             <SelectItem key={"lang_key_" + i} value={v}>
-              {ExamLanguage[v]}
+              {v == "HI" ? examData.test_second_language : ExamLanguage[v]}
             </SelectItem>
           ))}
         </SelectGroup>

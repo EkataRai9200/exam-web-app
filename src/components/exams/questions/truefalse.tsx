@@ -3,6 +3,7 @@ import { useExamData } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
 import React from "react";
 import { QuestionTypeProps } from "./render";
+import { MCQ_Style } from "./mcq";
 
 interface RenderMCQOptionProps extends QuestionTypeProps {}
 
@@ -63,7 +64,7 @@ export function TRUEFALSE({ index, subjectIndex }: RenderMCQOptionProps) {
           <div
             key={i}
             className={cn(
-              "w-full bg-white border rounded-lg p-2 flex items-center gap-2 cursor-pointer relative border-2",
+              MCQ_Style.wrapper,
               status == "pending" ? "bg-white" : "",
               status == "answered" ? "border-green-600" : ""
             )}
@@ -73,7 +74,7 @@ export function TRUEFALSE({ index, subjectIndex }: RenderMCQOptionProps) {
           >
             <div
               className={cn(
-                "border w-10 h-10 flex items-center justify-center text-center rounded-full",
+                MCQ_Style.label,
                 status == "answered" ? "bg-green-600 text-white" : ""
               )}
             >

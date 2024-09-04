@@ -112,6 +112,7 @@ export function TakeExam() {
   }, []);
 
   React.useEffect(() => {
+    document.title = `${examData.test_name}`;
     document.addEventListener("copy", disableCopyPaste);
     document.addEventListener("cut", disableCopyPaste);
     document.addEventListener("paste", disableCopyPaste);
@@ -132,7 +133,13 @@ export function TakeExam() {
     <>
       {examData.subjects.length > 0 && !isLoading ? (
         <>
-          <div className="flex flex-col md:h-screen">
+          <div
+            className="flex flex-col md:h-screen"
+            onCopy={disableCopyPaste}
+            onCut={disableCopyPaste}
+            onPaste={disableCopyPaste}
+            onContextMenu={(e) => e.preventDefault()}
+          >
             <div className="flex w-full justify-between items-center px-2 md:px-5 py-1 shadow z-10 bg-white">
               <div className="flex flex-wrap justify-between items-center w-full md:w-3/4">
                 <h5 className="scroll-m-20 text-sm font-medium text-muted-foreground tracking-normal">
@@ -190,10 +197,6 @@ export function TakeExam() {
                   "flex flex-col w-full h-full md:gap-0 relative items-stretch bg-white",
                   showSidebar ? "md:w-3/4" : ""
                 )}
-                onCopy={disableCopyPaste}
-                onCut={disableCopyPaste}
-                onPaste={disableCopyPaste}
-                onContextMenu={(e) => e.preventDefault()}
               >
                 <div className="flex items-center w-full overflow-x-auto md:overflow-y-hidden gap-2 px-3 pt-2 pb-2 bg-gray-100 border-b-2">
                   <p className="text-sm border-r-2 pr-2">Sections</p>
@@ -304,7 +307,9 @@ export function TakeExam() {
                     </Button>
                     {examData.subjects.length >= 0 && (
                       <>
-                        {activeSubject == examData.subjects.length - 1 &&
+                        {(examData.subject_time == "yes" ||
+                          (examData.subject_time != "yes" &&
+                            activeSubject == examData.subjects.length - 1)) &&
                         examData.studentExamState.activeSubject >= 0 &&
                         activeQuestion ==
                           examData.subjects[

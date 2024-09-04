@@ -176,6 +176,7 @@ export interface ExamDetailData {
   is_proctoring_allow: any;
   lang: ExamLanguage;
   available_languages: Array<keyof typeof ExamLanguage>;
+  test_second_language: string;
   is_calc_allow: string;
   is_keyboard_allow: 0 | 1 | null;
   passage_alignment: string;
@@ -185,6 +186,7 @@ export interface ExamDetailData {
   featured: string;
   testresume: number;
   browserswitchsubmittest: string;
+  proctoring_allowed_browser_switches?: number;
   instructions: Instruction;
   subjects: Array<Subject>;
   subject_times?: SubjectTimer;
@@ -232,6 +234,7 @@ const initialState: ExamDetailData = {
   is_proctoring_allow: "",
   lang: ExamLanguage.EN,
   available_languages: [],
+  test_second_language: "",
   is_calc_allow: "",
   is_keyboard_allow: null,
   passage_alignment: "",

@@ -1,10 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Question } from "@/context/ExamContext";
 import { useExamData } from "@/lib/hooks";
-import { sanitize } from "@/lib/utils";
+import { cn, sanitize } from "@/lib/utils";
 import { CheckCircle, Trash } from "lucide-react";
 import React, { useEffect } from "react";
 import { QuestionTypeProps } from "./render";
@@ -104,75 +103,81 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
     }
   };
 
+  const questionText =
+    activeLang == "EN" ? question?.question : question?.hi_question ?? "";
+
   return (
     <>
       <div
         dangerouslySetInnerHTML={{
-          __html:
-            activeLang == "EN"
-              ? question?.question
-              : question?.hi_question ?? "",
+          __html: questionText,
         }}
       ></div>
-      <div className="mt-5 grid w-full gap-2">
-        <Label htmlFor="message">Answer</Label>
-        <Textarea
-          onChange={handleTextChange}
-          onBlur={saveLatestAnswer}
-          placeholder="Type your message here."
-          rows={5}
-          defaultValue={(studentResponse.ans as string) ?? ""}
-          id="message"
-        />
-        <div>
-          <Input
-            type="file"
-            accept="image/*,application/pdf"
-            onChange={uploadFile}
-          />
-          <p className="text-xs text-muted-foreground italic">
-            PDF, JPG, JPEG, PNG files are accepted.
-          </p>
-        </div>
-      </div>
-      <div className="flex gap-2">
-        {subjectiveimages.map((s, i) => {
-          return (
-            <div
-              className="relative"
-              key={`subjective_image_${question._id.$oid}_${i}`}
-            >
-              <img
-                src={`https://d3bioexaf647f4.cloudfront.net/${s}`}
-                width={60}
-                className="border"
-              />
-              <Button
-                variant={"ghost"}
-                onClick={() => removeImage(i)}
-                className="text-red-600 px-1 py-0 absolute h-5 top-0 right-0 bg-gray-100"
-              >
-                <Trash size={15} />
-              </Button>
-            </div>
-          );
+      <div
+        className={cn({
+          hidden: questionText == "",
         })}
-      </div>
-      <div>
-        <Button
-          disabled={isSaved}
-          variant={"outline"}
-          className="flex gap-2"
-          onClick={saveLatestAnswer}
-        >
-          {isSaved ? (
-            <>
-              Answer Saved <CheckCircle size={12} />
-            </>
-          ) : (
-            "Save Answer"
-          )}
-        </Button>
+      >
+        <div className="mt-5 grid w-full gap-2">
+          <Label htmlFor="message">Answer</Label>
+          <Textarea
+            onChange={handleTextChange}
+            onBlur={saveLatestAnswer}
+            placeholder="Type your message here."
+            rows={5}
+            defaultValue={(studentResponse.ans as string) ?? ""}
+            id="message"
+          />
+          <div>
+            <input
+              type="file"
+              accept="image/*,application/pdf"
+              onChange={uploadFile}
+            />
+            <p className="text-xs text-muted-foreground italic">
+              PDF, JPG, JPEG, PNG files are accepted.
+            </p>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          {subjectiveimages.map((s, i) => {
+            return (
+              <div
+                className="relative"
+                key={`subjective_image_${question._id.$oid}_${i}`}
+              >
+                <img
+                  src={`https://d3bioexaf647f4.cloudfront.net/${s}`}
+                  width={60}
+                  className="border"
+                />
+                <Button
+                  variant={"ghost"}
+                  onClick={() => removeImage(i)}
+                  className="text-red-600 px-1 py-0 absolute h-5 top-0 right-0 bg-gray-100"
+                >
+                  <Trash size={15} />
+                </Button>
+              </div>
+            );
+          })}
+        </div>
+        <div>
+          <Button
+            disabled={isSaved}
+            variant={"outline"}
+            className="flex gap-2"
+            onClick={saveLatestAnswer}
+          >
+            {isSaved ? (
+              <>
+                Answer Saved <CheckCircle size={12} />
+              </>
+            ) : (
+              "Save Answer"
+            )}
+          </Button>
+        </div>
       </div>
     </>
   );

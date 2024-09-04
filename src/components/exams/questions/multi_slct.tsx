@@ -1,12 +1,14 @@
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Label } from "@/components/ui/label";
 import { Question } from "@/context/ExamContext";
 import { useExamData } from "@/lib/hooks";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import React, { useEffect } from "react";
 import { QuestionTypeProps } from "./render";
 
@@ -69,19 +71,39 @@ export default function MULTI_SLCT({
               : question?.hi_question ?? "",
         }}
       ></div>
+      <Label htmlFor="message">Answer</Label>
 
       <DropdownMenu open={showDropdown}>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
+          <div
+            className="cursor-pointer inline-flex items-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background h-10 px-4 py-2 justify-between"
             onClick={() => setShowDropdown(!showDropdown)}
           >
-            {showDropdown ? "Hide" : "Show"} Options
-          </Button>
+            {ans.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {ans.map((a) => {
+                  return (
+                    <Badge variant="secondary">
+                      {options[parseInt(a)]?.value}
+                    </Badge>
+                  );
+                })}
+              </div>
+            ) : (
+              "Select Options"
+            )}
+            <span className="">
+              {showDropdown ? (
+                <ChevronUp size={15} />
+              ) : (
+                <ChevronDown size={15} />
+              )}
+            </span>
+          </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent
           onPointerDownOutside={() => setShowDropdown(false)}
-          className="w-56"
+          className="w-full"
         >
           {options.map((o, i) => {
             return (
