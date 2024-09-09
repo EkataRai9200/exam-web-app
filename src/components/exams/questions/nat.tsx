@@ -66,18 +66,23 @@ export function NAT({ index, subjectIndex }: RenderMCQOptionProps) {
       <h5 className="text-md font-medium">Answer</h5>
       <div className="md:w-[300px] flex flex-col gap-4">
         <Input
-          type="number"
+          type="text"
           value={value ?? ""}
+          only-digits
           onChange={(e) => {
-            setValue(e.target.value);
-            setIsSaved(false);
-            keyboard.current.setInput(e.target.value);
+            if (/^[0-9.]+$/.test(e.target.value)) {
+              setValue(e.target.value);
+              setIsSaved(false);
+              keyboard.current.setInput(e.target.value);
+            } else {
+              return false;
+            }
           }}
         />
         <Keyboard
           keyboardRef={(r) => (keyboard.current = r)}
           layout={{
-            default: ["1 2 3", "4 5 6", "7 8 9", "0 {bksp} "],
+            default: ["1 2 3", "4 5 6", "7 8 9", "0 . {bksp}"],
           }}
           theme="hg-theme-default hg-layout-numeric numeric-theme"
           onChange={(input) => {
