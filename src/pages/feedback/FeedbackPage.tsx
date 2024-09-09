@@ -55,17 +55,21 @@ export function CardWithForm() {
         webtesttoken: examData.authUser?.webtesttoken,
       }),
     });
-    if (examData.featured == "1") {
-      alert("Thank You for your feedback. Test Result is not yet Published");
-      window.location.href =
-        "http://" + examData.authUser?.institute_url + "/student/reports";
+    if (typeof (window as any).Android != "undefined") {
+      (window as any).Android.testCompletedCallback();
     } else {
-      alert("Thank You for your feedback.");
-      window.location.href =
-        "http://" +
-        examData.authUser?.institute_url +
-        "/student/reports/view-report/" +
-        examData._id.$oid;
+      if (examData.featured == "1") {
+        alert("Thank You for your feedback. Test Result is not yet Published");
+        window.location.href =
+          "http://" + examData.authUser?.institute_url + "/student/reports";
+      } else {
+        alert("Thank You for your feedback.");
+        window.location.href =
+          "http://" +
+          examData.authUser?.institute_url +
+          "/student/reports/view-report/" +
+          examData._id.$oid;
+      }
     }
   };
 

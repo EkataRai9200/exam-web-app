@@ -481,9 +481,13 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
         removeMarkState.subjects[action.payload.subjectIndex].questions[
           action.payload.index
         ];
-      removeMarkState.studentExamState.student_answers[
-        removeMarkQs._id.$oid
-      ].review = false;
+
+      if (
+        removeMarkState.studentExamState.student_answers[removeMarkQs._id.$oid]
+      )
+        removeMarkState.studentExamState.student_answers[
+          removeMarkQs._id.$oid
+        ].review = false;
       return removeMarkState;
     case "setActiveLang":
       const activeLangState = { ...state };
@@ -541,15 +545,16 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       return submitSectionState;
     case "submit_exam":
       const submitState = { ...state };
-      saveTest(submitState, "Yes").then(() => {
-        setTimeout(() => {
-          if (typeof (window as any).Android != "undefined") {
-            (window as any).Android.testCompletedCallback();
-          } else {
-            window.close();
-          }
-        }, 1500);
-      });
+      saveTest(submitState, "Yes");
+      // .then(() => {
+      //   setTimeout(() => {
+      //     if (typeof (window as any).Android != "undefined") {
+      //       (window as any).Android.testCompletedCallback();
+      //     } else {
+      //       window.close();
+      //     }
+      //   }, 1500);
+      // });
       return submitState;
     case "showHideKeyboard":
       return {
