@@ -45,6 +45,10 @@ export function FILL_BLANKS({ index, subjectIndex }: RenderMCQOptionProps) {
       type: "markAnswer",
       payload,
     });
+    dispatch({
+      type: "setActiveAnswer",
+      payload: payload.ans,
+    });
     setIsSaved(true);
   };
 
