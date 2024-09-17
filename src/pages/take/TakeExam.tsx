@@ -264,13 +264,7 @@ export function TakeExam() {
 
                     {examData.subjects.length > 0 &&
                       activeSubject >= 0 &&
-                      isAnswered(
-                        examData.studentExamState.student_answers[
-                          examData.subjects[activeSubject].questions[
-                            activeQuestion
-                          ]._id.$oid
-                        ]
-                      ) && (
+                      examData.studentExamState.activeAnswer!="" && (
                         <Button
                           size={"icon"}
                           variant="default"

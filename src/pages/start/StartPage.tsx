@@ -189,7 +189,7 @@ export function StartPage() {
               <LanguageDropdown />
             </div>
           </div>
-          <ScrollArea className="h-[calc(80vh)] md:h-[calc(100vh-150px)] bg-white overflow-y-auto py-2 px-2 m-0 md:mx-2 font-serif text-sm">
+          <ScrollArea className="h-[calc(80vh)] md:h-[calc(100vh-180px)] bg-white overflow-y-auto py-2 px-2 m-0 md:mx-2 font-serif text-sm">
             <h3 className="scroll-m-20 text-center text-md md:text-md font-bold tracking-tight pb-0 pt-2">
               {examData.studentExamState.activeLang == "EN"
                 ? "Please read the following instructions carefully"
