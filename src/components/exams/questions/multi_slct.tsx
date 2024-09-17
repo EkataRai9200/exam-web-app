@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Question } from "@/context/ExamContext";
 import { useExamData } from "@/lib/hooks";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import React, { useEffect } from "react";
+import React from "react";
 import { QuestionTypeProps } from "./render";
 
 interface RenderMULTI_SLCTOptionProps extends QuestionTypeProps {}

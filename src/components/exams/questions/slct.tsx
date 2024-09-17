@@ -29,8 +29,6 @@ export default function SLCT({ index, subjectIndex }: RenderSLCTOptionProps) {
     }
   }, [examData]);
 
-  const studentResponse =
-    examData.studentExamState.student_answers[question._id.$oid] ?? {};
   const ans = examData.studentExamState.activeAnswer ?? "";
 
   useEffect(() => {

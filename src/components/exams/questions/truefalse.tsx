@@ -26,8 +26,6 @@ export function TRUEFALSE({ index, subjectIndex }: RenderMCQOptionProps) {
     }
   }, [examData]);
 
-  const studentResponse =
-    examData.studentExamState.student_answers[question._id.$oid] ?? {};
   const ans = examData.studentExamState.activeAnswer ?? "";
 
   const markAnswer = (i: number) => {
