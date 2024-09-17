@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Question } from "@/context/ExamContext";
 import { useExamData } from "@/lib/hooks";
 import { cn, sanitize } from "@/lib/utils";
-import { CheckCircle, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 import React, { useEffect } from "react";
 import { QuestionTypeProps } from "./render";
 
@@ -14,37 +14,30 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
   const { examData, dispatch } = useExamData();
   const question: Question = examData.subjects[subjectIndex].questions[index];
   const activeLang = examData.studentExamState.activeLang;
-  const studentResponse =
-    examData.studentExamState.student_answers[question._id.$oid] ?? {};
-  // const _ans = studentResponse?.ans ?? "";
+  const activeAnswer = examData.studentExamState.activeAnswer;
 
   const [subjectiveimages, setSubjectiveimages] = React.useState<string[]>(
-    studentResponse.image ?? []
+    activeAnswer?.subjectiveimages ?? []
   );
 
-  const [content, setContent] = React.useState("");
-
-  const saveLatestAnswer = () => {
-    const payload = {
-      ...studentResponse,
-      ans: content,
-      sub_id: examData.subjects[subjectIndex].sub_id,
-      qid: question._id.$oid,
-      qtype: question.question_type,
-      image: subjectiveimages,
-    };
-    dispatch({
-      type: "markAnswer",
-      payload,
-    });
-    setIsSaved(true);
-  };
+  const [content, setContent] = React.useState(activeAnswer?.content ?? "");
 
   useEffect(() => {
-    setIsSaved(false);
-  }, [content]);
+    console.log("Content is", activeAnswer);
+  }, []);
 
-  const [isSaved, setIsSaved] = React.useState(false);
+  const markAnswer = () => {
+    dispatch({
+      type: "setActiveAnswer",
+      payload: {
+        content,
+        subjectiveimages,
+      },
+    });
+  };
+  useEffect(() => {
+    markAnswer();
+  }, [content, subjectiveimages]);
 
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(sanitize(event.target.value.trim()));
@@ -66,7 +59,6 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
       const json = await response.json();
       if (json.status) {
         setSubjectiveimages([...subjectiveimages, json.filename]);
-        setIsSaved(false);
         return json.data;
       } else {
         throw new Error("File upload failed");
@@ -94,7 +86,7 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
         const json = await response.json();
         if (json.status) {
           setSubjectiveimages(subjectiveimages.filter((_v, i) => i !== index));
-          setIsSaved(false);
+          // setIsSaved(false);
           return json.data;
         } else {
           throw new Error("File upload failed");
@@ -122,10 +114,10 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
           <Label htmlFor="message">Answer</Label>
           <Textarea
             onChange={handleTextChange}
-            onBlur={saveLatestAnswer}
+            onBlur={markAnswer}
             placeholder="Type your message here."
             rows={5}
-            defaultValue={(studentResponse.ans as string) ?? ""}
+            defaultValue={content}
             id="message"
           />
           <div>
@@ -162,12 +154,12 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
             );
           })}
         </div>
-        <div>
+        {/* <div>
           <Button
             disabled={isSaved}
             variant={"outline"}
             className="flex gap-2"
-            onClick={saveLatestAnswer}
+            onClick={markAnswer}
           >
             {isSaved ? (
               <>
@@ -177,7 +169,7 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
               "Save Answer"
             )}
           </Button>
-        </div>
+        </div> */}
       </div>
     </>
   );

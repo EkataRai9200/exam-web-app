@@ -1,8 +1,6 @@
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Question } from "@/context/ExamContext";
 import { useExamData } from "@/lib/hooks";
-import { CheckCircle } from "lucide-react";
 import React, { useEffect } from "react";
 import Keyboard from "react-simple-keyboard";
 import { QuestionTypeProps } from "./render";
@@ -13,43 +11,24 @@ export function NAT({ index, subjectIndex }: RenderMCQOptionProps) {
   const { examData, dispatch } = useExamData();
   const question: Question = examData.subjects[subjectIndex].questions[index];
   const activeLang = examData.studentExamState.activeLang;
-  const studentResponse =
-    examData.studentExamState.student_answers[question._id.$oid] ?? {};
 
-  const [value, setValue] = React.useState(studentResponse?.ans ?? null);
+  const [value, setValue] = React.useState(
+    examData.studentExamState.activeAnswer ?? null
+  );
+
+  useEffect(() => {
+    dispatch({
+      type: "setActiveAnswer",
+      payload: value,
+    });
+  }, [value]);
 
   useEffect(() => {
     if (!examData.studentExamState.student_answers[question._id.$oid]) {
       setValue("");
       keyboard.current.setInput("");
-      setIsSaved(false);
     }
   }, [examData.studentExamState.student_answers[question._id.$oid]]);
-
-  const saveLatestAnswer = () => {
-    const payload = {
-      ...studentResponse,
-      ans: value,
-      sub_id: examData.subjects[subjectIndex].sub_id,
-      qid: question._id.$oid,
-      qtype: question.question_type,
-    };
-    dispatch({
-      type: "markAnswer",
-      payload,
-    });
-    setIsSaved(true);
-  };
-
-  // useEffect(() => {
-  //   if (
-  //     examData.studentExamState.activeQuestion === index + 1 ||
-  //     examData.studentExamState.activeQuestion === index
-  //   )
-  //     saveLatestAnswer();
-  // }, [examData.studentExamState.activeQuestion]);
-
-  const [isSaved, setIsSaved] = React.useState(false);
 
   const keyboard = React.useRef<any>(null);
 
@@ -72,7 +51,6 @@ export function NAT({ index, subjectIndex }: RenderMCQOptionProps) {
           onChange={(e) => {
             if (/^[0-9.]+$/.test(e.target.value)) {
               setValue(e.target.value);
-              setIsSaved(false);
               keyboard.current.setInput(e.target.value);
             } else {
               return false;
@@ -87,26 +65,9 @@ export function NAT({ index, subjectIndex }: RenderMCQOptionProps) {
           theme="hg-theme-default hg-layout-numeric numeric-theme"
           onChange={(input) => {
             setValue(input);
-            setIsSaved(false);
           }}
           onKeyPress={() => {}}
         />
-      </div>
-      <div>
-        <Button
-          disabled={isSaved}
-          variant={"outline"}
-          className="flex gap-2"
-          onClick={saveLatestAnswer}
-        >
-          {isSaved ? (
-            <>
-              Answer Saved <CheckCircle size={12} />
-            </>
-          ) : (
-            "Save Answer"
-          )}
-        </Button>
       </div>
     </>
   );

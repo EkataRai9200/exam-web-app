@@ -138,6 +138,7 @@ export interface StudentExamState {
   showCalculator: boolean;
   timeSpent: number;
   startTimeLocal: number;
+  activeAnswer: Answer["ans"];
 }
 
 export interface ObjectID {
@@ -205,6 +206,7 @@ type Action = {
     | "setActiveSubject"
     | "setActiveQuestion"
     | "start_exam"
+    | "setActiveAnswer"
     | "markAnswer"
     | "markVisited"
     | "markForReview"
@@ -264,6 +266,7 @@ const initialState: ExamDetailData = {
     showKeyboard: true,
     showCalculator: false,
     startTimeLocal: 0,
+    activeAnswer: "",
   },
   audio_base_url: "",
 };
@@ -295,12 +298,34 @@ const setActiveQuestion = async (
   subjectIndex: number,
   tt?: number
 ) => {
+  // set time taken
   if (tt) {
     saveQuestionTimeTaken(state, tt);
   }
+
+  // set active subject
   state.studentExamState.activeSubject = subjectIndex;
+
+  // set active question
   state.studentExamState.activeQuestion = questionIndex;
+
+  // mark visited
   if (state.start_date) markVisitedQuestion(state, questionIndex, subjectIndex);
+
+  // set active answer
+  const question = state.subjects[subjectIndex].questions[questionIndex];
+  const studentQuesResponse =
+    state.studentExamState.student_answers[
+      state.subjects[subjectIndex].questions[questionIndex]._id.$oid
+    ];
+  if (question.question_type == "SUBJECTIVE") {
+    state.studentExamState.activeAnswer = {
+      content: studentQuesResponse?.ans ?? "",
+      subjectiveimages: studentQuesResponse?.image ?? [],
+    };
+  } else {
+    state.studentExamState.activeAnswer = studentQuesResponse?.ans ?? "";
+  }
 };
 
 const calcTimeSpent = (state: ExamDetailData) => {
@@ -440,6 +465,11 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       saveTest(d);
       resetTimeSpent(d);
       return d;
+    case "setActiveAnswer":
+      const activeState = { ...state };
+      activeState.studentExamState.activeAnswer = action.payload;
+
+      return activeState;
     case "deleteAnswer":
       delete state.studentExamState.student_answers[action.payload]["ans"];
       saveTest(state);

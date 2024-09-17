@@ -45,23 +45,14 @@ export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
     }
   }, [examData]);
 
-  const studentResponse =
-    examData.studentExamState.student_answers[question._id.$oid] ?? {};
-  const ans = studentResponse?.ans ?? "";
-
   const markAnswer = (i: number) => {
-    const payload = {
-      ...studentResponse,
-      ans: String.fromCharCode(65 + i).toLowerCase(),
-      sub_id: examData.subjects[subjectIndex].sub_id,
-      qid: question._id.$oid,
-      qtype: question.question_type,
-    };
     dispatch({
-      type: "markAnswer",
-      payload,
+      type: "setActiveAnswer",
+      payload: String.fromCharCode(65 + i).toLowerCase(),
     });
   };
+
+  const activeAnswer = examData.studentExamState.activeAnswer;
 
   return (
     <>
@@ -73,10 +64,9 @@ export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
               : question?.hi_question ?? "",
         }}
       ></div>
-
       {options.map((_v, i) => {
         const status =
-          String.fromCharCode(65 + i).toLowerCase() == ans
+          String.fromCharCode(65 + i).toLowerCase() == activeAnswer
             ? "answered"
             : "pending";
         return (
@@ -85,7 +75,7 @@ export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
             className={cn(
               MCQ_Style.wrapper,
               status == "pending" ? "" : "",
-              status == "answered" ? "border-green-600 " : ""
+              status == "answered" ? "border-green-600 bg-gray-100/50" : ""
             )}
             onClick={() => {
               markAnswer(i);
@@ -103,7 +93,6 @@ export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
           </div>
         );
       })}
-      {/* <div>{isSaved ? "Saved" : "Not Saved"}</div> */}
     </>
   );
 }

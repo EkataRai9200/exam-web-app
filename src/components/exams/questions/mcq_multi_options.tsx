@@ -19,6 +19,15 @@ export function MCQ_MULTI_OPTIONS({
   const question: Question = examData.subjects[subjectIndex].questions[index];
   const activeLang = examData.studentExamState.activeLang;
 
+  const ans = examData.studentExamState.activeAnswer ?? "";
+
+  const markAnswer = (i: number) => {
+    dispatch({
+      type: "setActiveAnswer",
+      payload: i.toString(),
+    });
+  };
+
   React.useEffect(() => {
     if (activeLang == "EN") {
       setOptions(question?.slct_options ?? []);
@@ -30,25 +39,6 @@ export function MCQ_MULTI_OPTIONS({
       }
     }
   }, [examData]);
-
-  const studentResponse =
-    examData.studentExamState.student_answers[question._id.$oid] ?? {};
-  const ans = studentResponse?.ans ?? "";
-
-  const markAnswer = (i: number) => {
-    const payload = {
-      ...studentResponse,
-      ans: i.toString(),
-      sub_id: examData.subjects[subjectIndex].sub_id,
-      qid: question._id.$oid,
-      qtype: question.question_type,
-    };
-    dispatch({
-      type: "markAnswer",
-      payload,
-    });
-  };
-
   return (
     <>
       <div

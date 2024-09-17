@@ -13,10 +13,21 @@ export function MAQ({ index, subjectIndex }: RenderMCQOptionProps) {
   const [options, setOptions] = React.useState<Array<string | undefined>>([]);
   const question: Question = examData.subjects[subjectIndex].questions[index];
   const activeLang = examData.studentExamState.activeLang;
-  const studentResponse =
-    examData.studentExamState.student_answers[question._id.$oid] ?? {};
-  const ans = studentResponse?.ans ?? "";
+  const ans = examData.studentExamState.activeAnswer ?? "";
   const ansArr = typeof ans == "string" && ans != "" ? ans.split(",") : [];
+
+  const markAnswer = (i: number) => {
+    if (ansArr.includes(String.fromCharCode(65 + i).toLowerCase()))
+      ansArr.splice(
+        ansArr.indexOf(String.fromCharCode(65 + i).toLowerCase()),
+        1
+      );
+    else ansArr.push(String.fromCharCode(65 + i).toLowerCase());
+    dispatch({
+      type: "setActiveAnswer",
+      payload: ansArr.join(",").trim(),
+    });
+  };
 
   React.useEffect(() => {
     if (activeLang == "EN") {
@@ -43,28 +54,6 @@ export function MAQ({ index, subjectIndex }: RenderMCQOptionProps) {
       }
     }
   }, [examData]);
-
-  const markAnswer = (i: number) => {
-    if (ansArr.includes(String.fromCharCode(65 + i).toLowerCase()))
-      ansArr.splice(
-        ansArr.indexOf(String.fromCharCode(65 + i).toLowerCase()),
-        1
-      );
-    else ansArr.push(String.fromCharCode(65 + i).toLowerCase());
-    console.log(ansArr);
-
-    const payload = {
-      ...studentResponse,
-      ans: ansArr.join(",").trim(),
-      sub_id: examData.subjects[subjectIndex].sub_id,
-      qid: question._id.$oid,
-      qtype: question.question_type,
-    };
-    dispatch({
-      type: "markAnswer",
-      payload,
-    });
-  };
 
   return (
     <>
@@ -103,19 +92,10 @@ export function MAQ({ index, subjectIndex }: RenderMCQOptionProps) {
               }
               checked={status == "answered"}
             />
-            {/* <div
-              className={cn(
-                "border w-7 h-7 text-sm font-medium flex items-center justify-center text-center rounded-full",
-                status == "answered" ? "bg-green-600 text-white" : ""
-              )}
-            >
-              {String.fromCharCode(65 + i)}
-            </div> */}
             {_v && <div dangerouslySetInnerHTML={{ __html: _v }}></div>}
           </div>
         );
       })}
-      {/* <div>{isSaved ? "Saved" : "Not Saved"}</div> */}
     </>
   );
 }

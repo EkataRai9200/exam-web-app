@@ -31,6 +31,7 @@ export function TakeExam() {
     setActiveSubject,
     isLoaded,
     onTimerExpires,
+    saveAndNextQuestion,
   } = useExamData();
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -46,24 +47,22 @@ export function TakeExam() {
   const handleNextQuestion = () => {
     if (
       activeQuestion <
-      examData.subjects[examData.studentExamState.activeSubject].questions
-        .length -
-        1
+      examData.subjects[activeSubject].questions.length - 1
     ) {
       setActiveQuestion(activeQuestion + 1);
-    } else if (
-      examData.studentExamState.activeSubject + 1 <=
-      examData.subjects.length - 1
-    ) {
-      setActiveSubject(examData.studentExamState.activeSubject + 1);
+    } else if (activeSubject + 1 <= examData.subjects.length - 1) {
+      setActiveSubject(activeSubject + 1);
     }
   };
 
   const handlePreviousQuestion = () => {
     if (activeQuestion > 0) {
       setActiveQuestion(activeQuestion - 1);
-    } else if (examData.studentExamState.activeSubject > 0) {
-      setActiveSubject(examData.studentExamState.activeSubject - 1);
+    } else if (activeSubject > 0) {
+      setActiveQuestion(
+        examData.subjects[activeSubject - 1].questions.length - 1,
+        activeSubject - 1
+      );
     }
   };
 
@@ -220,27 +219,17 @@ export function TakeExam() {
                 {examData.subjects.length > 0 ? (
                   <>
                     <ScrollArea className="md:my-0 px-2 h-full pt-0 pb-[100px] md:pb-[70px]">
-                      {examData.subjects.map((subject, subjectIndex) => (
-                        <div
-                          key={`subject_key_${subject.sub_id}}`}
-                          className={cn({
-                            hidden: activeSubject != subjectIndex,
-                            block: activeSubject == subjectIndex,
-                          })}
-                        >
-                          {subject.questions?.map((v, i) => {
-                            return (
-                              <RenderQuestion
-                                index={i}
-                                subjectIndex={subjectIndex}
-                                isActive={activeQuestion == i}
-                                setActive={setActiveQuestion}
-                                key={v._id.$oid}
-                              />
-                            );
-                          })}
-                        </div>
-                      ))}
+                      <RenderQuestion
+                        index={activeQuestion}
+                        subjectIndex={activeSubject}
+                        isActive={true}
+                        setActive={setActiveQuestion}
+                        key={
+                          examData.subjects[activeSubject].questions[
+                            activeQuestion
+                          ]._id.$oid
+                        }
+                      />
                     </ScrollArea>
                   </>
                 ) : (
@@ -307,22 +296,22 @@ export function TakeExam() {
                     </Button>
                     {examData.subjects.length >= 0 && (
                       <>
-                        {(examData.subject_time == "yes" ||
-                          (examData.subject_time != "yes" &&
-                            activeSubject == examData.subjects.length - 1)) &&
-                        examData.studentExamState.activeSubject >= 0 &&
+                        {examData.subject_time == "yes" &&
                         activeQuestion ==
                           examData.subjects[
                             examData.studentExamState.activeSubject
                           ].questions.length -
                             1 ? (
                           <Button size={"default"} disabled className="px-3">
-                            Next <ArrowRight size={15} className="ms-1" />
+                            <span className="hidden md:ps-1 md:block">
+                              Save & Next
+                            </span>{" "}
+                            <ArrowRight size={15} className="ms-1" />
                           </Button>
                         ) : (
                           <Button
                             onClick={() => {
-                              handleNextQuestion();
+                              saveAndNextQuestion();
                               dispatch({
                                 type: "removeMarkForReview",
                                 payload: {
@@ -334,7 +323,10 @@ export function TakeExam() {
                             size={"default"}
                             className="px-3"
                           >
-                            Next <ArrowRight size={15} className="ms-1" />
+                            <span className="hidden md:ps-1 md:block">
+                              Save & Next
+                            </span>{" "}
+                            <ArrowRight size={15} className="ms-1" />
                           </Button>
                         )}
                       </>

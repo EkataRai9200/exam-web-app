@@ -1,6 +1,6 @@
 import { ToastAction } from "@/components/ui/toast";
 import { toast } from "@/components/ui/use-toast";
-import { Answer, ExamContext } from "@/context/ExamContext";
+import { Answer, ExamContext, Question } from "@/context/ExamContext";
 import { authenticateToken, getTestDetails } from "@/pages/start/StartPage";
 import React, { useContext, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -13,10 +13,9 @@ export function useExamData() {
   const [isLoaded, setIsLoaded] = React.useState(
     state._id && state.subjects.length > 0
   );
-
-  useEffect(() => {
-    setIsLoaded(state._id && state.subjects.length > 0);
-  }, [state]);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const MySwal = withReactContent(Swal);
 
   const fetchExamData = async () => {
     const url = new URL(window.location.href);
@@ -50,22 +49,6 @@ export function useExamData() {
       }, 2000);
     });
 
-    // const url = state.authUser.api_url + "/update_activity/" + state._id.$oid;
-    // const res = await fetch(url, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     browser: {
-    //       info: getBrowserInfo(),
-    //       windowSwitch,
-    //     },
-    //   }),
-    // }).catch(() => {
-    //   showSaveTestError(() => saveTest(state), state);
-    // });
-
     return res;
   };
 
@@ -79,12 +62,12 @@ export function useExamData() {
     }, 1000);
   };
 
-  const setActiveQuestion = (index: number) => {
+  const setActiveQuestion = (index: number, subjectIndex?: number) => {
     dispatch({
       type: "setActiveQuestion",
       payload: {
         index,
-        subjectIndex: state.studentExamState.activeSubject,
+        subjectIndex: subjectIndex ?? state.studentExamState.activeSubject,
         tt: qTimeTakenRef.current,
       },
     });
@@ -140,10 +123,6 @@ export function useExamData() {
     }
   };
 
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const MySwal = withReactContent(Swal);
-
   const submitExam = async ({ message }: { message?: string } = {}) => {
     saveTest(state, "Yes").then((res) => {
       if (res.status) {
@@ -173,6 +152,78 @@ export function useExamData() {
     });
   };
 
+  const saveAnswer = async ({
+    subjectIndex,
+    index,
+    ans,
+  }: {
+    subjectIndex: number;
+    index: number;
+    ans: Answer["ans"];
+  }) => {
+    const question: Question = state.subjects[subjectIndex].questions[index];
+    const studentResponse =
+      state.studentExamState.student_answers[question._id.$oid] ?? {};
+    const payload = {
+      ...studentResponse,
+      ans: ans,
+      sub_id: state.subjects[subjectIndex].sub_id,
+      qid: question._id.$oid,
+      qtype: question.question_type,
+    };
+
+    if (question.question_type == "SUBJECTIVE") {
+      payload.ans = ans.content;
+      payload.image = ans.subjectiveimages;
+    }
+
+    console.log("saving...", payload);
+
+    dispatch({
+      type: "markAnswer",
+      payload,
+    });
+  };
+
+  const saveAndNextQuestion = async () => {
+    const subjectIndex = state.studentExamState.activeSubject;
+    const index = state.studentExamState.activeQuestion;
+    await saveAnswer({
+      subjectIndex,
+      index,
+      ans: state.studentExamState.activeAnswer,
+    });
+
+    if (
+      state.studentExamState.activeQuestion <
+      state.subjects[state.studentExamState.activeSubject].questions.length - 1
+    ) {
+      setActiveQuestion(state.studentExamState.activeQuestion + 1);
+    } else if (
+      state.studentExamState.activeSubject + 1 <=
+      state.subjects.length - 1
+    ) {
+      setActiveSubject(state.studentExamState.activeSubject + 1);
+    } else {
+      navigate({
+        pathname: "/submit",
+        search: searchParams.toString(),
+      });
+    }
+
+    dispatch({
+      type: "removeMarkForReview",
+      payload: {
+        index: state.studentExamState.activeQuestion,
+        subjectIndex: state.studentExamState.activeSubject,
+      },
+    });
+  };
+
+  useEffect(() => {
+    setIsLoaded(state._id && state.subjects.length > 0);
+  }, [state]);
+
   return {
     examData: state,
     dispatch,
@@ -185,6 +236,7 @@ export function useExamData() {
     submitExam,
     onTimerExpires,
     getRemainingTime,
+    saveAndNextQuestion,
   };
 }
 
