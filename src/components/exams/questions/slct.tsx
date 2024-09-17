@@ -31,7 +31,7 @@ export default function SLCT({ index, subjectIndex }: RenderSLCTOptionProps) {
 
   const studentResponse =
     examData.studentExamState.student_answers[question._id.$oid] ?? {};
-  const ans = studentResponse?.ans ?? "";
+  const ans = examData.studentExamState.activeAnswer ?? "";
 
   useEffect(() => {
     if (!examData.studentExamState.student_answers[question._id.$oid]) {
@@ -40,16 +40,9 @@ export default function SLCT({ index, subjectIndex }: RenderSLCTOptionProps) {
   }, [question]);
 
   const markAnswer = (i: string) => {
-    const payload = {
-      ...studentResponse,
-      ans: i.toString(),
-      sub_id: examData.subjects[subjectIndex].sub_id,
-      qid: question._id.$oid,
-      qtype: question.question_type,
-    };
     dispatch({
-      type: "markAnswer",
-      payload,
+      type: "setActiveAnswer",
+      payload: i.toString(),
     });
   };
 

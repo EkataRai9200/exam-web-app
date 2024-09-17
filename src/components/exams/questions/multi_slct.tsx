@@ -34,28 +34,23 @@ export default function MULTI_SLCT({
     }
   }, [examData]);
 
-  const studentResponse =
-    examData.studentExamState.student_answers[question._id.$oid] ?? {};
+  // const studentResponse =
+  //   examData.studentExamState.student_answers[question._id.$oid] ?? {};
   const ans: Array<string> =
-    typeof studentResponse?.ans === "object" ? studentResponse?.ans ?? [] : [];
+    typeof examData.studentExamState.activeAnswer === "object"
+      ? examData.studentExamState.activeAnswer ?? []
+      : [];
 
-  useEffect(() => {
-    if (!examData.studentExamState.student_answers[question._id.$oid]) {
-      //
-    }
-  }, [question]);
+  // useEffect(() => {
+  //   if (!examData.studentExamState.student_answers[question._id.$oid]) {
+  //     //
+  //   }
+  // }, [question]);
 
   const markAnswer = (i: string, _checked: boolean) => {
-    const payload = {
-      ...studentResponse,
-      ans: ans.includes(i) ? ans.filter((a) => a !== i) : [...ans, i],
-      sub_id: examData.subjects[subjectIndex].sub_id,
-      qid: question._id.$oid,
-      qtype: question.question_type,
-    };
     dispatch({
-      type: "markAnswer",
-      payload,
+      type: "setActiveAnswer",
+      payload: ans.includes(i) ? ans.filter((a) => a !== i) : [...ans, i],
     });
   };
 

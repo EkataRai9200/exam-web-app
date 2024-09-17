@@ -16,7 +16,9 @@ export function TXT_INPUT({ index, subjectIndex }: RenderTXT_INPUTOptionProps) {
   const studentResponse =
     examData.studentExamState.student_answers[question._id.$oid] ?? {};
   const ans =
-    typeof studentResponse.ans === "object" ? studentResponse?.ans ?? [] : [];
+    typeof examData.studentExamState.activeAnswer === "object"
+      ? studentResponse?.ans ?? []
+      : [];
 
   const markAnswer = (i: number, inputVal: string) => {
     const a = ans;
@@ -25,16 +27,9 @@ export function TXT_INPUT({ index, subjectIndex }: RenderTXT_INPUTOptionProps) {
       delete a[i];
     }
 
-    const payload = {
-      ...studentResponse,
-      ans: a,
-      sub_id: examData.subjects[subjectIndex].sub_id,
-      qid: question._id.$oid,
-      qtype: question.question_type,
-    };
     dispatch({
-      type: "markAnswer",
-      payload,
+      type: "setActiveAnswer",
+      payload: a,
     });
   };
 

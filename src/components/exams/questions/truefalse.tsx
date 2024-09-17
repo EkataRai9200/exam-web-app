@@ -28,19 +28,12 @@ export function TRUEFALSE({ index, subjectIndex }: RenderMCQOptionProps) {
 
   const studentResponse =
     examData.studentExamState.student_answers[question._id.$oid] ?? {};
-  const ans = studentResponse?.ans ?? "";
+  const ans = examData.studentExamState.activeAnswer ?? "";
 
   const markAnswer = (i: number) => {
-    const payload = {
-      ...studentResponse,
-      ans: i == 0 ? "true" : "false",
-      sub_id: examData.subjects[subjectIndex].sub_id,
-      qid: question._id.$oid,
-      qtype: question.question_type,
-    };
     dispatch({
-      type: "markAnswer",
-      payload,
+      type: "setActiveAnswer",
+      payload: i == 0 ? "true" : "false",
     });
   };
 

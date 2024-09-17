@@ -22,10 +22,6 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
 
   const [content, setContent] = React.useState(activeAnswer?.content ?? "");
 
-  useEffect(() => {
-    console.log("Content is", activeAnswer);
-  }, []);
-
   const markAnswer = () => {
     dispatch({
       type: "setActiveAnswer",

@@ -27,6 +27,7 @@ export function MTQ({ index, subjectIndex }: RenderMTQOptionProps) {
 
   const question: Question = examData.subjects[subjectIndex].questions[index];
   const activeLang = examData.studentExamState.activeLang;
+  const activeAns = examData.studentExamState.activeAnswer;
 
   React.useEffect(() => {
     if (activeLang == "EN") {
@@ -48,7 +49,7 @@ export function MTQ({ index, subjectIndex }: RenderMTQOptionProps) {
       if (question?.tques) enOptions2.push(question?.tques);
       setOptions2(enOptions2);
 
-      if (typeof studentResponse.ans == "object") {
+      if (typeof activeAns == "object") {
         const _arr = [
           Array(4).fill("_"),
           Array(4).fill("_"),
@@ -56,7 +57,7 @@ export function MTQ({ index, subjectIndex }: RenderMTQOptionProps) {
           Array(4).fill("_"),
         ];
 
-        const _oldAns = (studentResponse?.ans as MTQStudentAnsArray) ?? {};
+        const _oldAns = (activeAns as MTQStudentAnsArray) ?? {};
 
         Object.keys(_oldAns).map((k, i) => {
           _arr[i].map((_a, j) => {
@@ -86,9 +87,6 @@ export function MTQ({ index, subjectIndex }: RenderMTQOptionProps) {
     }
   }, [examData]);
 
-  const studentResponse =
-    examData.studentExamState.student_answers[question._id.$oid] ?? [];
-
   const markAnswer = (i: number, j: number) => {
     const char2 = String.fromCharCode(80 + j);
 
@@ -97,16 +95,9 @@ export function MTQ({ index, subjectIndex }: RenderMTQOptionProps) {
       newAns[i][j] = char2.toLowerCase();
     else newAns[i][j] = "_";
 
-    const payload = {
-      ...studentResponse,
-      ans: newAns,
-      sub_id: examData.subjects[subjectIndex].sub_id,
-      qid: question._id.$oid,
-      qtype: question.question_type,
-    };
     dispatch({
-      type: "markAnswer",
-      payload,
+      type: "setActiveAnswer",
+      payload: newAns,
     });
   };
 
