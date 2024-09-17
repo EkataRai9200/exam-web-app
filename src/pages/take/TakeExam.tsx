@@ -16,7 +16,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 // modules css
 import CalculatorBlock from "@/components/exams/calculator/CalculatorBlock";
 import Sidebar from "@/components/exams/drawer/Sidebar";
-import { isAnswered } from "@/components/exams/drawer/examDrawerContent";
 import InstructionsContent from "@/components/exams/instructions/content/InstructionsContent";
 import KeyboardBlock from "@/components/exams/keyboard/KeyboardBlock";
 import QuestionPaperContent from "@/components/exams/questions/QuestionPaperContent";
