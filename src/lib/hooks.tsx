@@ -7,6 +7,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { saveTest } from "./utils";
+import { isAnswered } from "@/components/exams/drawer/examDrawerContent";
 
 export function useExamData() {
   const { state, dispatch } = useContext(ExamContext);
@@ -185,9 +186,49 @@ export function useExamData() {
     });
   };
 
+  const canSaveAnswer = ({
+    subjectIndex,
+    index,
+  }: {
+    subjectIndex: number;
+    index: number;
+  }) => {
+    const activeSubData = state.subjects[state.studentExamState.activeSubject];
+
+    if (activeSubData.qlimit && parseInt(activeSubData.qlimit) > 0) {
+      const question: Question = state.subjects[subjectIndex].questions[index];
+      const attemptedNoOfQs = Object.values(
+        state.studentExamState.student_answers
+      ).filter(
+        (v) =>
+          v.sub_id == activeSubData.sub_id &&
+          v.qid != question._id.$oid &&
+          isAnswered(v)
+      ).length;
+
+      if (attemptedNoOfQs >= parseInt(activeSubData.qlimit)) {
+        MySwal.fire(
+          `You can attempt a maximum of ${activeSubData.qlimit} questions on this subject`,
+          "",
+          "error"
+        );
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const saveAndNextQuestion = async () => {
     const subjectIndex = state.studentExamState.activeSubject;
     const index = state.studentExamState.activeQuestion;
+    if (
+      !canSaveAnswer({
+        subjectIndex,
+        index,
+      })
+    )
+      return;
     await saveAnswer({
       subjectIndex,
       index,
