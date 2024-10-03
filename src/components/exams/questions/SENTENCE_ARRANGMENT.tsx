@@ -43,16 +43,9 @@ export function SENTENCE_ARRANGMENT({
     newState.map((item) => {
       ans.push({ id: item.id, value: item.name });
     });
-    const payload = {
-      ...studentResponse,
-      ans: ans,
-      sub_id: examData.subjects[subjectIndex].sub_id,
-      qid: question._id.$oid,
-      qtype: question.question_type,
-    };
     dispatch({
-      type: "markAnswer",
-      payload,
+      type: "setActiveAnswer",
+      payload: ans,
     });
   };
 
@@ -87,6 +80,7 @@ export function SENTENCE_ARRANGMENT({
               : question?.hi_question ?? "",
         }}
       ></div>
+      <>{console.log("reloaded !", state)}</>
       <div className="flex gap-2">
         <ReactSortable
           className="flex flex-col p-2 gap-2 h-[400px] w-full rounded-lg bg-gray-200"

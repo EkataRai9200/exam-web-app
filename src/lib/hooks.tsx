@@ -328,7 +328,8 @@ const usePageVisibility = () => {
 
 const useExamWindowSwitch = () => {
   const { isVisible, times: windowSwitch } = usePageVisibility();
-  const { saveBrowserActivity, examData, onTimerExpires } = useExamData();
+  const { saveBrowserActivity, examData, submitExam } =
+    useExamData();
   const [active, setActive] = React.useState(false);
 
   const activate = () => {
@@ -347,7 +348,10 @@ const useExamWindowSwitch = () => {
         windowSwitch > (examData.proctoring_allowed_browser_switches ?? 3) &&
         examData.browserswitchsubmittest == "yes"
       ) {
-        onTimerExpires();
+        submitExam({
+          message:
+            "You have reached the maximum number of browser switches. Your exam has been automatically submitted. ",
+        });
         return;
       } else {
         MySwal.fire({

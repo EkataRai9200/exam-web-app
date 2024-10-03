@@ -47,7 +47,6 @@ export function NAT({ index, subjectIndex }: RenderMCQOptionProps) {
         <Input
           type="text"
           value={value ?? ""}
-          only-digits
           onChange={(e) => {
             if (/^[0-9.]+$/.test(e.target.value)) {
               setValue(e.target.value);

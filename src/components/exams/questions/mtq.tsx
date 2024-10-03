@@ -14,6 +14,31 @@ export interface MTQStudentAnsArray {
   d: Array<any>;
 }
 
+export const mapResponseAnswersToStudentAnsArray = (
+  response: MTQStudentAnsArray
+) => {
+  const _oldAns = response ?? {};
+  const newAns = [
+    Array(4).fill("_"),
+    Array(4).fill("_"),
+    Array(4).fill("_"),
+    Array(4).fill("_"),
+  ];
+
+  Object.keys(_oldAns).map((k, i) => {
+    newAns[i].map((_a, j) => {
+      newAns[i][j] =
+        _oldAns[k as keyof MTQStudentAnsArray].filter((x) => {
+          return String.fromCharCode(80 + j).toLowerCase() == x;
+        }).length > 0
+          ? String.fromCharCode(80 + j).toLowerCase()
+          : "_";
+    });
+  });
+
+  return newAns;
+};
+
 export function MTQ({ index, subjectIndex }: RenderMTQOptionProps) {
   const { examData, dispatch } = useExamData();
   const [options, setOptions] = React.useState<Array<string | undefined>>([]);
@@ -94,7 +119,6 @@ export function MTQ({ index, subjectIndex }: RenderMTQOptionProps) {
     if (!newAns[i][j] || newAns[i][j] == "_")
       newAns[i][j] = char2.toLowerCase();
     else newAns[i][j] = "_";
-
     dispatch({
       type: "setActiveAnswer",
       payload: newAns,

@@ -28,6 +28,10 @@ export function AUDIO_TYPE({ index, subjectIndex }: RenderMCQOptionProps) {
       type: "markAnswer",
       payload,
     });
+    dispatch({
+      type: "setActiveAnswer",
+      payload: url,
+    });
   };
 
   const removeRecording = () => {

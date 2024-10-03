@@ -1,5 +1,8 @@
 // ExamContext.tsx
-import { MTQStudentAnsArray } from "@/components/exams/questions/mtq";
+import {
+  MTQStudentAnsArray,
+  mapResponseAnswersToStudentAnsArray,
+} from "@/components/exams/questions/mtq";
 import { saveTest } from "@/lib/utils";
 import React, { Dispatch, createContext, useReducer } from "react";
 
@@ -213,7 +216,6 @@ type Action = {
     | "removeMarkForReview"
     | "setActiveLang"
     | "submit_section"
-    | "submit_exam"
     | "showHideKeyboard"
     | "showHideCalculator"
     | "deleteAnswer"
@@ -301,7 +303,7 @@ const setActiveQuestion = async (
 ) => {
   // set time taken
   if (tt) {
-    saveQuestionTimeTaken(state, tt);
+    updateQsTimeTaken(state, tt);
   }
 
   // set active subject
@@ -338,23 +340,7 @@ const calcTimeSpent = (state: ExamDetailData) => {
   return timeSpent;
 };
 
-const resetTimeSpent = (d: ExamDetailData) => {
-  d.elapsed_time = (d.elapsed_time ?? 0) + d.studentExamState.timeSpent;
-  // if (d.subject_time == "yes" && d.studentExamState.subject_times) {
-  //   const activeSubData = d.subjects[d.studentExamState.activeSubject];
-  //   const activeSubTimer =
-  //     d.studentExamState.subject_times[activeSubData.sub_id];
-  //   d.studentExamState.subject_times[activeSubData.sub_id] = {
-  //     ...d.studentExamState.subject_times[activeSubData.sub_id],
-  //     elapsed_time:
-  //       (activeSubTimer.elapsed_time ?? 0) + d.studentExamState.timeSpent,
-  //     timeSpent: 0,
-  //   };
-  // }
-  d.studentExamState.timeSpent = 0;
-};
-
-const saveQuestionTimeTaken = (state: ExamDetailData, sec: number) => {
+const updateQsTimeTaken = (state: ExamDetailData, sec: number) => {
   const vQs =
     state.subjects[state.studentExamState.activeSubject].questions[
       state.studentExamState.activeQuestion
@@ -382,7 +368,7 @@ const markVisitedQuestion = async (
       review: false,
       tt: 0,
     };
-    await saveTest(state);
+    // await saveTest(state);
   }
 };
 
@@ -411,13 +397,26 @@ const startResumeExamCallback = (state: ExamDetailData) => {
   }
 };
 
+const setInitialAnswers = (answers: any) => {
+  if (!answers) return;
+  Object.values(answers).map((q: any) => {
+    if (q.qtype == "MTQ") {
+      q.ans = mapResponseAnswersToStudentAnsArray(q.ans);
+    }
+    answers[q.qid] = q;
+  });
+
+  return answers;
+};
+
 // Create the reducer function
 const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
-  console.log("reducer action is called", action.type, action.payload);
+  // console.log("reducer action is called", action.type, action.payload);
   switch (action.type) {
     case "init":
       let newState = { ...state, ...action.payload } as ExamDetailData;
-      newState.studentExamState.student_answers = action.payload.response ?? {};
+      newState.studentExamState.student_answers =
+        setInitialAnswers(action.payload.response) ?? {};
       newState.studentExamState.subject_times =
         action.payload.subject_times ?? {};
       if (action.payload.start_date) {
@@ -466,7 +465,6 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       );
       d.studentExamState.timeSpent = calcTimeSpent(d);
       saveTest(d);
-      resetTimeSpent(d);
       return d;
     case "setActiveAnswer":
       const activeState = { ...state };
@@ -577,19 +575,6 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       }
 
       return submitSectionState;
-    case "submit_exam":
-      const submitState = { ...state };
-      saveTest(submitState, "Yes");
-      // .then(() => {
-      //   setTimeout(() => {
-      //     if (typeof (window as any).Android != "undefined") {
-      //       (window as any).Android.testCompletedCallback();
-      //     } else {
-      //       window.close();
-      //     }
-      //   }, 1500);
-      // });
-      return submitState;
     case "showHideKeyboard":
       return {
         ...state,

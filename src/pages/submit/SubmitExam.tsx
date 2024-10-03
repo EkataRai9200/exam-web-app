@@ -211,7 +211,7 @@ export function SubjectOverviewBlock({
 }
 
 function SubmitExam() {
-  const { examData, submitExam, onTimerExpires } = useExamData();
+  const { examData, submitExam, isLoaded, onTimerExpires } = useExamData();
   const [searchParams] = useSearchParams();
 
   const navigate = useNavigate();
@@ -233,10 +233,8 @@ function SubmitExam() {
             {examData.test_name}
           </h5>
           <div className="flex gap-4">
-            {examData.subjects.length > 0 && examData.start_date ? (
-              <CountdownTimer
-                onExpire={onTimerExpires}
-              />
+            {examData.subjects.length > 0 && examData.start_date && isLoaded ? (
+              <CountdownTimer onExpire={onTimerExpires} />
             ) : (
               ""
             )}
