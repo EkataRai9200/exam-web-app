@@ -48,7 +48,7 @@ export function NAT({ index, subjectIndex }: RenderMCQOptionProps) {
           type="text"
           value={value ?? ""}
           onChange={(e) => {
-            if (/^[0-9.]+$/.test(e.target.value)) {
+            if (/^-?[0-9.]+$/.test(e.target.value)) {
               setValue(e.target.value);
               keyboard.current.setInput(e.target.value);
             } else {
@@ -59,7 +59,7 @@ export function NAT({ index, subjectIndex }: RenderMCQOptionProps) {
         <Keyboard
           keyboardRef={(r) => (keyboard.current = r)}
           layout={{
-            default: ["1 2 3", "4 5 6", "7 8 9", "0 . {bksp}"],
+            default: ["1 2 3", "4 5 6", "7 8 9", "0 . -", "{bksp}"],
           }}
           theme="hg-theme-default hg-layout-numeric numeric-theme"
           onChange={(input) => {
