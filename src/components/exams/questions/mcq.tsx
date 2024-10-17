@@ -15,20 +15,24 @@ export const MCQ_Style = {
 
 export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
   const { examData, dispatch } = useExamData();
-  const [options, setOptions] = React.useState<Array<string | undefined>>([]);
-
+  const [options, setOptions] = React.useState<
+    Array<{ index: number; value: string | undefined }>
+  >([]);
   const question: Question = examData.subjects[subjectIndex].questions[index];
   const activeLang = examData.studentExamState.activeLang;
+  const randomOrder = examData.studentExamState.student_answers[
+    question._id.$oid
+  ].mcq_shuffled_order ?? [0, 1, 2, 3, 4];
 
   React.useEffect(() => {
     if (activeLang == "EN") {
       const enOptions = [
-        question?.opt1,
-        question?.opt2,
-        question?.opt3,
-        question?.opt4,
+        { index: 0, value: question?.opt1 },
+        { index: 1, value: question?.opt2 },
+        { index: 2, value: question?.opt3 },
+        { index: 3, value: question?.opt4 },
       ];
-      if (question?.opt5) enOptions.push(question?.opt5);
+      if (question?.opt5) enOptions.push({ index: 4, value: question?.opt5 });
       setOptions(enOptions);
     } else {
       if (question?.hi_opt1) {
@@ -64,35 +68,41 @@ export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
               : question?.hi_question ?? "",
         }}
       ></div>
-      {options.map((_v, i) => {
-        const status =
-          String.fromCharCode(65 + i).toLowerCase() == activeAnswer
-            ? "answered"
-            : "pending";
-        return (
-          <div
-            key={i}
-            className={cn(
-              MCQ_Style.wrapper,
-              status == "pending" ? "" : "",
-              status == "answered" ? "border-green-600 bg-gray-100/50" : ""
-            )}
-            onClick={() => {
-              markAnswer(i);
-            }}
-          >
+      {options
+        .sort(
+          (a, b) => randomOrder.indexOf(a.index) - randomOrder.indexOf(b.index)
+        )
+        .map((_v, i) => {
+          const status =
+            String.fromCharCode(65 + _v.index).toLowerCase() == activeAnswer
+              ? "answered"
+              : "pending";
+          return (
             <div
+              key={i}
               className={cn(
-                MCQ_Style.label,
-                status == "answered" ? "bg-green-600 text-white" : ""
+                MCQ_Style.wrapper,
+                status == "pending" ? "" : "",
+                status == "answered" ? "border-green-600 bg-gray-100/50" : ""
               )}
+              onClick={() => {
+                markAnswer(_v.index);
+              }}
             >
-              {String.fromCharCode(65 + i)}
+              <div
+                className={cn(
+                  MCQ_Style.label,
+                  status == "answered" ? "bg-green-600 text-white" : ""
+                )}
+              >
+                {String.fromCharCode(65 + i)}
+              </div>
+              {_v && (
+                <div dangerouslySetInnerHTML={{ __html: _v.value ?? "" }}></div>
+              )}
             </div>
-            {_v && <div dangerouslySetInnerHTML={{ __html: _v }}></div>}
-          </div>
-        );
-      })}
+          );
+        })}
     </>
   );
 }

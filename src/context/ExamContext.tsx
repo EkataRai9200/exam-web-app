@@ -59,6 +59,7 @@ export interface Question {
   };
   show_qs_passage?: boolean;
   sentences?: Array<{ id: number; value: string }>;
+  is_random_order?: boolean;
 }
 
 export interface PassageDesc {
@@ -90,6 +91,7 @@ export interface Answer {
   sub_id: string;
   qtype: string;
   tt: number;
+  mcq_shuffled_order?: Array<number>;
   review?: boolean;
 }
 
@@ -368,6 +370,16 @@ const markVisitedQuestion = async (
       review: false,
       tt: 0,
     };
+
+    if (
+      vQs.is_random_order &&
+      vQs.question_type == "MCQ" &&
+      !state.studentExamState.student_answers[vQs._id.$oid].mcq_shuffled_order
+    ) {
+      state.studentExamState.student_answers[vQs._id.$oid].mcq_shuffled_order =
+        [0, 1, 2, 3, 4].sort(() => Math.random() - 0.5);
+    }
+
     // await saveTest(state);
   }
 };
