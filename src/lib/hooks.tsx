@@ -60,6 +60,7 @@ export function useExamData() {
     qTimeTakenRef.current = 0;
     qTimerRef.current = setInterval(() => {
       qTimeTakenRef.current++;
+      // console.log("started recording time...", qTimeTakenRef);
     }, 1000);
   };
 
@@ -69,7 +70,6 @@ export function useExamData() {
       payload: {
         index,
         subjectIndex: subjectIndex ?? state.studentExamState.activeSubject,
-        tt: qTimeTakenRef.current,
       },
     });
     recordQuestionTime();
@@ -171,6 +171,7 @@ export function useExamData() {
       sub_id: state.subjects[subjectIndex].sub_id,
       qid: question._id.$oid,
       qtype: question.question_type,
+      tt: (studentResponse.tt ?? 0) + qTimeTakenRef.current,
     };
 
     if (question.question_type == "SUBJECTIVE") {
@@ -178,7 +179,7 @@ export function useExamData() {
       payload.image = ans.subjectiveimages;
     }
 
-    console.log("saving...", payload);
+    // console.log("saving...", payload);
 
     dispatch({
       type: "markAnswer",
@@ -312,11 +313,18 @@ const usePageVisibility = () => {
 
   React.useEffect(() => {
     const handleVisibilityChange = () => {
+      console.log("document.hidden", document.hidden);
       setIsVisible(document.visibilityState === "visible");
       if (document.visibilityState === "visible") setTimes((t) => t + 1);
     };
 
+    const handleFocusChange = () => {
+      console.log("window.isFocused", document.hasFocus());
+    };
+
     document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.onfocus = handleFocusChange;
+    window.onblur = handleFocusChange;
 
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
@@ -328,8 +336,7 @@ const usePageVisibility = () => {
 
 const useExamWindowSwitch = () => {
   const { isVisible, times: windowSwitch } = usePageVisibility();
-  const { saveBrowserActivity, examData, submitExam } =
-    useExamData();
+  const { saveBrowserActivity, examData, submitExam } = useExamData();
   const [active, setActive] = React.useState(false);
 
   const activate = () => {

@@ -300,14 +300,8 @@ const setActiveQuestion = async (
   state: ExamDetailData,
   questionIndex: number,
   subjectIndex: number,
-  tt?: number,
   markVisited: boolean = true
 ) => {
-  // set time taken
-  if (tt) {
-    updateQsTimeTaken(state, tt);
-  }
-
   // set active subject
   state.studentExamState.activeSubject = subjectIndex;
 
@@ -340,15 +334,6 @@ const calcTimeSpent = (state: ExamDetailData) => {
     (Date.now() - state.studentExamState.startTimeLocal) / 1000
   );
   return timeSpent;
-};
-
-const updateQsTimeTaken = (state: ExamDetailData, sec: number) => {
-  const vQs =
-    state.subjects[state.studentExamState.activeSubject].questions[
-      state.studentExamState.activeQuestion
-    ];
-  state.studentExamState.student_answers[vQs._id.$oid].tt =
-    (state.studentExamState.student_answers[vQs._id.$oid].tt ?? 0) + sec;
 };
 
 const markVisitedQuestion = async (
@@ -401,11 +386,14 @@ const startResumeExamCallback = (state: ExamDetailData) => {
       setActiveQuestion(
         state,
         0,
-        state.subjects.findIndex((s) => s.sub_id == subjectsNotSubmitted[0]._id)
+        state.subjects.findIndex(
+          (s) => s.sub_id == subjectsNotSubmitted[0]._id
+        ),
+        true
       );
     }
   } else {
-    setActiveQuestion(state, 0, 0);
+    setActiveQuestion(state, 0, 0, true);
   }
 };
 

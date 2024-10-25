@@ -106,6 +106,8 @@ export function TakeExam() {
         // }
         setIsLoading(false);
       }
+
+      setActiveQuestion(activeQuestion, activeSubject);
     }
   }, []);
 
@@ -263,7 +265,7 @@ export function TakeExam() {
 
                     {examData.subjects.length > 0 &&
                       activeSubject >= 0 &&
-                      examData.studentExamState.activeAnswer!="" && (
+                      examData.studentExamState.activeAnswer != "" && (
                         <Button
                           size={"icon"}
                           variant="default"
