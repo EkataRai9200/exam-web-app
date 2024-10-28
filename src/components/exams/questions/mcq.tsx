@@ -20,9 +20,9 @@ export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
   >([]);
   const question: Question = examData.subjects[subjectIndex].questions[index];
   const activeLang = examData.studentExamState.activeLang;
-  const randomOrder = examData.studentExamState.student_answers[
+  const randomOrder = examData.studentExamState?.student_answers[
     question._id.$oid
-  ].mcq_shuffled_order ?? [0, 1, 2, 3, 4];
+  ]?.mcq_shuffled_order ?? [0, 1, 2, 3, 4];
 
   React.useEffect(() => {
     if (activeLang == "EN") {

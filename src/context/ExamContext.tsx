@@ -454,7 +454,7 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
         visitedState,
         action.payload.index,
         action.payload.subjectIndex,
-        action.payload.tt ?? false
+        true
       );
 
       return visitedState;
