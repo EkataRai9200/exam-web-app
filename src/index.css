@@ -122,3 +122,11 @@
 .ck-powered-by {
   display: none;
 }
+
+
+@media print {
+  body {
+    visibility: hidden !important;
+    display: none !important;
+  }
+}

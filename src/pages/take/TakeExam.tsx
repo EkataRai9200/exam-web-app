@@ -116,11 +116,32 @@ export function TakeExam() {
     document.addEventListener("copy", disableCopyPaste);
     document.addEventListener("cut", disableCopyPaste);
     document.addEventListener("paste", disableCopyPaste);
+    document.addEventListener("contextmenu", (e) => e.preventDefault());
 
     return () => {
       document.removeEventListener("copy", disableCopyPaste);
       document.removeEventListener("cut", disableCopyPaste);
       document.removeEventListener("paste", disableCopyPaste);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    const handleKeydown = (e: any) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "p") {
+        e.preventDefault();
+        alert("Printing is disabled on this page.");
+      }
+      if (e.key === "PrintScreen") {
+        e.preventDefault();
+        alert("Screenshot capture is disabled.");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeydown);
+
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener("keydown", handleKeydown);
     };
   }, []);
 
