@@ -59,8 +59,16 @@ export function RenderQuestion({
 
   return (
     <>
-      <div className="flex flex-col md:flex-row gap-4">
-        {question.show_qs_passage && (
+      <div
+        className={cn(
+          "flex flex-col gap-4",
+          question.passage_desc.length > 0 &&
+            examData.passage_alignment == "Left"
+            ? "md:flex-row"
+            : ""
+        )}
+      >
+        {question.passage_desc.length > 0 && (
           <Passage
             index={index}
             isActive={isActive}
@@ -71,7 +79,10 @@ export function RenderQuestion({
           className={cn(
             "w-full md:min-h-[300px] border-none",
             isActive ? "visible" : "hidden",
-            question.show_qs_passage ? "md:w-1/2" : ""
+            question.passage_desc.length > 0 &&
+              examData.passage_alignment == "Left"
+              ? "md:w-1/2"
+              : ""
           )}
         >
           <CardHeader className="flex md:flex-row md:items-center justify-between space-y-0 relative px-3 py-1 border-b">
