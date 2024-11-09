@@ -279,6 +279,8 @@ export function useExamData() {
     onTimerExpires,
     getRemainingTime,
     saveAndNextQuestion,
+    canSaveAnswer,
+    saveAnswer,
   };
 }
 

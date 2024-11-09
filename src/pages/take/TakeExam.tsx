@@ -31,6 +31,8 @@ export function TakeExam() {
     isLoaded,
     onTimerExpires,
     saveAndNextQuestion,
+    saveAnswer,
+    canSaveAnswer,
   } = useExamData();
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -318,11 +320,38 @@ export function TakeExam() {
                             examData.studentExamState.activeSubject
                           ].questions.length -
                             1 ? (
-                          <Button size={"default"} disabled className="px-3">
+                          <Button
+                            size={"default"}
+                            onClick={async () => {
+                              if (
+                                !canSaveAnswer({
+                                  subjectIndex:
+                                    examData.studentExamState.activeSubject,
+                                  index:
+                                    examData.studentExamState.activeQuestion,
+                                })
+                              )
+                                return;
+                              await saveAnswer({
+                                subjectIndex:
+                                  examData.studentExamState.activeSubject,
+                                index: examData.studentExamState.activeQuestion,
+                                ans: examData.studentExamState.activeAnswer,
+                              });
+                              dispatch({
+                                type: "removeMarkForReview",
+                                payload: {
+                                  index: activeQuestion,
+                                  subjectIndex: activeSubject,
+                                },
+                              });
+                            }}
+                            className="px-3"
+                          >
                             <span className="hidden md:ps-1 md:block">
-                              Save & Next
+                              Save
                             </span>{" "}
-                            <ArrowRight size={15} className="ms-1" />
+                            {/* <ArrowRight size={15} className="ms-1" /> */}
                           </Button>
                         ) : (
                           <Button
