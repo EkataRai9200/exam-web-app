@@ -9,8 +9,9 @@ function CalculatorBlock() {
   return (
     <div
       className={cn(
-        "fixed max-w-full w-[250px] top-[10px] right-[10px] md:top-[10%] md:right-[100px] z-20 bg-gray-100",
-        examData.studentExamState.showCalculator ? "block" : "hidden"
+        "fixed max-w-full top-[10px] right-[10px] md:top-[10%] md:right-[100px] z-20 bg-gray-100",
+        examData.studentExamState.showCalculator ? "block" : "hidden",
+        examData.is_calc_allow == "1" ? "w-[520px]" : "w-[250px]"
       )}
     >
       <Button
@@ -29,8 +30,9 @@ function CalculatorBlock() {
       </Button>
       <div className="p-2">
         <iframe
+          className="w-full"
           src={`https://${examData.authUser?.institute_url}/calculator.html?version=${examData.is_calc_allow}`}
-          height={350}
+          height={370}
         ></iframe>
       </div>
     </div>
