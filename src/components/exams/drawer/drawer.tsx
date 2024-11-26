@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import ExamDrawerContent from "./examDrawerContent";
+import React from "react";
 
 export function ExamDrawer({
   setShowQuestionPaper,
@@ -16,8 +17,10 @@ export function ExamDrawer({
   setShowQuestionPaper: any;
   setShowInstructions: any;
 }) {
+  const [open, setOpen] = React.useState(false);
+
   return (
-    <Drawer direction="right">
+    <Drawer open={open} onOpenChange={setOpen} direction="right">
       <DrawerTrigger asChild>
         <Button
           variant="default"
@@ -32,6 +35,7 @@ export function ExamDrawer({
           <ExamDrawerContent
             setShowQuestionPaper={setShowQuestionPaper}
             setShowInstructions={setShowInstructions}
+            setOpenDrawer={setOpen}
           />
           <DrawerClose asChild>
             <Button

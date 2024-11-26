@@ -32,9 +32,11 @@ export const isNotAnswered = (a: Answer | undefined) => {
 function ExamDrawerContent({
   setShowQuestionPaper,
   setShowInstructions,
+  setOpenDrawer,
 }: {
   setShowQuestionPaper: any;
   setShowInstructions: any;
+  setOpenDrawer?: any;
 }) {
   const { examData, dispatch, submitExam } = useExamData();
   const [searchParams] = useSearchParams();
@@ -70,13 +72,14 @@ function ExamDrawerContent({
         type: "submit_section",
         payload: {},
       });
-    } else {  
+    } else {
       submitExam();
     }
   };
 
   const handleSubmitSection = () => {
     if (!canSubmitSection()) return;
+    if (setOpenDrawer) setOpenDrawer(false);
     MySwal.fire({
       title: "Are you sure you want to submit this section?",
       html: <SubjectSubmitOverview examData={examData} />,

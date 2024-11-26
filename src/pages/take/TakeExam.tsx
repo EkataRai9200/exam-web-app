@@ -21,6 +21,7 @@ import KeyboardBlock from "@/components/exams/keyboard/KeyboardBlock";
 import QuestionPaperContent from "@/components/exams/questions/QuestionPaperContent";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import "react-simple-keyboard/build/css/index.css";
+import { toast } from "sonner";
 
 export function TakeExam() {
   const {
@@ -32,7 +33,9 @@ export function TakeExam() {
     onTimerExpires,
     saveAndNextQuestion,
     saveAnswer,
+    markForReview,
     canSaveAnswer,
+    submitExam,
   } = useExamData();
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -46,6 +49,19 @@ export function TakeExam() {
   const navigate = useNavigate();
 
   const handleNextQuestion = () => {
+    if (
+      examData.subject_time != "yes" ||
+      (examData.subject_time == "yes" &&
+        activeQuestion >=
+          examData.subjects[examData.studentExamState.activeSubject].questions
+            .length -
+            1)
+    ) {
+      toast.dismiss();
+      toast.info("Submit this section before moving to the next section");
+      return false;
+    }
+
     if (
       activeQuestion <
       examData.subjects[activeSubject].questions.length - 1
@@ -187,10 +203,22 @@ export function TakeExam() {
                         <CountdownTimer
                           beforeText="Time Left For Section :"
                           onExpire={() => {
-                            dispatch({
-                              type: "submit_section",
-                              payload: {},
-                            });
+                            if (
+                              !examData.studentExamState.submitted &&
+                              examData.studentExamState.activeSubject + 1 <=
+                                examData.subjects.length - 1
+                            ) {
+                              dispatch({
+                                type: "submit_section",
+                                payload: {},
+                              });
+                            } else {
+                              submitExam();
+                            }
+                            // dispatch({
+                            //   type: "submit_section",
+                            //   payload: {},
+                            // });
                           }}
                         />
                       </div>
@@ -271,13 +299,11 @@ export function TakeExam() {
                       size={"default"}
                       variant="default"
                       className="bg-purple-800 px-2"
-                      onClick={() => {
-                        dispatch({
-                          type: "markForReview",
-                          payload: {
-                            index: activeQuestion,
-                            subjectIndex: activeSubject,
-                          },
+                      onClick={async () => {
+                        await markForReview({
+                          subjectIndex: examData.studentExamState.activeSubject,
+                          index: examData.studentExamState.activeQuestion,
+                          ans: examData.studentExamState.activeAnswer,
                         });
                         handleNextQuestion();
                       }}
@@ -351,19 +377,12 @@ export function TakeExam() {
                             <span className="hidden md:ps-1 md:block">
                               Save
                             </span>{" "}
-                            {/* <ArrowRight size={15} className="ms-1" /> */}
+                            <ArrowRight size={15} className="ms-1 md:hidden" />
                           </Button>
                         ) : (
                           <Button
                             onClick={() => {
                               saveAndNextQuestion();
-                              dispatch({
-                                type: "removeMarkForReview",
-                                payload: {
-                                  index: activeQuestion,
-                                  subjectIndex: activeSubject,
-                                },
-                              });
                             }}
                             size={"default"}
                             className="px-3"

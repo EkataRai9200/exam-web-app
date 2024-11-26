@@ -144,6 +144,7 @@ export interface StudentExamState {
   timeSpent: number;
   startTimeLocal: number;
   activeAnswer: Answer["ans"];
+  submitted: boolean;
 }
 
 export interface ObjectID {
@@ -221,6 +222,7 @@ type Action = {
     | "showHideKeyboard"
     | "showHideCalculator"
     | "deleteAnswer"
+    | "notifySubmitted"
     | "updateTimer";
   payload: any;
 };
@@ -271,6 +273,7 @@ const initialState: ExamDetailData = {
     showCalculator: false,
     startTimeLocal: 0,
     activeAnswer: "",
+    submitted: false,
   },
   audio_base_url: "",
 };
@@ -478,35 +481,15 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       return { ...state };
     case "markForReview":
       const markedState = { ...state };
-      const isMarked = state.studentExamState.marked_for_review.findIndex(
-        (v) => v.index == action.payload.index
-      );
-      if (isMarked < 0)
-        state.studentExamState.marked_for_review.push(action.payload);
-
-      let markQs =
-        markedState.subjects[action.payload.subjectIndex].questions[
-          action.payload.index
-        ];
-
-      if (!markedState.studentExamState.student_answers[markQs._id.$oid])
-        markedState.studentExamState.student_answers[markQs._id.$oid] = {
-          ans: null,
-          image: [],
-          pdf: "",
-          qid: markQs._id.$oid,
-          qtype: markQs.question_type,
-          sub_id: markedState.subjects[action.payload.subjectIndex].sub_id,
-          tt: 0,
-          review: true,
-        };
-      else {
-        markedState.studentExamState.student_answers[markQs._id.$oid] = {
-          ...markedState.studentExamState.student_answers[markQs._id.$oid],
-          review: true,
-        };
-      }
+      markedState.studentExamState.student_answers[action.payload.answer.qid] =
+        createAnswer(action.payload.answer);
+      markedState.studentExamState.student_answers[
+        action.payload.answer.qid
+      ].review = true;
+      markedState.studentExamState.timeSpent = calcTimeSpent(markedState);
+      saveTest(markedState);
       return markedState;
+
     case "removeMarkForReview":
       let removeMarkState = { ...state };
       let removeMarkQs =
@@ -589,6 +572,14 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
         studentExamState: {
           ...state.studentExamState,
           showCalculator: action.payload,
+        },
+      };
+    case "notifySubmitted":
+      return {
+        ...state,
+        studentExamState: {
+          ...state.studentExamState,
+          submitted: true,
         },
       };
     default:

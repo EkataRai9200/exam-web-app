@@ -135,6 +135,10 @@ export function useExamData() {
           backdrop: "rgba(0, 0, 0, 0.5)",
           confirmButtonText: "Close Window",
         }).then((_result) => {
+          dispatch({
+            type: "notifySubmitted",
+            payload: "",
+          });
           navigate({
             pathname: "/feedback",
             search: searchParams.toString(),
@@ -153,7 +157,7 @@ export function useExamData() {
     });
   };
 
-  const saveAnswer = async ({
+  const createPayloadForAnswer = async ({
     subjectIndex,
     index,
     ans,
@@ -173,17 +177,55 @@ export function useExamData() {
       qtype: question.question_type,
       tt: (studentResponse.tt ?? 0) + qTimeTakenRef.current,
     };
-
     if (question.question_type == "SUBJECTIVE") {
       payload.ans = ans.content;
       payload.image = ans.subjectiveimages;
     }
+    return payload;
+  };
 
-    // console.log("saving...", payload);
+  const saveAnswer = async ({
+    subjectIndex,
+    index,
+    ans,
+  }: {
+    subjectIndex: number;
+    index: number;
+    ans: Answer["ans"];
+  }) => {
+    const payload = await createPayloadForAnswer({
+      subjectIndex,
+      index,
+      ans,
+    });
 
     dispatch({
       type: "markAnswer",
       payload,
+    });
+  };
+
+  const markForReview = async ({
+    subjectIndex,
+    index,
+    ans,
+  }: {
+    subjectIndex: number;
+    index: number;
+    ans: Answer["ans"];
+  }) => {
+    const payload = await createPayloadForAnswer({
+      subjectIndex,
+      index,
+      ans,
+    });
+    dispatch({
+      type: "markForReview",
+      payload: {
+        index: index,
+        subjectIndex: subjectIndex,
+        answer: payload,
+      },
     });
   };
 
@@ -281,6 +323,7 @@ export function useExamData() {
     saveAndNextQuestion,
     canSaveAnswer,
     saveAnswer,
+    markForReview,
   };
 }
 

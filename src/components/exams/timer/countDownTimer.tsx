@@ -13,7 +13,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
   beforeText,
 }) => {
   const {
-    examData: { test_time_limit, subject_time },
+    examData: { subjects, test_time_limit, subject_time, studentExamState },
     getRemainingTime,
     isLoaded,
   } = useExamData();
@@ -30,7 +30,12 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
     const updateRemainingTime = () => {
       const timeLeft = Math.max(0, getRemainingTime());
       if (timeLeft <= 0 && intervalRef.current) {
-        if (subject_time != "yes") clearInterval(intervalRef.current);
+        if (
+          subject_time != "yes" ||
+          (subject_time == "yes" &&
+            studentExamState.activeSubject >= subjects.length - 1)
+        )
+          clearInterval(intervalRef.current);
         onExpire && onExpire();
       }
       setTimeLeft(timeLeft);
