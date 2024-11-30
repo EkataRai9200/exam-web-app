@@ -73,6 +73,12 @@ export function TakeExam() {
   };
 
   const handlePreviousQuestion = () => {
+    if (examData.subject_time == "yes" && activeQuestion <= 0) {
+      toast.dismiss();
+      toast.info("You cannot go back to previous question");
+      return false;
+    }
+
     if (activeQuestion > 0) {
       setActiveQuestion(activeQuestion - 1);
     } else if (activeSubject > 0) {
