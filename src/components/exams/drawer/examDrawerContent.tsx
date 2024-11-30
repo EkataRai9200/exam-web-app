@@ -246,12 +246,16 @@ function ExamDrawerContent({
           </Button>
         </div>
         {examData.subject_time == "yes" ? (
-          <Button
-            className="bg-green-600 hover:bg-green-800 uppercase shadow-md font-medium w-full"
-            onClick={handleSubmitSection}
-          >
-            Submit section
-          </Button>
+          examData.submit_section_button == "yes" ? (
+            <Button
+              className="bg-green-600 hover:bg-green-800 uppercase shadow-md font-medium w-full"
+              onClick={handleSubmitSection}
+            >
+              Submit section
+            </Button>
+          ) : (
+            ""
+          )
         ) : (
           <Button
             className="bg-green-600 hover:bg-green-800 uppercase shadow-md font-medium w-full"

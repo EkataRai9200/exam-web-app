@@ -204,6 +204,7 @@ export interface ExamDetailData {
   remaining_time?: number;
   studentExamState: StudentExamState;
   audio_base_url: string;
+  submit_section_button: "yes" | "no";
 }
 
 type Action = {
@@ -276,6 +277,7 @@ const initialState: ExamDetailData = {
     submitted: false,
   },
   audio_base_url: "",
+  submit_section_button: "yes",
 };
 
 const startResumeSubjectTime = (state: ExamDetailData) => {

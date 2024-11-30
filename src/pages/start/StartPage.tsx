@@ -297,7 +297,7 @@ export const authenticateToken = async (token: string | null) => {
   const decoded = jwtDecode(token as string) as ExamTokenData;
 
   const data = await fetch(
-    `${decoded.api_url}/generateTeskTokenForStudentInternal/${decoded.test_id}?token=${token}`
+    `${decoded.api_url}/generateTestTokenForStudentInternal/${decoded.test_id}?token=${token}`
   );
 
   const json = await data.json();
