@@ -420,6 +420,7 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
   switch (action.type) {
     case "init":
       let newState = { ...state, ...action.payload } as ExamDetailData;
+      newState.studentExamState.activeLang = newState.available_languages[0];
       newState.studentExamState.student_answers =
         setInitialAnswers(action.payload.response) ?? {};
       newState.studentExamState.subject_times =

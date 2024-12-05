@@ -37,12 +37,14 @@ export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
     } else {
       if (question?.hi_opt1) {
         const hiOptions = [
-          question?.hi_opt1,
-          question?.hi_opt2,
-          question?.hi_opt3,
-          question?.hi_opt4,
+          { index: 0, value: question?.hi_opt1 },
+          { index: 1, value: question?.hi_opt2 },
+          { index: 2, value: question?.hi_opt3 },
+          { index: 3, value: question?.hi_opt4 },
         ];
-        if (question?.hi_opt5) hiOptions.push(question?.hi_opt5);
+        if (question?.hi_opt5)
+          hiOptions.push({ index: 4, value: question?.hi_opt5 });
+        setOptions(hiOptions);
       } else {
         setOptions([]);
       }
@@ -97,8 +99,13 @@ export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
               >
                 {String.fromCharCode(65 + i)}
               </div>
+
               {_v && (
-                <div dangerouslySetInnerHTML={{ __html: _v.value ?? "" }}></div>
+                <>
+                  <div
+                    dangerouslySetInnerHTML={{ __html: _v.value ?? "" }}
+                  ></div>
+                </>
               )}
             </div>
           );
