@@ -79,8 +79,13 @@ const Instructions2 = ({
           </div>
           <div>
             <p>
-              Please note all questions will appear in your default language.
-              This language can be changed for a particular question later on
+              {examData.test_second_language != "Indonesia"
+                ? "Please note all questions will appear in your default language. This language can be changed for a particular question later on"
+                : ""}
+              {examData.studentExamState.activeLang == "HI" &&
+              examData.test_second_language == "Indonesia"
+                ? "Harap perhatikan, Anda harus menyetujui persyaratan ujian yang ditetapkan dengan mengklik tanda di bawah ini."
+                : ""}
             </p>
           </div>
           <div className="flex space-x-2 md:gap-2">
@@ -98,8 +103,13 @@ const Instructions2 = ({
                   hall. I agree that in case of not adhering to the
                   instructions, I will be disqualified from taking the exam.`
                 : ""}
-              {examData.studentExamState.activeLang == "HI"
+              {examData.studentExamState.activeLang == "HI" &&
+              examData.test_second_language != "Indonesia"
                 ? `मैंने पढ़ा है और निर्देश समझ लिया है। मेरे लिए आवंटित सभी कंप्यूटर हार्डवेयर उचित हालत में काम कर रहे हैं। मुझे लगता है मैं परीक्षा हॉल में मेरे साथ आदि मोबाइल फोन की तरह किसी भी निषिद्ध गैजेट / किसी भी निषिद्ध सामग्री नहीं ले जा रहा है कि इस बात से सहमत । मैं निर्देशों का पालन नहीं करने के मामले में , मुझे लगता है कि परीक्षा लेने से अयोग्य घोषित कर दिया जाएगा सहमत हैं।`
+                : ""}
+              {examData.studentExamState.activeLang == "HI" &&
+              examData.test_second_language == "Indonesia"
+                ? `Saya telah membaca dan memahami petunjuknya, dan saya siap untuk memulai ujian`
                 : ""}
             </label>
           </div>
@@ -198,7 +208,8 @@ export function StartPage() {
           </div>
           <ScrollArea className="h-[calc(80vh)] md:h-[calc(100vh-180px)] bg-white overflow-y-auto py-2 px-2 m-0 md:mx-2 font-serif text-sm">
             <h3 className="scroll-m-20 text-center text-md md:text-md font-bold tracking-tight pb-0 pt-2">
-              {examData.studentExamState.activeLang == "EN"
+              {examData.studentExamState.activeLang == "EN" ||
+              examData.test_second_language == "Indonesia"
                 ? "Please read the following instructions carefully"
                 : "कृपया निम्नलिखित निर्देशों को ध्यान से पढ़ें"}
             </h3>
