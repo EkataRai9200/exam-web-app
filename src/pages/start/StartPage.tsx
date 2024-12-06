@@ -1,6 +1,7 @@
 import Loader from "@/components/blocks/Loader";
 import EnglishInstructionsContent from "@/components/exams/instructions/content/EnglishInstructionsContent";
 import HindiInstructionsContent from "@/components/exams/instructions/content/HindiInstructionsContent";
+import IndonesiaInstructionsContent from "@/components/exams/instructions/content/IndonesiaInstructionsContent";
 import { LanguageDropdown } from "@/components/exams/language/LanguageDropdown";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -35,7 +36,13 @@ const Instructions = () => {
         <EnglishInstructionsContent />
       )}
       {examData.studentExamState.activeLang === "HI" && (
-        <HindiInstructionsContent />
+        <>
+          {examData.test_second_language == "Indonesia" ? (
+            <IndonesiaInstructionsContent />
+          ) : (
+            <HindiInstructionsContent />
+          )}
+        </>
       )}
     </>
   );

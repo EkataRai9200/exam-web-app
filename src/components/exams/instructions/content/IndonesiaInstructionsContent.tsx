@@ -1,3 +1,5 @@
+import { Badge } from "@/components/ui/badge";
+
 const IndonesiaInstructionsContent = () => {
   return (
     <div>
@@ -23,46 +25,44 @@ const IndonesiaInstructionsContent = () => {
         <li>
           Palet soal pada sebelah kanan layar anda menunjukkan status dari
           setiap nomor soal:
-          <table style={{ fontSize: "100%" }} className="instruction_area">
-            <tbody>
-              <tr>
-                <td valign="top" className="btn-in-inst btn_nv">
-                  <button id="tooltip_not_visited">1</button>
-                </td>
-                <td>Anda belum mengunjungi soal tersebut sama sekali</td>
-              </tr>
-              <tr>
-                <td valign="top" className="btn-in-inst btn_na">
-                  <button id="tooltip_not_visited">1</button>
-                </td>
-                <td>Anda belum menjawab soal tersebu.</td>
-              </tr>
-              <tr>
-                <td valign="top" className="btn-in-inst btn_a">
-                  <button id="tooltip_not_visited">1</button>
-                </td>
-                <td>Anda telah menjawab soal tersebut</td>
-              </tr>
-              <tr>
-                <td valign="top" className="btn-in-inst btn_m">
-                  <button id="tooltip_not_visited">1</button>
-                </td>
-                <td>
-                  Anda belum menjawab soal tersebut tetapi telah menandainya
-                  untuk ditinjau ulang.
-                </td>
-              </tr>
-              <tr>
-                <td valign="top" className="btn-in-inst btn_ma">
-                  <button id="tooltip_reviewanswered">1</button>
-                </td>
-                <td>
-                  Anda telah menjawab soal tersebut dan menandainya untuk di
-                  tinjau ulang.
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-nowrap gap-2 items-center">
+              <Badge className="w-7 h-7 rounded-lg flex items-center justify-center bg-slate-200 text-dark">
+                1
+              </Badge>
+              <span>Anda belum mengunjungi soal tersebut sama sekali</span>
+            </div>
+            <div className="flex flex-nowrap gap-2 items-center">
+              <Badge className="w-7 h-7 rounded-lg flex items-center justify-center bg-red-600">
+                1
+              </Badge>
+              <span>Anda belum menjawab soal tersebu. </span>
+            </div>
+            <div className="flex flex-nowrap gap-2 items-center">
+              <Badge className="w-7 h-7 rounded-lg flex items-center justify-center bg-green-600">
+                1
+              </Badge>
+              <span>Anda telah menjawab soal tersebut</span>
+            </div>
+            <div className="flex flex-nowrap gap-2 items-center">
+              <Badge className="w-7 h-7 rounded-lg flex items-center justify-center bg-purple-600">
+                1
+              </Badge>
+              <span>
+                Anda belum menjawab soal tersebut tetapi telah menandainya untuk
+                ditinjau ulang.
+              </span>
+            </div>
+            <div className="flex flex-nowrap gap-2 items-center">
+              <Badge className="w-7 h-7 rounded-lg flex items-center justify-center bg-purple-600">
+                1
+              </Badge>
+              <span>
+                आप प्रश्न का उत्तर दे चुकें हैं पर प्रश्न को पुनर्विचार के लिए
+                चिन्हित किया है।
+              </span>
+            </div>
+          </div>
         </li>
         <li style={{ listStyleType: "none" }}>
           Pilihan “Mark for Review “ sederhananya berfungsi sebagai pengingat
