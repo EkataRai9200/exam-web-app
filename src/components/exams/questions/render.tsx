@@ -124,7 +124,7 @@ export function RenderQuestion({
               ) : (
                 ""
               )}
-              {examData.is_calc_allow ? (
+              {parseInt(examData.is_calc_allow) ? (
                 <Button
                   onClick={() => {
                     dispatch({

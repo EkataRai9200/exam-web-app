@@ -12,13 +12,9 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
   onExpire,
   beforeText,
 }) => {
-  const {
-    examData: { subjects, test_time_limit, subject_time, studentExamState },
-    getRemainingTime,
-    isLoaded,
-  } = useExamData();
+  const { examData, getRemainingTime, isLoaded } = useExamData();
 
-  const timeLimit = parseInt(test_time_limit) * 60;
+  const timeLimit = parseInt(examData.test_time_limit) * 60;
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const [timeLeft, setTimeLeft] = useState<number>(timeLimit);
@@ -28,12 +24,13 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
       return;
     }
     const updateRemainingTime = () => {
-      const timeLeft = Math.max(0, getRemainingTime());
+      const timeLeft = Math.max(0, getRemainingTime(examData));
       if (timeLeft <= 0 && intervalRef.current) {
         if (
-          subject_time != "yes" ||
-          (subject_time == "yes" &&
-            studentExamState.activeSubject >= subjects.length - 1)
+          examData.subject_time != "yes" ||
+          (examData.subject_time == "yes" &&
+            examData.studentExamState.activeSubject >=
+              examData.subjects.length - 1)
         )
           clearInterval(intervalRef.current);
         onExpire && onExpire();
@@ -44,7 +41,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
     updateRemainingTime();
 
     return () => {
-      if (intervalRef.current && subject_time != "yes") {
+      if (intervalRef.current && examData.subject_time != "yes") {
         clearInterval(intervalRef.current);
       }
     };

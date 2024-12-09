@@ -1,6 +1,11 @@
 import { ToastAction } from "@/components/ui/toast";
 import { toast } from "@/components/ui/use-toast";
-import { Answer, ExamContext, Question } from "@/context/ExamContext";
+import {
+  Answer,
+  ExamContext,
+  ExamDetailData,
+  Question,
+} from "@/context/ExamContext";
 import { authenticateToken, getTestDetails } from "@/pages/start/StartPage";
 import React, { useContext, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -87,21 +92,25 @@ export function useExamData() {
     recordQuestionTime();
   };
 
-  const getRemainingTime = () => {
+  const getRemainingTime = (latest_state: ExamDetailData) => {
     let timeSpent = 0;
 
-    const endTimeLeft = state.test_end_date
-      ? Math.round((state.test_end_date - Date.now()) / 1000)
+    const endTimeLeft = latest_state.test_end_date
+      ? Math.round((latest_state.test_end_date - Date.now()) / 1000)
       : 0;
 
-    if (state.test_end_date && state.test_end_date < Date.now()) {
+    if (latest_state.test_end_date && latest_state.test_end_date < Date.now()) {
       return 0;
     }
-    if (state.subject_time == "yes" && state.studentExamState.subject_times) {
+    if (
+      latest_state.subject_time == "yes" &&
+      latest_state.studentExamState.subject_times
+    ) {
       const activeSubData =
-        state.subjects[state.studentExamState.activeSubject] ?? {};
+        latest_state.subjects[latest_state.studentExamState.activeSubject] ??
+        {};
       const activeSubTime =
-        state.studentExamState.subject_times[activeSubData.sub_id] ?? {};
+        latest_state.studentExamState.subject_times[activeSubData.sub_id] ?? {};
       if (!activeSubTime.start_time) {
         return parseInt(activeSubData.subject_time) * 60;
       }
@@ -112,13 +121,14 @@ export function useExamData() {
       return Math.round((endTime - Date.now()) / 1000);
     } else {
       timeSpent = Math.round(
-        (Date.now() - state.studentExamState.startTimeLocal) / 1000
+        (Date.now() - latest_state.studentExamState.startTimeLocal) / 1000
       );
       const timeLeft =
-        parseInt(state.test_time_limit) * 60 -
+        parseInt(latest_state.test_time_limit) * 60 -
         timeSpent -
-        (state.elapsed_time ?? 0);
-      return state.test_end_date
+        ((window as any).elapsed_time ?? 0);
+      console.log("getRemainingTime", timeSpent, (window as any).elapsed_time);
+      return latest_state.test_end_date
         ? Math.min(timeLeft, endTimeLeft ?? 0)
         : timeLeft;
     }

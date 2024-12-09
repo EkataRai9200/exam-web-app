@@ -341,6 +341,13 @@ const calcTimeSpent = (state: ExamDetailData) => {
   return timeSpent;
 };
 
+const resetTimeSpent = (state: ExamDetailData) => {
+  state.elapsed_time = (state.elapsed_time ?? 0) + calcTimeSpent(state);
+  (window as any).elapsed_time = state.elapsed_time;
+  state.studentExamState.startTimeLocal = Date.now();
+  state.studentExamState.timeSpent = 0;
+};
+
 const markVisitedQuestion = async (
   state: ExamDetailData,
   questionIndex: number,
@@ -398,6 +405,7 @@ const startResumeExamCallback = (state: ExamDetailData) => {
       );
     }
   } else {
+    (window as any).elapsed_time = state.elapsed_time ?? 0;
     setActiveQuestion(state, 0, 0, true);
   }
 };
@@ -465,12 +473,14 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
 
       return visitedState;
     case "markAnswer":
+      console.log("markAnswer", state);
       const d = { ...state };
       d.studentExamState.student_answers[action.payload.qid] = createAnswer(
         action.payload
       );
       d.studentExamState.timeSpent = calcTimeSpent(d);
       saveTest(d);
+      resetTimeSpent(d);
       return d;
     case "setActiveAnswer":
       const activeState = { ...state };
