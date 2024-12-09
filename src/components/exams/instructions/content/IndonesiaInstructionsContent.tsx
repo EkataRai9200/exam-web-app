@@ -58,8 +58,8 @@ const IndonesiaInstructionsContent = () => {
                 1
               </Badge>
               <span>
-                आप प्रश्न का उत्तर दे चुकें हैं पर प्रश्न को पुनर्विचार के लिए
-                चिन्हित किया है।
+                Anda telah menjawab soal tersebut dan menandainya untuk di
+                tinjau ulang.
               </span>
             </div>
           </div>
