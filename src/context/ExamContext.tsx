@@ -473,7 +473,7 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
 
       return visitedState;
     case "markAnswer":
-      console.log("markAnswer", state);
+      // console.log("markAnswer", state);
       const d = { ...state };
       d.studentExamState.student_answers[action.payload.qid] = createAnswer(
         action.payload
@@ -501,8 +501,8 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       ].review = true;
       markedState.studentExamState.timeSpent = calcTimeSpent(markedState);
       saveTest(markedState);
+      resetTimeSpent(markedState);
       return markedState;
-
     case "removeMarkForReview":
       let removeMarkState = { ...state };
       let removeMarkQs =

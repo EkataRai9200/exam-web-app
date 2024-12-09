@@ -50,15 +50,18 @@ export function TakeExam() {
 
   const handleNextQuestion = () => {
     if (
-      examData.subject_time != "yes" ||
-      (examData.subject_time == "yes" &&
-        activeQuestion >=
-          examData.subjects[examData.studentExamState.activeSubject].questions
-            .length -
-            1)
+      examData.subject_time == "yes" &&
+      activeQuestion >=
+        examData.subjects[examData.studentExamState.activeSubject].questions
+          .length -
+          1
     ) {
       toast.dismiss();
-      toast.info("Submit this section before moving to the next section");
+      toast.info(
+        examData.submit_section_button == "yes"
+          ? "Submit this section before moving to the next section"
+          : "Please wait for the section to end before moving to the next section"
+      );
       return false;
     }
 

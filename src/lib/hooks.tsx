@@ -127,7 +127,7 @@ export function useExamData() {
         parseInt(latest_state.test_time_limit) * 60 -
         timeSpent -
         ((window as any).elapsed_time ?? 0);
-      console.log("getRemainingTime", timeSpent, (window as any).elapsed_time);
+      // console.log("getRemainingTime", timeSpent, (window as any).elapsed_time);
       return latest_state.test_end_date
         ? Math.min(timeLeft, endTimeLeft ?? 0)
         : timeLeft;
@@ -374,7 +374,7 @@ const usePageVisibility = () => {
     };
 
     const handleFocusChange = () => {
-      console.log("window.isFocused", document.hasFocus());
+      // console.log("window.isFocused", document.hasFocus());
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
