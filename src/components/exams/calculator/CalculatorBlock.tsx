@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useExamData } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
+import { X } from "lucide-react";
 import React from "react";
 
 function CalculatorBlock() {
@@ -9,15 +10,15 @@ function CalculatorBlock() {
   return (
     <div
       className={cn(
-        "fixed max-w-full top-[10px] right-[10px] md:top-[10%] md:right-[100px] z-20 bg-gray-100",
+        "fixed max-w-full top-[27%] right-0 z-20",
         examData.studentExamState.showCalculator ? "block" : "hidden",
-        examData.is_calc_allow == "1" ? "w-[520px]" : "w-[250px]"
+        examData.is_calc_allow == "1" ? "w-[490px]" : "w-[240px]"
       )}
     >
       <Button
-        className="absolute top-0 right-0 text-xs"
+        className="absolute rounded-none top-0 right-[10px] text-xs bg-red-700 hover:bg-red-900"
         variant={"destructive"}
-        size={"sm"}
+        size={"icon"}
         onClick={() => {
           setValue("");
           dispatch({
@@ -26,9 +27,9 @@ function CalculatorBlock() {
           });
         }}
       >
-        close
+        <X size={16} />
       </Button>
-      <div className="p-2">
+      <div>
         <iframe
           className="w-full"
           src={`https://${examData.authUser?.institute_url}/calculator.html?version=${examData.is_calc_allow}`}
