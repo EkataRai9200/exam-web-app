@@ -212,16 +212,15 @@ export function TakeExam() {
                         <CountdownTimer
                           beforeText="Time Left For Section :"
                           onExpire={() => {
+                            dispatch({
+                              type: "submit_section",
+                              payload: {},
+                            });
                             if (
                               !examData.studentExamState.submitted &&
-                              examData.studentExamState.activeSubject + 1 <=
+                              examData.studentExamState.activeSubject >=
                                 examData.subjects.length - 1
                             ) {
-                              dispatch({
-                                type: "submit_section",
-                                payload: {},
-                              });
-                            } else {
                               submitExam();
                             }
                             // dispatch({
