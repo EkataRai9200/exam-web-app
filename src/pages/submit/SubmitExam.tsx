@@ -68,7 +68,11 @@ export function TableDemo() {
             <TableCell className="font-medium">Not Visited Questions</TableCell>
             <TableCell>
               <NotVisited
-                value={totalQs - Object.values(examData.subjects).length}
+                value={
+                  totalQs -
+                  Object.values(examData.studentExamState.student_answers)
+                    .length
+                }
               />
             </TableCell>
           </TableRow>
@@ -197,8 +201,9 @@ export function SubjectOverviewBlock({
           <div className="flex gap-2 items-center">
             <NotVisited
               value={
+                s.questions.length -
                 Object.values(examData.studentExamState.student_answers).filter(
-                  (a) => a.sub_id == s.sub_id && a.review
+                  (a) => a.sub_id == s.sub_id
                 ).length
               }
             />
