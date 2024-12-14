@@ -136,7 +136,15 @@ export function useExamData() {
 
   const submitExam = async ({ message }: { message?: string } = {}) => {
     saveTest(state, "Yes").then((res) => {
-      if (res.status) {
+      if (res && res?.status) {
+        dispatch({
+          type: "notifySubmitted",
+          payload: "",
+        });
+        navigate({
+          pathname: "/feedback",
+          search: searchParams.toString(),
+        });
         MySwal.fire({
           title: message ?? "Your exam has been submitted.",
           showDenyButton: false,
@@ -144,18 +152,12 @@ export function useExamData() {
           allowOutsideClick: false,
           backdrop: "rgba(0, 0, 0, 0.5)",
           confirmButtonText: "Close Window",
-        }).then((_result) => {
-          dispatch({
-            type: "notifySubmitted",
-            payload: "",
-          });
-          navigate({
-            pathname: "/feedback",
-            search: searchParams.toString(),
-          });
         });
       } else {
         alert("We were unable to submit your exam. Try Again !");
+        setTimeout(() => {
+          submitExam();
+        }, 2000);
       }
     });
     return;
