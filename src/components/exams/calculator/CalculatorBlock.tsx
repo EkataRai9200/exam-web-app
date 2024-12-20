@@ -12,13 +12,14 @@ function CalculatorBlock() {
  const [startPosition, setStartPosition] = React.useState({ x: 0, y: 0 });
 
 
- const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-   setIsDragging(true);
-   setStartPosition({
-     x: e.clientX - position.x,
-     y: e.clientY - position.y,
-   });
- };
+ const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+  setIsDragging(true);
+  setStartPosition({
+    x: e.clientX - position.x,
+    y: e.clientY - position.y,
+  });
+};
+
 
 
  const handleMouseMove = (e: MouseEvent) => {
@@ -75,14 +76,14 @@ function CalculatorBlock() {
       >
         <X size={16} />
       </Button>
-      <Button
-       className="cursor-move absolute rounded-none top-0 right-[60px] text-xs bg-red-700 hover:bg-red-900"
-   
-       size={"icon"}
-       onMouseDown={handleMouseDown}
-     >
-       <GripVertical size={16} />
-     </Button>
+        <Button
+        className="cursor-move absolute rounded-none top-0 right-[60px] text-xs bg-red-700 hover:bg-red-900"
+    
+        size={"icon"}
+        onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) => handleMouseDown(e)}
+        >
+        <GripVertical size={16} />
+      </Button>
 
       <div>
         <iframe
