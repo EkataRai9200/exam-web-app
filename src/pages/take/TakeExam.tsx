@@ -257,7 +257,7 @@ export function TakeExam() {
                   showSidebar ? "md:w-3/4" : ""
                 )}
               >
-                <div className="flex items-center w-full overflow-x-auto md:overflow-y-hidden gap-2 px-3 pt-2 pb-2 bg-gray-100 border-b-2">
+                <div className="flex items-center w-full overflow-x-auto md:overflow-y-hidden gap-2 px-3 pt-2 pb-2  border-b-2">
                   <p className="text-sm border-r-2 pr-2">Sections</p>
                   {examData.subjects.map((v, i) => {
                     return (
@@ -306,7 +306,7 @@ export function TakeExam() {
                     <Button
                       size={"default"}
                       variant="default"
-                      className="bg-purple-800 px-2"
+                      className="bg-white text-black border border-black hover:bg-purple-800 hover:text-white hover:border-purple-800 px-2"
                       onClick={async () => {
                         await markForReview({
                           subjectIndex: examData.studentExamState.activeSubject,

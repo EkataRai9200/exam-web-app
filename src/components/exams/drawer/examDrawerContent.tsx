@@ -115,7 +115,7 @@ function ExamDrawerContent({
         </div>
       )}
 
-      <div className="grid grid-cols-3 font-medium text-xs gap-1 justify-between p-2 md:h-[85px] bg-blue-200">
+      <div className="grid grid-cols-3 font-medium text-xs gap-1 justify-between p-2 md:h-[85px]">
         <div className="flex gap-1 items-center">
           {/* <Badge className="min-w-5 justify-center px-1 bg-green-600 rounded-md">
             {
@@ -179,13 +179,13 @@ function ExamDrawerContent({
         </div>
       </div>
 
-      <div className="flex max-w-full overflow-x-auto gap-2 p-2 h-[32px] bg-blue-300">
-        <h3 className="font-medium text-sm">
+      <div className="flex max-w-full overflow-x-auto gap-2 p-2 h-[32px] bg-[#4e85c5]">
+        <h3 className="font-medium text-sm text-white">
           {"Section: "}
           {examData.subjects[examData.studentExamState.activeSubject]?.name}
         </h3>
       </div>
-      <div className="p-3 pb-0 grid grid-cols-6 auto-rows-max gap-2 mb-5 h-[calc(100%-300px)] md:h-[calc(100%-350px)] overflow-y-auto">
+      <div className="bg-[#e5f6fd] p-3 pb-0 grid grid-cols-6 auto-rows-max gap-2 mb-5 h-[calc(100%-300px)] md:h-[calc(100%-350px)] overflow-y-auto">
         {examData?.subjects[
           examData.studentExamState.activeSubject
         ]?.questions?.map((_v, i) => {
@@ -220,7 +220,7 @@ function ExamDrawerContent({
       </div>
       <div
         className={cn(
-          "mt-auto flex flex-col justify-center items-center gap-2 p-4 py-0 border-t-2 border-blue-200 h-[100px] md:h-[100px]"
+          "mt-auto flex flex-col justify-center items-center gap-2 p-4 py-0 border-t-2 border-blue-200 h-[100px] md:h-[100px] bg-[#e5f6fd]"
         )}
       >
         <div className="flex gap-2 justify-between w-full">
@@ -258,7 +258,7 @@ function ExamDrawerContent({
           )
         ) : (
           <Button
-            className="bg-green-600 hover:bg-green-800 uppercase shadow-md font-medium w-full"
+            className="rounded-none bg-green-600 uppercase shadow-md font-medium w-full bg-[#38a9eb]"
             asChild
           >
             <Link to={{ pathname: "/submit", search: searchParams.toString() }}>
