@@ -24,7 +24,7 @@ function Passage({
         isActive && examData.passage_with_qs ? "visible" : "hidden",
         examData.passage_alignment == "Left" ? "md:w-1/2" : ""
       )}
-    > 
+    >
       <CardHeader className="relative px-3 py-1">
         <div className="pt-1">
           <p className="text-sm text-muted-foreground">Passage</p>
