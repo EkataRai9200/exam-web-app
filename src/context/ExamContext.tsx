@@ -18,6 +18,7 @@ export interface Question {
   _id: {
     $oid: string;
   };
+  questionNumber?: number;
   find_hint: string;
   marks_positive: string;
   marks_negative: string;
@@ -543,7 +544,7 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
           submitSectionSubjectData.sub_id
         ].submitted = true;
       saveTest(submitSectionState, "No");
-      
+
       if (
         submitSectionState.studentExamState.activeSubject <
         submitSectionState.subjects.length - 1

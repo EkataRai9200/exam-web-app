@@ -2,7 +2,7 @@ import { useExamData } from "@/lib/hooks";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Answer } from "@/context/ExamContext";
+import { Answer, ExamDetailData } from "@/context/ExamContext";
 import { cn } from "@/lib/utils";
 import { calcTotalQs } from "@/pages/submit/SubmitExam";
 import { Link, useSearchParams } from "react-router-dom";
@@ -98,6 +98,18 @@ function ExamDrawerContent({
     });
   };
 
+  const questionsDataWithNo = (data: ExamDetailData["subjects"]) => {
+    let questionNumber = 1;
+
+    return data.map((subject) => ({
+      ...subject,
+      questions: subject.questions.map((question) => ({
+        ...question,
+        questionNumber: questionNumber++,
+      })),
+    }));
+  };
+
   return (
     <>
       {examData.authUser && (
@@ -186,13 +198,14 @@ function ExamDrawerContent({
         </h3>
       </div>
       <div className="bg-[#e5f6fd] p-3 pb-0 grid grid-cols-6 auto-rows-max gap-2 mb-5 h-[calc(100%-300px)] md:h-[calc(100%-350px)] overflow-y-auto">
-        {examData?.subjects[
+        {questionsDataWithNo(examData?.subjects)[
           examData.studentExamState.activeSubject
         ]?.questions?.map((_v, i) => {
           const sAns = examData.studentExamState.student_answers[_v._id.$oid];
           const isAns = sAns && isAnswered(sAns) ? true : false;
           const isMarkedForReview = sAns && isMarkedReview(sAns) ? true : false;
           const notAnswered = isNotAnswered(sAns);
+          const qNo = examData.qorder == "cont" ? _v.questionNumber : i + 1;
           return (
             <div
               key={i}
@@ -208,12 +221,12 @@ function ExamDrawerContent({
               className="flex items-start justify-start cursor-pointer"
             >
               {!sAns && !isMarkedForReview && !isAns && (
-                <NotVisited value={i + 1} />
+                <NotVisited value={qNo} />
               )}
-              {sAns && notAnswered && <NotAnswered value={i + 1} />}
-              {!isMarkedForReview && isAns && <Answered value={i + 1} />}
-              {isMarkedForReview && !isAns && <Marked value={i + 1} />}
-              {isMarkedForReview && isAns && <MarkedAnswered value={i + 1} />}
+              {sAns && notAnswered && <NotAnswered value={qNo} />}
+              {!isMarkedForReview && isAns && <Answered value={qNo} />}
+              {isMarkedForReview && !isAns && <Marked value={qNo} />}
+              {isMarkedForReview && isAns && <MarkedAnswered value={qNo} />}
             </div>
           );
         })}

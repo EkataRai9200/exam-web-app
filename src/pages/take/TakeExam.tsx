@@ -223,10 +223,6 @@ export function TakeExam() {
                             ) {
                               submitExam();
                             }
-                            // dispatch({
-                            //   type: "submit_section",
-                            //   payload: {},
-                            // });
                           }}
                         />
                       </div>
