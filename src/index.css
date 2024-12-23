@@ -114,6 +114,36 @@
     -webkit-appearance: none;
     margin: 0;
   }
+
+  .no-tailwindcss-base {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-size: revert;
+      font-weight: revert;
+    }
+
+    ol,
+    ul {
+      list-style: revert;
+      margin: revert;
+      padding: revert;
+    }
+
+    img,
+    svg,
+    video,
+    canvas,
+    audio,
+    iframe,
+    embed,
+    object {
+      display: initial;
+    }
+  }
 }
 
 /**
@@ -123,10 +153,57 @@
   display: none;
 }
 
-
 @media print {
   body {
     visibility: hidden !important;
     display: none !important;
   }
+}
+
+.ck-editor {
+  font-size: 13px;
+  line-height: 1.6;
+  word-wrap: break-word;
+  overflow-x: auto;
+}
+
+.ck-editor img {
+  max-width: 100%;
+  height: auto;
+}
+
+.ck-editor p {
+  display: block;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  unicode-bidi: isolate;
+}
+
+.ck-editor table {
+  border-collapse: collapse;
+  width: 100%;
+  display: table;
+  border-collapse: separate;
+  box-sizing: border-box;
+  text-indent: initial;
+  unicode-bidi: isolate;
+  border: 1px solid black;
+  border-spacing: 2px;
+  border-color: gray;
+}
+
+@media (max-width: 480px) {
+  .ck-editor {
+    max-width: 90vw;
+  }
+}
+
+.ck-editor th,
+.ck-editor td {
+  border: 1px solid black;
+  border-collapse: separate;
+  text-indent: initial;
+  border-spacing: 2px;
 }

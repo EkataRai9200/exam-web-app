@@ -58,6 +58,7 @@ export function MAQ({ index, subjectIndex }: RenderMCQOptionProps) {
   return (
     <>
       <div
+        className="no-tailwindcss-base ck-editor"
         dangerouslySetInnerHTML={{
           __html:
             activeLang == "EN"
@@ -92,7 +93,12 @@ export function MAQ({ index, subjectIndex }: RenderMCQOptionProps) {
               }
               checked={status == "answered"}
             />
-            {_v && <div dangerouslySetInnerHTML={{ __html: _v }}></div>}
+            {_v && (
+              <div
+                className="no-tailwindcss-base ck-editor"
+                dangerouslySetInnerHTML={{ __html: _v }}
+              ></div>
+            )}
           </div>
         );
       })}

@@ -63,6 +63,7 @@ export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
   return (
     <>
       <div
+        className="no-tailwindcss-base ck-editor"
         dangerouslySetInnerHTML={{
           __html:
             activeLang == "EN"
@@ -103,6 +104,7 @@ export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
               {_v && (
                 <>
                   <div
+                    className="no-tailwindcss-base ck-editor"
                     dangerouslySetInnerHTML={{ __html: _v.value ?? "" }}
                   ></div>
                 </>

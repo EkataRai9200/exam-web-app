@@ -36,6 +36,7 @@ export function TXT_INPUT({ index, subjectIndex }: RenderTXT_INPUTOptionProps) {
   return (
     <>
       <div
+        className="no-tailwindcss-base ck-editor"
         dangerouslySetInnerHTML={{
           __html:
             activeLang == "EN"

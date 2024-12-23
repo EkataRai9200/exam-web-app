@@ -128,6 +128,7 @@ export function MTQ({ index, subjectIndex }: RenderMTQOptionProps) {
   return (
     <>
       <div
+        className="no-tailwindcss-base ck-editor"
         dangerouslySetInnerHTML={{
           __html:
             activeLang == "EN"
@@ -153,7 +154,12 @@ export function MTQ({ index, subjectIndex }: RenderMTQOptionProps) {
                 >
                   {String.fromCharCode(65 + i)}
                 </div>
-                {_v && <div dangerouslySetInnerHTML={{ __html: _v }}></div>}
+                {_v && (
+                  <div
+                    className="no-tailwindcss-base ck-editor"
+                    dangerouslySetInnerHTML={{ __html: _v }}
+                  ></div>
+                )}
               </div>
             );
           })}
@@ -175,7 +181,12 @@ export function MTQ({ index, subjectIndex }: RenderMTQOptionProps) {
                 >
                   {String.fromCharCode(80 + i)}
                 </div>
-                {_v && <div dangerouslySetInnerHTML={{ __html: _v }}></div>}
+                {_v && (
+                  <div
+                    className="no-tailwindcss-base ck-editor"
+                    dangerouslySetInnerHTML={{ __html: _v }}
+                  ></div>
+                )}
               </div>
             );
           })}

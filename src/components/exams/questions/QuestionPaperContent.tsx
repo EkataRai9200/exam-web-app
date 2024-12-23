@@ -30,13 +30,13 @@ function QuestionPaperContent({
             <div key={`question_${index}`} className="mt-2 border-b pb-2">
               <h3 className="font-bold">{`Q${index + 1}.`}</h3>
               <div
+                className="no-tailwindcss-base ck-editor text-sm"
                 dangerouslySetInnerHTML={{
                   __html:
                     examData.studentExamState.activeLang == "EN"
                       ? question.question
                       : question.hi_question ?? "",
                 }}
-                className="text-sm"
               ></div>
             </div>
           );

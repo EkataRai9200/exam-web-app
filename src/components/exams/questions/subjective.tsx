@@ -97,6 +97,7 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
   return (
     <>
       <div
+        className="no-tailwindcss-base ck-editor"
         dangerouslySetInnerHTML={{
           __html: questionText,
         }}

@@ -59,6 +59,7 @@ export default function MULTI_SLCT({
   return (
     <>
       <div
+        className="no-tailwindcss-base ck-editor"
         dangerouslySetInnerHTML={{
           __html:
             activeLang == "EN"

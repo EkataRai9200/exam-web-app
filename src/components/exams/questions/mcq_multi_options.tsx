@@ -42,6 +42,7 @@ export function MCQ_MULTI_OPTIONS({
   return (
     <>
       <div
+        className="no-tailwindcss-base ck-editor"
         dangerouslySetInnerHTML={{
           __html:
             activeLang == "EN"
@@ -72,7 +73,12 @@ export function MCQ_MULTI_OPTIONS({
             >
               {String.fromCharCode(65 + i)}
             </div>
-            {_v && <div dangerouslySetInnerHTML={{ __html: _v.value }}></div>}
+            {_v && (
+              <div
+                className="no-tailwindcss-base ck-editor"
+                dangerouslySetInnerHTML={{ __html: _v.value }}
+              ></div>
+            )}
           </div>
         );
       })}

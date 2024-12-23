@@ -73,6 +73,7 @@ export function SENTENCE_ARRANGMENT({
   return (
     <>
       <div
+        className="no-tailwindcss-base ck-editor"
         dangerouslySetInnerHTML={{
           __html:
             activeLang == "EN"
@@ -80,7 +81,6 @@ export function SENTENCE_ARRANGMENT({
               : question?.hi_question ?? "",
         }}
       ></div>
-      <>{console.log("reloaded !", state)}</>
       <div className="flex gap-2">
         <ReactSortable
           className="flex flex-col p-2 gap-2 h-[400px] w-full rounded-lg bg-gray-200"

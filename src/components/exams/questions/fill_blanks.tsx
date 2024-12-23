@@ -189,6 +189,7 @@ export function FILL_BLANKS({ index, subjectIndex }: RenderMCQOptionProps) {
   return (
     <>
       <div
+        className="no-tailwindcss-base ck-editor"
         dangerouslySetInnerHTML={{
           __html: htmlWithInputs,
         }}
