@@ -69,14 +69,14 @@ export function RenderQuestion({
             : ""
         )}
       >
-        {question.passage_desc.length > 0 ||
-          (question.hi_passage_desc.length > 0 && (
-            <Passage
-              index={index}
-              isActive={isActive}
-              subjectIndex={subjectIndex}
-            />
-          ))}
+        {(question.passage_desc.length > 0 ||
+          question.hi_passage_desc.length > 0) && (
+          <Passage
+            index={index}
+            isActive={isActive}
+            subjectIndex={subjectIndex}
+          />
+        )}
         <Card
           className={cn(
             "w-full md:min-h-[300px] border-none",
