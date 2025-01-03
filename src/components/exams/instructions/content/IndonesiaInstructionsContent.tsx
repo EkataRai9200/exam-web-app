@@ -36,7 +36,7 @@ const IndonesiaInstructionsContent = () => {
               <Badge className="w-7 h-7 rounded-lg flex items-center justify-center bg-red-600">
                 1
               </Badge>
-              <span>Anda belum menjawab soal tersebu. </span>
+              <span>Anda belum menjawab soal tersebut. </span>
             </div>
             <div className="flex flex-nowrap gap-2 items-center">
               <Badge className="w-7 h-7 rounded-lg flex items-center justify-center bg-green-600">
@@ -69,7 +69,7 @@ const IndonesiaInstructionsContent = () => {
           bahwa anda menandai soal terkait untuk ditinjau ulang.{" "}
           <i className="text-red-600">
             Jika jawaban terpilih untuk sebuah soal yang ditandai untuk ditinjau
-            ulang, jawaban tersebut akan dipertimbangan sebagai evaluasi jawaban
+            ulang, jawaban tersebut akan dipertimbangkan sebagai evaluasi jawaban
             terakhir.
           </i>
         </li>
