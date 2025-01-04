@@ -137,7 +137,7 @@ const IndonesiaInstructionsContent = () => {
               <i className="text-red-600">
                 Jika jawaban yang dipilih untuk sebuah soal ditandai untuk
                 ditinjau ulang (“Mark for Review) jawaban tersebut akan
-                dipertimbangan sebagai evaluasi jawaban terakhir
+                dipertimbangkan sebagai evaluasi jawaban terakhir
               </i>
             </li>
           </ol>
