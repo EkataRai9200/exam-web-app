@@ -20,6 +20,7 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
     activeAnswer?.subjectiveimages ?? []
   );
 
+  const [wordCount, setWordCount] = React.useState(0);
   const [content, setContent] = React.useState(activeAnswer?.content ?? "");
 
   const markAnswer = () => {
@@ -37,6 +38,8 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
 
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(sanitize(event.target.value.trim()));
+    const words = content.trim().split(/\s+/).filter(Boolean);
+    setWordCount(words.length);
   };
 
   const uploadFile = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,7 +113,7 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
         <div className="mt-5 grid w-full gap-2">
           <div className="flex-row ">   
           <Label htmlFor="message">Answer </Label>
-          <div className="float-right">{content.length}</div>
+          <div className="float-right">Word Count: {wordCount}</div>
           </div>
         
 
