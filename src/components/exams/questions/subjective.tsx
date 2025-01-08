@@ -108,7 +108,12 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
         })}
       >
         <div className="mt-5 grid w-full gap-2">
-          <Label htmlFor="message">Answer</Label>
+          <div className="flex-row ">   
+          <Label htmlFor="message">Answer </Label>
+          <div className="float-right">{content.length}</div>
+          </div>
+        
+
           <Textarea
             onChange={handleTextChange}
             onBlur={markAnswer}
@@ -117,6 +122,7 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
             defaultValue={content}
             id="message"
           />
+
           <div>
             <input
               type="file"
