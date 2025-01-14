@@ -261,7 +261,7 @@ export function useExamData() {
           isAnswered(v)
       ).length;
 
-      if (attemptedNoOfQs >= parseInt(activeSubData.qlimit)) {
+      if (attemptedNoOfQs > parseInt(activeSubData.qlimit)) {
         MySwal.fire(
           `You can attempt a maximum of ${activeSubData.qlimit} questions on this subject`,
           "",

@@ -126,6 +126,7 @@ export interface SubjectTimer {
     elapsed_time?: number;
     submitted: boolean;
     timeSpent?: number;
+    submit_time?: number;
   };
 }
 
@@ -345,6 +346,22 @@ const calcTimeSpent = (state: ExamDetailData) => {
 const resetTimeSpent = (state: ExamDetailData) => {
   state.elapsed_time = (state.elapsed_time ?? 0) + calcTimeSpent(state);
   (window as any).elapsed_time = state.elapsed_time;
+  // save time spent on subject so far
+  if (state.subject_time == "yes" && state.studentExamState.subject_times) {
+    state.studentExamState.subject_times[
+      state.subjects[state.studentExamState.activeSubject].sub_id
+    ].elapsed_time =
+      (state.studentExamState.subject_times[
+        state.subjects[state.studentExamState.activeSubject].sub_id
+      ].elapsed_time ?? 0) + calcTimeSpent(state);
+    state.studentExamState.subject_times[
+      state.subjects[state.studentExamState.activeSubject].sub_id
+    ].timeSpent =
+      state.studentExamState.subject_times[
+        state.subjects[state.studentExamState.activeSubject].sub_id
+      ].elapsed_time;
+  }
+
   state.studentExamState.startTimeLocal = Date.now();
   state.studentExamState.timeSpent = 0;
 };
@@ -523,12 +540,15 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       activeLangState.studentExamState.activeLang = action.payload;
       return activeLangState;
     case "submit_section":
+      // check if subject time is enabled
       if (
         !state.studentExamState.subject_times ||
         state.subject_time != "yes"
       ) {
         return state;
       }
+
+      // submitting the current section
       const submitSectionState = { ...state };
       const submitSectionSubjectData =
         submitSectionState.subjects[
@@ -539,12 +559,21 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
         submitSectionState.studentExamState.subject_times[
           submitSectionSubjectData.sub_id
         ]
-      )
+      ) {
         submitSectionState.studentExamState.subject_times[
           submitSectionSubjectData.sub_id
         ].submitted = true;
-      saveTest(submitSectionState, "No");
+        submitSectionState.studentExamState.subject_times[
+          submitSectionSubjectData.sub_id
+        ].submit_time = Date.now();
+      }
 
+      submitSectionState.studentExamState.timeSpent =
+        calcTimeSpent(submitSectionState);
+      saveTest(submitSectionState, "No");
+      resetTimeSpent(submitSectionState);
+
+      // navigating to next subject
       if (
         submitSectionState.studentExamState.activeSubject <
         submitSectionState.subjects.length - 1
