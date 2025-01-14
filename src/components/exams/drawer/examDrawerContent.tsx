@@ -217,6 +217,8 @@ function ExamDrawerContent({
                     subjectIndex: examData.studentExamState.activeSubject,
                   },
                 });
+                if (setOpenDrawer) setOpenDrawer(false);
+
               }}
               className="flex items-start justify-start cursor-pointer"
             >
