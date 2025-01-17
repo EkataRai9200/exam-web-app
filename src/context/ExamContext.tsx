@@ -61,6 +61,7 @@ export interface Question {
   show_qs_passage?: boolean;
   sentences?: Array<{ id: number; value: string }>;
   is_random_order?: boolean;
+  image_answer?: "yes" | "no";
 }
 
 export interface PassageDesc {
@@ -343,25 +344,29 @@ const calcTimeSpent = (state: ExamDetailData) => {
   return timeSpent;
 };
 
-const resetTimeSpent = (state: ExamDetailData) => {
+const updateLatestTimeSpent = (state: ExamDetailData) => {
   state.elapsed_time = (state.elapsed_time ?? 0) + calcTimeSpent(state);
   (window as any).elapsed_time = state.elapsed_time;
-  // save time spent on subject so far
+
+  // save time spent on subject
   if (state.subject_time == "yes" && state.studentExamState.subject_times) {
-    state.studentExamState.subject_times[
-      state.subjects[state.studentExamState.activeSubject].sub_id
-    ].elapsed_time =
-      (state.studentExamState.subject_times[
-        state.subjects[state.studentExamState.activeSubject].sub_id
-      ].elapsed_time ?? 0) + calcTimeSpent(state);
-    state.studentExamState.subject_times[
-      state.subjects[state.studentExamState.activeSubject].sub_id
-    ].timeSpent =
-      state.studentExamState.subject_times[
-        state.subjects[state.studentExamState.activeSubject].sub_id
-      ].elapsed_time;
+    const sub_id = state.subjects[state.studentExamState.activeSubject].sub_id;
+    const timeObj = state.studentExamState.subject_times[sub_id];
+    timeObj.elapsed_time = (timeObj.elapsed_time ?? 0) + calcTimeSpent(state);
+    timeObj.timeSpent = 0;
   }
 
+  // save time spent on test
+  state.studentExamState.timeSpent = calcTimeSpent(state);
+};
+
+const saveLatestTimeAndState = (state: ExamDetailData) => {
+  updateLatestTimeSpent(state);
+  saveTest(state);
+  resetTimeSpent(state);
+};
+
+const resetTimeSpent = (state: ExamDetailData) => {
   state.studentExamState.startTimeLocal = Date.now();
   state.studentExamState.timeSpent = 0;
 };
@@ -491,14 +496,11 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
 
       return visitedState;
     case "markAnswer":
-      // console.log("markAnswer", state);
       const d = { ...state };
       d.studentExamState.student_answers[action.payload.qid] = createAnswer(
         action.payload
       );
-      d.studentExamState.timeSpent = calcTimeSpent(d);
-      saveTest(d);
-      resetTimeSpent(d);
+      saveLatestTimeAndState(d);
       return d;
     case "setActiveAnswer":
       const activeState = { ...state };
@@ -508,7 +510,7 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
     case "deleteAnswer":
       delete state.studentExamState.student_answers[action.payload]["ans"];
       state.studentExamState.activeAnswer = "";
-      saveTest(state);
+      saveLatestTimeAndState(state);
       return { ...state };
     case "markForReview":
       const markedState = { ...state };
@@ -517,9 +519,7 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       markedState.studentExamState.student_answers[
         action.payload.answer.qid
       ].review = true;
-      markedState.studentExamState.timeSpent = calcTimeSpent(markedState);
-      saveTest(markedState);
-      resetTimeSpent(markedState);
+      saveLatestTimeAndState(markedState);
       return markedState;
     case "removeMarkForReview":
       let removeMarkState = { ...state };
@@ -568,10 +568,7 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
         ].submit_time = Date.now();
       }
 
-      submitSectionState.studentExamState.timeSpent =
-        calcTimeSpent(submitSectionState);
-      saveTest(submitSectionState, "No");
-      resetTimeSpent(submitSectionState);
+      saveLatestTimeAndState(submitSectionState);
 
       // navigating to next subject
       if (

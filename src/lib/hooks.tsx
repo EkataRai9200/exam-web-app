@@ -99,9 +99,12 @@ export function useExamData() {
       ? Math.round((latest_state.test_end_date - Date.now()) / 1000)
       : 0;
 
+    // checks if test has ended
     if (latest_state.test_end_date && latest_state.test_end_date < Date.now()) {
       return 0;
     }
+
+    // checks if subject time is enabled
     if (
       latest_state.subject_time == "yes" &&
       latest_state.studentExamState.subject_times
@@ -114,9 +117,11 @@ export function useExamData() {
       if (!activeSubTime.start_time) {
         return parseInt(activeSubData.subject_time) * 60;
       }
+
       const endTime =
         activeSubTime.start_time +
         parseInt(activeSubData.subject_time) * 60 * 1000;
+
       if (activeSubTime.submitted) return 0;
       return Math.round((endTime - Date.now()) / 1000);
     } else {
@@ -127,7 +132,6 @@ export function useExamData() {
         parseInt(latest_state.test_time_limit) * 60 -
         timeSpent -
         ((window as any).elapsed_time ?? 0);
-      // console.log("getRemainingTime", timeSpent, (window as any).elapsed_time);
       return latest_state.test_end_date
         ? Math.min(timeLeft, endTimeLeft ?? 0)
         : timeLeft;
