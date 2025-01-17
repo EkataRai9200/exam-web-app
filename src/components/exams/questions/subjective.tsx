@@ -111,11 +111,10 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
         })}
       >
         <div className="mt-5 grid w-full gap-2">
-          <div className="flex-row ">   
-          <Label htmlFor="message">Answer </Label>
-          <div className="float-right">Word Count: {wordCount}</div>
+          <div className="flex-row ">
+            <Label htmlFor="message">Answer </Label>
+            <div className="float-right">Word Count: {wordCount}</div>
           </div>
-        
 
           <Textarea
             onChange={handleTextChange}
@@ -125,57 +124,44 @@ export function Subjective({ index, subjectIndex }: RenderMCQOptionProps) {
             defaultValue={content}
             id="message"
           />
-
-          <div>
-            <input
-              type="file"
-              accept="image/*,application/pdf"
-              onChange={uploadFile}
-            />
-            <p className="text-xs text-muted-foreground italic">
-              PDF, JPG, JPEG, PNG files are accepted.
-            </p>
-          </div>
+          {question.image_answer == "yes" && (
+            <div>
+              <input
+                type="file"
+                accept="image/*,application/pdf"
+                onChange={uploadFile}
+              />
+              <p className="text-xs text-muted-foreground italic">
+                PDF, JPG, JPEG, PNG files are accepted.
+              </p>
+            </div>
+          )}
         </div>
-        <div className="flex gap-2">
-          {subjectiveimages.map((s, i) => {
-            return (
-              <div
-                className="relative"
-                key={`subjective_image_${question._id.$oid}_${i}`}
-              >
-                <img
-                  src={`https://d3bioexaf647f4.cloudfront.net/${s}`}
-                  width={60}
-                  className="border"
-                />
-                <Button
-                  variant={"ghost"}
-                  onClick={() => removeImage(i)}
-                  className="text-red-600 px-1 py-0 absolute h-5 top-0 right-0 bg-gray-100"
+        {question.image_answer == "yes" && (
+          <div className="flex gap-2">
+            {subjectiveimages.map((s, i) => {
+              return (
+                <div
+                  className="relative"
+                  key={`subjective_image_${question._id.$oid}_${i}`}
                 >
-                  <Trash size={15} />
-                </Button>
-              </div>
-            );
-          })}
-        </div>
-        {/* <div>
-          <Button
-            disabled={isSaved}
-            variant={"outline"}
-            className="flex gap-2"
-            onClick={markAnswer}
-          >
-            {isSaved ? (
-              <>
-                Answer Saved <CheckCircle size={12} />
-              </>
-            ) : (
-              "Save Answer"
-            )}
-          </Button>
-        </div> */}
+                  <img
+                    src={`https://d3bioexaf647f4.cloudfront.net/${s}`}
+                    width={60}
+                    className="border"
+                  />
+                  <Button
+                    variant={"ghost"}
+                    onClick={() => removeImage(i)}
+                    className="text-red-600 px-1 py-0 absolute h-5 top-0 right-0 bg-gray-100"
+                  >
+                    <Trash size={15} />
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </>
   );
