@@ -554,48 +554,46 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
         submitSectionState.subjects[
           submitSectionState.studentExamState.activeSubject
         ];
+      const currentSubTimeData = submitSectionState.studentExamState
+        .subject_times
+        ? submitSectionState.studentExamState.subject_times[
+            submitSectionSubjectData.sub_id
+          ]
+        : null;
       if (
         submitSectionState.studentExamState.subject_times &&
-        submitSectionState.studentExamState.subject_times[
-          submitSectionSubjectData.sub_id
-        ]
+        currentSubTimeData
       ) {
-        submitSectionState.studentExamState.subject_times[
-          submitSectionSubjectData.sub_id
-        ].submitted = true;
-        submitSectionState.studentExamState.subject_times[
-          submitSectionSubjectData.sub_id
-        ].submit_time = Date.now();
+        currentSubTimeData.submitted = true;
+        currentSubTimeData.submit_time = Date.now();
       }
 
       saveLatestTimeAndState(submitSectionState);
 
       // navigating to next subject
-      if (
-        submitSectionState.studentExamState.activeSubject <
-        submitSectionState.subjects.length - 1
-      ) {
-        submitSectionState.studentExamState.activeSubject += 1;
-        const newSubData =
-          submitSectionState.subjects[
-            submitSectionState.studentExamState.activeSubject
-          ];
+      let activeSubIndex = submitSectionState.studentExamState.activeSubject;
+
+      if (activeSubIndex < submitSectionState.subjects.length - 1) {
+        activeSubIndex += 1;
+
+        const newSubData = submitSectionState.subjects[activeSubIndex];
 
         if (submitSectionState.studentExamState.subject_times) {
-          submitSectionState.studentExamState.subject_times[
-            newSubData.sub_id
-          ].start_time = Date.now();
-          submitSectionState.studentExamState.subject_times[
-            newSubData.sub_id
-          ].elapsed_time = 0;
+          const activeSubTimeData =
+            submitSectionState.studentExamState.subject_times[
+              newSubData.sub_id
+            ];
+          if (!activeSubTimeData.start_time)
+            activeSubTimeData.start_time = Date.now();
 
-          submitSectionState.studentExamState.startTimeLocal = Date.now();
+          if (!activeSubTimeData.elapsed_time)
+            activeSubTimeData.elapsed_time = 0;
+
+          // submitSectionState.studentExamState.startTimeLocal = Date.now();
         }
-        setActiveQuestion(
-          submitSectionState,
-          0,
-          submitSectionState.studentExamState.activeSubject
-        );
+
+        submitSectionState.studentExamState.activeSubject = activeSubIndex;
+        setActiveQuestion(submitSectionState, 0, activeSubIndex);
       }
 
       return submitSectionState;

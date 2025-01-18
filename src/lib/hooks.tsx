@@ -115,15 +115,19 @@ export function useExamData() {
       const activeSubTime =
         latest_state.studentExamState.subject_times[activeSubData.sub_id] ?? {};
       if (!activeSubTime.start_time) {
-        return parseInt(activeSubData.subject_time) * 60;
+        return parseFloat(activeSubData.subject_time) * 60;
       }
 
-      const endTime =
-        activeSubTime.start_time +
-        parseInt(activeSubData.subject_time) * 60 * 1000;
-
       if (activeSubTime.submitted) return 0;
-      return Math.round((endTime - Date.now()) / 1000);
+
+      const timeLeft =
+        parseFloat(activeSubData.subject_time) * 60 -
+        (activeSubTime.elapsed_time ?? 0);
+      timeSpent = Math.round(
+        (Date.now() - latest_state.studentExamState.startTimeLocal) / 1000
+      );
+      // console.log("timeLeft", timeLeft - timeSpent);
+      return timeLeft - timeSpent;
     } else {
       timeSpent = Math.round(
         (Date.now() - latest_state.studentExamState.startTimeLocal) / 1000
