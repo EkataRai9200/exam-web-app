@@ -208,6 +208,7 @@ export interface ExamDetailData {
   studentExamState: StudentExamState;
   audio_base_url: string;
   submit_section_button: "yes" | "no";
+  is_option_based_marking:string;
 }
 
 type Action = {
@@ -281,6 +282,7 @@ const initialState: ExamDetailData = {
   },
   audio_base_url: "",
   submit_section_button: "yes",
+  is_option_based_marking:""
 };
 
 const startResumeSubjectTime = (state: ExamDetailData) => {

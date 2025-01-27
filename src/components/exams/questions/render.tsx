@@ -56,7 +56,7 @@ export function RenderQuestion({
 }: RenderQuestionProps) {
   const { examData, dispatch } = useExamData();
   const question = examData.subjects[subjectIndex].questions[index];
-
+  const is_option_based_marking=examData.is_option_based_marking;
   return (
     <>
       <div
@@ -97,7 +97,9 @@ export function RenderQuestion({
               <Badge className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium uppercase px-1">
                 {question.question_type}
               </Badge>
-              <Badge
+            {is_option_based_marking =="1"?'': 
+            <>
+            <Badge
                 className="bg-green-100 hover:bg-green-200 text-green-500 font-medium px-1"
                 style={{ width: "-webkit-fill-available" }}
               >
@@ -109,6 +111,8 @@ export function RenderQuestion({
               >
                 -{question.marks_negative}
               </Badge>
+              </>}
+             
               <LanguageDropdown />
               {examData.is_keyboard_allow ? (
                 <Button
