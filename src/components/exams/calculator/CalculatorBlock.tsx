@@ -10,8 +10,19 @@ function CalculatorBlock() {
   const [position, setPosition] = React.useState({ x: 0, y: 0 });
  const [isDragging, setIsDragging] = React.useState(false);
  const [startPosition, setStartPosition] = React.useState({ x: 0, y: 0 });
+ const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
 
 
+ React.useEffect(() => {
+  const handleResize = () => {
+    setWindowWidth(window.innerWidth);
+  };
+  
+  window.addEventListener("resize", handleResize);
+  return () => {
+    window.removeEventListener("resize", handleResize);
+  };
+}, []);
  const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
   setIsDragging(true);
   setStartPosition({
@@ -76,14 +87,16 @@ function CalculatorBlock() {
       >
         <X size={16} />
       </Button>
+      {windowWidth >= 640 && (
         <Button
-        className="cursor-move absolute rounded-none top-0 right-[60px] text-xs bg-red-700 hover:bg-red-900"
-    
-        size={"icon"}
-        onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) => handleMouseDown(e)}
+          className="cursor-move absolute rounded-none top-0 right-[60px] text-xs bg-red-700 hover:bg-red-900"
+          size={"icon"}
+          onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) => handleMouseDown(e)}
         >
-        <GripVertical size={16} />
-      </Button>
+          <GripVertical size={16} />
+        </Button>
+      )}
+
 
       <div>
         <iframe
