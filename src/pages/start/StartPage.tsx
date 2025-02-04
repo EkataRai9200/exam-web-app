@@ -229,18 +229,18 @@ export function StartPage() {
                 className="bg-blue-600 hover:bg-blue-800"
                 onClick={() => {
                   setInstructionsPage(2);
-                  if (examData.is_proctoring_allow) {
-                    let win = window.open(
-                      examData.authUser?.api_url +
-                        "/launch-webcam/" +
-                        examData._id.$oid,
-                      "Trigrexam Procter",
-                      "width=400,height=400,scrollbars=no,location=no"
-                    );
-                    window.onunload = function () {
-                      win?.close();
-                    };
-                  }
+                  // if (examData.is_proctoring_allow) {
+                    // let win = window.open(
+                    //   examData.authUser?.api_url +
+                    //     "/launch-webcam/" +
+                    //     examData._id.$oid,
+                    //   "Trigrexam Procter",
+                    //   "width=400,height=400,scrollbars=no,location=no"
+                    // );
+                    // window.onunload = function () {
+                    //   win?.close();
+                    // };
+                  // }
                 }}
                 size={"default"}
               >
@@ -301,7 +301,6 @@ export function StartPage() {
           )}
         </div>
       </div>
-
       <Loader visible={showLoading} />
     </main>
   );
