@@ -22,6 +22,7 @@ import QuestionPaperContent from "@/components/exams/questions/QuestionPaperCont
 import { ScrollArea } from "@/components/ui/scroll-area";
 import "react-simple-keyboard/build/css/index.css";
 import { toast } from "sonner";
+import WebcamComponent from "@/components/exams/proctor/WebcamComponent";
 
 export function TakeExam() {
   const {
@@ -430,6 +431,7 @@ export function TakeExam() {
       ) : (
         <Loader visible={true} />
       )}
+      {examData.is_proctoring_allow ? <WebcamComponent /> : ""}
     </>
   );
 }

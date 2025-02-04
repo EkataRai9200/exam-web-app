@@ -58,6 +58,32 @@ export function useExamData() {
     return res;
   };
 
+  const reportStudentWebCam = async (image: any) => {
+    // console.log("state", state);
+    if (!state.authUser) return;
+    // return;
+
+    const url =
+      state?.authUser?.api_url + "/save-test-image-proctor/" + state._id.$oid;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        test_id: state._id.$oid,
+        webtesttoken: state.authUser?.webtesttoken,
+        image,
+      }),
+    }).catch(() => {
+      setTimeout(() => {
+        reportStudentWebCam(reportStudentWebCam);
+      }, 2000);
+    });
+
+    return res;
+  };
+
   const qTimeTakenRef = React.useRef<number>(0);
   const qTimerRef = React.useRef<any>();
   const recordQuestionTime = () => {
@@ -344,6 +370,7 @@ export function useExamData() {
     canSaveAnswer,
     saveAnswer,
     markForReview,
+    reportStudentWebCam,
   };
 }
 
