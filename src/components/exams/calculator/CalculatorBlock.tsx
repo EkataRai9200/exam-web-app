@@ -104,7 +104,7 @@ function CalculatorBlock() {
       <div>
         <iframe
           className="w-full"
-          src={`http://${examData.authUser?.institute_url}/calculator.html?version=${examData.is_calc_allow}`}
+          src={`https://${examData.authUser?.institute_url}/calculator.html?version=${examData.is_calc_allow}`}
           height={370}
         ></iframe>
       </div>
