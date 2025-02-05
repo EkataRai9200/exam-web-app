@@ -7,13 +7,13 @@ import React from "react";
 function CalculatorBlock() {
   const { examData, dispatch } = useExamData();
   const [_value, setValue] = React.useState("");
-  const [position, setPosition] = React.useState({
-    x: 0,
-    y: window.innerHeight - 400,
-  });
   const [isDragging, setIsDragging] = React.useState(false);
   const [startPosition, setStartPosition] = React.useState({ x: 0, y: 0 });
-  const [windowWidth, setWindowWidth] = React.useState(window.innerHeight);
+  const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
+  const [position, setPosition] = React.useState({
+    x: 0,
+    y: window.innerWidth >= 640 ? 0 : window.innerHeight - 400,
+  });
 
   React.useEffect(() => {
     const handleResize = () => {
@@ -74,7 +74,7 @@ function CalculatorBlock() {
       <div className="absolute flex gap-2 top-0 right-[30px]" style={{}}>
         {windowWidth >= 640 && (
           <Button
-            className="cursor-move rounded-none text-xs bg-red-600 hover:bg-red-700 h-9"
+            className="cursor-move rounded-none hidden md:flex text-xs bg-red-600 hover:bg-red-700 h-9"
             style={{ marginTop: "2px" }}
             size={"icon"}
             onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) =>
