@@ -275,7 +275,13 @@ export function TakeExam() {
 
                 {examData.subjects.length > 0 ? (
                   <>
-                    <ScrollArea className="md:my-0 px-2 h-full pt-0 pb-[100px] md:pb-[70px]">
+                    <ScrollArea
+                      className={`md:my-0 px-2 h-full pt-0 ${
+                        examData.studentExamState.showCalculator
+                          ? "pb-[500px]"
+                          : "pb-[100px]"
+                      } md:pb-[70px]`}
+                    >
                       <RenderQuestion
                         index={activeQuestion}
                         subjectIndex={activeSubject}
