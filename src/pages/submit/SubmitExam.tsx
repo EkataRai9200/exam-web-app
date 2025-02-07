@@ -253,7 +253,11 @@ function SubmitExam() {
           <Button
             className="bg-green-600 w-full"
             size={"lg"}
-            onClick={() => submitExam()}
+            onClick={() =>
+              submitExam({
+                submission_source: "manual",
+              })
+            }
           >
             Submit Exam
           </Button>

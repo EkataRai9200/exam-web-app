@@ -222,7 +222,9 @@ export function TakeExam() {
                               examData.studentExamState.activeSubject >=
                                 examData.subjects.length - 1
                             ) {
-                              submitExam();
+                              submitExam({
+                                submission_source: "timer",
+                              });
                             }
                           }}
                         />

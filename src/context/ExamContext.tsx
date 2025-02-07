@@ -148,6 +148,7 @@ export interface StudentExamState {
   startTimeLocal: number;
   activeAnswer: Answer["ans"];
   submitted: boolean;
+  submission_source?: SubmissionSource;
 }
 
 export interface ObjectID {
@@ -172,6 +173,8 @@ export interface ExamAuthUser {
   api_url: string;
   _id: ObjectID;
 }
+
+export type SubmissionSource = "timer" | "manual" | "proctor";
 
 export interface ExamDetailData {
   _id: ObjectID;
@@ -208,7 +211,7 @@ export interface ExamDetailData {
   studentExamState: StudentExamState;
   audio_base_url: string;
   submit_section_button: "yes" | "no";
-  is_option_based_marking:string;
+  is_option_based_marking: string;
 }
 
 type Action = {
@@ -282,7 +285,7 @@ const initialState: ExamDetailData = {
   },
   audio_base_url: "",
   submit_section_button: "yes",
-  is_option_based_marking:""
+  is_option_based_marking: "",
 };
 
 const startResumeSubjectTime = (state: ExamDetailData) => {

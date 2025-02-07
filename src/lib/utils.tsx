@@ -54,7 +54,7 @@ export function saveTest(
   submitted: "Yes" | "No" = "No"
 ) {
   const MySwal = withReactContent(Swal);
-  const requestBody = {
+  const requestBody: any = {
     response: { ...examData.studentExamState.student_answers },
     remaining_time: 0,
     test_id: examData._id.$oid,
@@ -64,6 +64,9 @@ export function saveTest(
     subject_times: examData.studentExamState.subject_times,
     timeSpent: examData.studentExamState.timeSpent,
   };
+  if (examData.studentExamState.submission_source) {
+    requestBody.submission_source = examData.studentExamState.submission_source;
+  }
   return fetch(`${examData.authUser?.api_url}/save-test-response`, {
     method: "POST",
     headers: {

@@ -37,8 +37,9 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
       }
       setTimeLeft(timeLeft);
     };
-    intervalRef.current = setInterval(updateRemainingTime, 1000);
-    updateRemainingTime();
+
+    if (!intervalRef.current)
+      intervalRef.current = setInterval(updateRemainingTime, 1000);
 
     return () => {
       if (intervalRef.current && examData.subject_time != "yes") {

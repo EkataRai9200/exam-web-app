@@ -73,7 +73,9 @@ function ExamDrawerContent({
         payload: {},
       });
     } else {
-      submitExam();
+      submitExam({
+        "submission_source": "manual"
+      });
     }
   };
 

@@ -5,6 +5,7 @@ import {
   ExamContext,
   ExamDetailData,
   Question,
+  SubmissionSource,
 } from "@/context/ExamContext";
 import { authenticateToken, getTestDetails } from "@/pages/start/StartPage";
 import React, { useContext, useEffect } from "react";
@@ -168,7 +169,13 @@ export function useExamData() {
     }
   };
 
-  const submitExam = async ({ message }: { message?: string } = {}) => {
+  const submitExam = async ({
+    message,
+    submission_source,
+  }: { message?: string; submission_source?: SubmissionSource } = {}) => {
+    if (submission_source)
+      state.studentExamState.submission_source = submission_source;
+
     saveTest(state, "Yes").then((res) => {
       if (res && res?.status) {
         dispatch({
@@ -190,7 +197,10 @@ export function useExamData() {
       } else {
         alert("We were unable to submit your exam. Try Again !");
         setTimeout(() => {
-          submitExam();
+          submitExam({
+            message,
+            submission_source,
+          });
         }, 2000);
       }
     });
@@ -200,6 +210,7 @@ export function useExamData() {
   const onTimerExpires = () => {
     submitExam({
       message: "Time is up. Your exam has been automatically submitted. ",
+      submission_source: "timer",
     });
   };
 
@@ -450,6 +461,7 @@ const useExamWindowSwitch = () => {
         submitExam({
           message:
             "You have reached the maximum number of browser switches. Your exam has been automatically submitted. ",
+          submission_source: "proctor",
         });
         return;
       } else {
