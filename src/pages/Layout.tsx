@@ -4,16 +4,27 @@ import { AnalyticsTracker } from "@/lib/analytics/AnalyticsTracker";
 import { ClarityTracker } from "@/lib/analytics/ClarityTracker";
 import { Outlet } from "react-router-dom";
 import { Toaster as SonnerToaster } from "sonner";
+import {
+  MathJaxContext,
+} from "better-react-mathjax";
 
 function Layout() {
+  const mathjaxConfig = {
+    menuSettings: { inTabOrder: false },
+    options: {
+      enableMenu: false,
+    },
+  };
   return (
-    <ExamProvider>
-      <Outlet />
-      <ClarityTracker />
-      <AnalyticsTracker />
-      <Toaster />
-      <SonnerToaster richColors />
-    </ExamProvider>
+    <MathJaxContext config={mathjaxConfig}>
+      <ExamProvider>
+        <Outlet />
+        <ClarityTracker />
+        <AnalyticsTracker />
+        <Toaster />
+        <SonnerToaster richColors />
+      </ExamProvider>
+    </MathJaxContext>
   );
 }
 

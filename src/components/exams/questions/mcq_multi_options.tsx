@@ -39,6 +39,11 @@ export function MCQ_MULTI_OPTIONS({
       }
     }
   }, [examData]);
+
+  React.useEffect(() => {
+    if ((window as any).MathJax) (window.MathJax as any).typesetPromise();
+  }, [options]);
+
   return (
     <>
       <div

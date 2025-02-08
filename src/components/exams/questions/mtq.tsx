@@ -2,7 +2,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Question } from "@/context/ExamContext";
 import { useExamData } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
-import React from "react";
+import React, { useEffect } from "react";
 import { QuestionTypeProps } from "./render";
 
 interface RenderMTQOptionProps extends QuestionTypeProps {}
@@ -124,6 +124,10 @@ export function MTQ({ index, subjectIndex }: RenderMTQOptionProps) {
       payload: newAns,
     });
   };
+
+  useEffect(() => {
+    if ((window as any).MathJax) (window.MathJax as any).typesetPromise();
+  }, [options]);
 
   return (
     <>

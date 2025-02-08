@@ -19,6 +19,7 @@ import SLCT from "./slct";
 import { Subjective } from "./subjective";
 import { TRUEFALSE } from "./truefalse";
 import { TXT_INPUT } from "./txt_input";
+import { MathJax } from "better-react-mathjax";
 
 export enum QuestionType {
   MCQ = "MCQ",
@@ -56,6 +57,7 @@ export function RenderQuestion({
 }: RenderQuestionProps) {
   const { examData, dispatch } = useExamData();
   const question = examData.subjects[subjectIndex].questions[index];
+
   return (
     <>
       <div
@@ -96,22 +98,25 @@ export function RenderQuestion({
               <Badge className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium uppercase px-1">
                 {question.question_type}
               </Badge>
-            {examData.is_option_based_marking =="1"?'': 
-            <>
-            <Badge
-                className="bg-green-100 hover:bg-green-200 text-green-500 font-medium px-1"
-                style={{ width: "-webkit-fill-available" }}
-              >
-                +{question.marks_positive}
-              </Badge>
-              <Badge
-                className="bg-red-100 hover:bg-red-200 text-red-500 font-medium px-1"
-                style={{ width: "-webkit-fill-available" }}
-              >
-                -{question.marks_negative}
-              </Badge>
-              </>}
-             
+              {examData.is_option_based_marking == "1" ? (
+                ""
+              ) : (
+                <>
+                  <Badge
+                    className="bg-green-100 hover:bg-green-200 text-green-500 font-medium px-1"
+                    style={{ width: "-webkit-fill-available" }}
+                  >
+                    +{question.marks_positive}
+                  </Badge>
+                  <Badge
+                    className="bg-red-100 hover:bg-red-200 text-red-500 font-medium px-1"
+                    style={{ width: "-webkit-fill-available" }}
+                  >
+                    -{question.marks_negative}
+                  </Badge>
+                </>
+              )}
+
               <LanguageDropdown />
               {examData.is_keyboard_allow ? (
                 <Button
@@ -147,59 +152,64 @@ export function RenderQuestion({
               )}
             </div>
           </CardHeader>
-          <CardContent className="px-3 pt-3">
-            {question.find_hint && question.find_hint != "DOCQ" ? (
-              <div className="text-sm font-normal pb-3">
-                <span>Hint: {question.find_hint}</span>
+          <CardContent className="px-3 pt-3 h-full">
+            <MathJax>
+              {question.find_hint && question.find_hint != "DOCQ" ? (
+                <div className="text-sm font-normal pb-3">
+                  <span>Hint: {question.find_hint}</span>
+                </div>
+              ) : (
+                ""
+              )}
+              <div className="flex flex-col gap-3">
+                {question.question_type == QuestionType.MCQ && (
+                  <MCQ subjectIndex={subjectIndex} index={index} />
+                )}
+                {(question.question_type == QuestionType.MAQ ||
+                  question.question_type == QuestionType.VMAQ) && (
+                  <MAQ subjectIndex={subjectIndex} index={index} />
+                )}
+                {question.question_type == QuestionType.SUBJECTIVE && (
+                  <Subjective subjectIndex={subjectIndex} index={index} />
+                )}
+                {question.question_type == QuestionType.NAT && (
+                  <NAT subjectIndex={subjectIndex} index={index} />
+                )}
+                {question.question_type == QuestionType.TRUEFALSE && (
+                  <TRUEFALSE subjectIndex={subjectIndex} index={index} />
+                )}
+                {question.question_type == QuestionType.SLCT && (
+                  <SLCT subjectIndex={subjectIndex} index={index} />
+                )}
+                {question.question_type == QuestionType.MULTI_SLCT && (
+                  <MULTI_SLCT subjectIndex={subjectIndex} index={index} />
+                )}
+                {question.question_type == QuestionType.MCQ_MULTI_OPTIONS && (
+                  <MCQ_MULTI_OPTIONS
+                    subjectIndex={subjectIndex}
+                    index={index}
+                  />
+                )}
+                {question.question_type == QuestionType.TXT_INPUT && (
+                  <TXT_INPUT subjectIndex={subjectIndex} index={index} />
+                )}
+                {question.question_type == QuestionType.FILL_BLANKS && (
+                  <FILL_BLANKS subjectIndex={subjectIndex} index={index} />
+                )}
+                {question.question_type == QuestionType.SENTENCE_ARRANGMENT && (
+                  <SENTENCE_ARRANGMENT
+                    subjectIndex={subjectIndex}
+                    index={index}
+                  />
+                )}
+                {question.question_type == QuestionType.AUDIO_TYPE && (
+                  <AUDIO_TYPE subjectIndex={subjectIndex} index={index} />
+                )}
+                {question.question_type == QuestionType.MTQ && (
+                  <MTQ subjectIndex={subjectIndex} index={index} />
+                )}
               </div>
-            ) : (
-              ""
-            )}
-            <div className="flex flex-col gap-3">
-              {question.question_type == QuestionType.MCQ && (
-                <MCQ subjectIndex={subjectIndex} index={index} />
-              )}
-              {(question.question_type == QuestionType.MAQ ||
-                question.question_type == QuestionType.VMAQ) && (
-                <MAQ subjectIndex={subjectIndex} index={index} />
-              )}
-              {question.question_type == QuestionType.SUBJECTIVE && (
-                <Subjective subjectIndex={subjectIndex} index={index} />
-              )}
-              {question.question_type == QuestionType.NAT && (
-                <NAT subjectIndex={subjectIndex} index={index} />
-              )}
-              {question.question_type == QuestionType.TRUEFALSE && (
-                <TRUEFALSE subjectIndex={subjectIndex} index={index} />
-              )}
-              {question.question_type == QuestionType.SLCT && (
-                <SLCT subjectIndex={subjectIndex} index={index} />
-              )}
-              {question.question_type == QuestionType.MULTI_SLCT && (
-                <MULTI_SLCT subjectIndex={subjectIndex} index={index} />
-              )}
-              {question.question_type == QuestionType.MCQ_MULTI_OPTIONS && (
-                <MCQ_MULTI_OPTIONS subjectIndex={subjectIndex} index={index} />
-              )}
-              {question.question_type == QuestionType.TXT_INPUT && (
-                <TXT_INPUT subjectIndex={subjectIndex} index={index} />
-              )}
-              {question.question_type == QuestionType.FILL_BLANKS && (
-                <FILL_BLANKS subjectIndex={subjectIndex} index={index} />
-              )}
-              {question.question_type == QuestionType.SENTENCE_ARRANGMENT && (
-                <SENTENCE_ARRANGMENT
-                  subjectIndex={subjectIndex}
-                  index={index}
-                />
-              )}
-              {question.question_type == QuestionType.AUDIO_TYPE && (
-                <AUDIO_TYPE subjectIndex={subjectIndex} index={index} />
-              )}
-              {question.question_type == QuestionType.MTQ && (
-                <MTQ subjectIndex={subjectIndex} index={index} />
-              )}
-            </div>
+            </MathJax>
           </CardContent>
         </Card>
       </div>

@@ -1,7 +1,7 @@
 import { Question } from "@/context/ExamContext";
 import { useExamData } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
-import React from "react";
+import React, { useEffect } from "react";
 import { QuestionTypeProps } from "./render";
 
 interface RenderMCQOptionProps extends QuestionTypeProps {}
@@ -23,6 +23,15 @@ export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
   const randomOrder = examData.studentExamState?.student_answers[
     question._id.$oid
   ]?.mcq_shuffled_order ?? [0, 1, 2, 3, 4];
+
+  const markAnswer = (i: number) => {
+    dispatch({
+      type: "setActiveAnswer",
+      payload: String.fromCharCode(65 + i).toLowerCase(),
+    });
+  };
+
+  const activeAnswer = examData.studentExamState.activeAnswer;
 
   React.useEffect(() => {
     if (activeLang == "EN") {
@@ -49,16 +58,11 @@ export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
         setOptions([]);
       }
     }
-  }, [examData]);
+  }, []);
 
-  const markAnswer = (i: number) => {
-    dispatch({
-      type: "setActiveAnswer",
-      payload: String.fromCharCode(65 + i).toLowerCase(),
-    });
-  };
-
-  const activeAnswer = examData.studentExamState.activeAnswer;
+  useEffect(() => {
+    if ((window as any).MathJax) (window.MathJax as any).typesetPromise();
+  }, [options]);
 
   return (
     <>
@@ -104,7 +108,7 @@ export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
               {_v && (
                 <>
                   <div
-                    className="no-tailwindcss-base ck-editor"
+                    className="no-tailwindcss-base ck-editor w-full"
                     dangerouslySetInnerHTML={{ __html: _v.value ?? "" }}
                   ></div>
                 </>

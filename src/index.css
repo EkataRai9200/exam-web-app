@@ -116,6 +116,7 @@
   }
 
   .no-tailwindcss-base {
+
     h1,
     h2,
     h3,
@@ -165,11 +166,27 @@
   line-height: 1.6;
   word-wrap: break-word;
   overflow-x: auto;
+  overflow-y: visible;
+  display: block;
 }
 
 .ck-editor img {
   max-width: 100%;
   height: auto;
+}
+
+.ck-editor svg {
+  display: inline !important;
+  /* Ensures inline rendering */
+  vertical-align: middle;
+  /* Aligns formulas properly */
+}
+
+.ck-editor mjx-container {
+  overflow: hidden !important;
+  max-width: 100%;
+  display: inline-block !important;
+  /* Fixes extra space */
 }
 
 .ck-editor p {

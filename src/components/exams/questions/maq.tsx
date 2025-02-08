@@ -55,6 +55,10 @@ export function MAQ({ index, subjectIndex }: RenderMCQOptionProps) {
     }
   }, [examData]);
 
+  React.useEffect(() => {
+    if ((window as any).MathJax) (window.MathJax as any).typesetPromise();
+  }, [options]);
+
   return (
     <>
       <div
