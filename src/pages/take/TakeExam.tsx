@@ -23,6 +23,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import "react-simple-keyboard/build/css/index.css";
 import { toast } from "sonner";
 import WebcamComponent from "@/components/exams/proctor/WebcamComponent";
+import { SubjectOverviewBlock } from "@/pages/submit/SubmitExam";
 
 export function TakeExam() {
   const {
@@ -256,21 +257,26 @@ export function TakeExam() {
                   showSidebar ? "md:w-3/4" : ""
                 )}
               >
-                <div className="flex items-center w-full overflow-x-auto md:overflow-y-hidden gap-2 px-3 pt-2 pb-2  border-b-2">
+                <div className="flex items-center w-full overflow-y-hidden overflow-x-auto md:overflow-visible gap-2 px-3 pt-2 pb-2  border-b-2">
                   <p className="text-sm border-r-2 pr-2">Sections</p>
                   {examData.subjects.map((v, i) => {
                     return (
-                      <Button
-                        key={v.sub_id}
-                        size={"sm"}
-                        disabled={
-                          examData.subject_time == "yes" && i != activeSubject
-                        }
-                        variant={activeSubject == i ? "default" : "outline"}
-                        onClick={() => setActiveSubject(i)}
-                      >
-                        {v.name}
-                      </Button>
+                      <div className="relative group overflow-visible">
+                        <Button
+                          key={v.sub_id}
+                          size={"sm"}
+                          disabled={
+                            examData.subject_time == "yes" && i != activeSubject
+                          }
+                          variant={activeSubject == i ? "default" : "outline"}
+                          onClick={() => setActiveSubject(i)}
+                        >
+                          {v.name}
+                        </Button>
+                        <div className="hidden absolute w-[300px] top-[50px] h-[200px] z-50 left-0 md:group-hover:block">
+                          <SubjectOverviewBlock hideTitle subject={v} />
+                        </div>
+                      </div>
                     );
                   })}
                 </div>

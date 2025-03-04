@@ -141,14 +141,20 @@ export function SubjectWiseOverview() {
 
 export function SubjectOverviewBlock({
   subject: s,
+  hideTitle = false,
 }: {
   subject: ExamDetailData["subjects"][0];
+  hideTitle?: boolean;
 }) {
   const { examData } = useExamData();
   return (
     <Card key={`card_${s.sub_id}`} className="w-full">
       <CardContent className="px-3 py-2">
-        <h3 className="text-md font-medium mb-2 border-b">{s.name}</h3>
+        {!hideTitle ? (
+          <h3 className="text-md font-medium mb-2 border-b">{s.name}</h3>
+        ) : (
+          ""
+        )}
         <div className="grid grid-cols-2 font-medium text-xs gap-2 justify-between tracking-tight">
           <div className="flex gap-2 items-center">
             <div className="w-7 h-7 flex items-center justify-center bg-gray-100">
