@@ -156,7 +156,7 @@ export function TakeExam() {
   }, []);
 
   const handleBeforeUnload = (event: any) => {
-    saveTest(examData);
+    dispatch({ type: "saveLatestState", payload: "" });
 
     // Show confirmation message
     event.preventDefault();

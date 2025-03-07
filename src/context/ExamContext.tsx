@@ -231,7 +231,8 @@ type Action = {
     | "showHideCalculator"
     | "deleteAnswer"
     | "notifySubmitted"
-    | "updateTimer";
+    | "updateTimer"
+    | "saveLatestState";
   payload: any;
 };
 
@@ -523,6 +524,10 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       );
       saveLatestTimeAndState(d);
       return d;
+    case "saveLatestState":
+      const saveLatestState = { ...state };
+      saveLatestTimeAndState(saveLatestState);
+      return saveLatestState;
     case "setActiveAnswer":
       const activeState = { ...state };
       activeState.studentExamState.activeAnswer = action.payload;
