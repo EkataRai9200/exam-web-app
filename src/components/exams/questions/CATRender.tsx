@@ -109,7 +109,7 @@ export function CATRenderQuestion({
           <CardContent className="px-3 pt-3 h-full">
             <MathJax>
               {question.find_hint && question.find_hint != "DOCQ" ? (
-                <div className="text-sm font-normal pb-3">
+                <div className="text-[15px] font-normal pb-3">
                   <span>Hint: {question.find_hint}</span>
                 </div>
               ) : (

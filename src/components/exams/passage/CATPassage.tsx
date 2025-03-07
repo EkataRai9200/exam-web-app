@@ -24,7 +24,7 @@ function CATPassage({
         {question.passage_desc.length > 0 &&
           examData.studentExamState.activeLang == "EN" && (
             <div
-              className="text-sm"
+              className="text-[15px]"
               dangerouslySetInnerHTML={{
                 __html: question.passage_desc[0].passage,
               }}
@@ -33,7 +33,7 @@ function CATPassage({
         {question.hi_passage_desc.length > 0 &&
           examData.studentExamState.activeLang == "HI" && (
             <div
-              className="text-sm"
+              className="text-[15px]"
               dangerouslySetInnerHTML={{
                 __html: question.hi_passage_desc[0].passage,
               }}
