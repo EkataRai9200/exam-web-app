@@ -16,6 +16,7 @@ import SLCT from "./slct";
 import { Subjective } from "./subjective";
 import { TRUEFALSE } from "./truefalse";
 import { TXT_INPUT } from "./txt_input";
+import { CATMCQ } from "./CATmcq";
 
 export enum QuestionType {
   MCQ = "MCQ",
@@ -117,7 +118,7 @@ export function CATRenderQuestion({
               )}
               <div className="flex flex-col gap-3">
                 {question.question_type == QuestionType.MCQ && (
-                  <MCQ subjectIndex={subjectIndex} index={index} />
+                  <CATMCQ subjectIndex={subjectIndex} index={index} />
                 )}
                 {(question.question_type == QuestionType.MAQ ||
                   question.question_type == QuestionType.VMAQ) && (

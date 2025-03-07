@@ -30,6 +30,15 @@ export const routes: RouteObject[] = [
         path: "/cat-exam",
         children: [
           {
+            path: "/cat-exam",
+            lazy: async () => {
+              const module = await import("@/pages/template/cat/take/TakeExam");
+              return {
+                Component: module.TakeExam,
+              };
+            },
+          },
+          {
             path: "/cat-exam/start",
             lazy: async () => {
               const module = await import(
