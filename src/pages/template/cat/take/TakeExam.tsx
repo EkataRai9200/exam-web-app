@@ -387,7 +387,7 @@ export function TakeExam() {
                           : "pb-[100px]"
                       } md:pb-[70px]`}
                     > */}
-                    <div className="flex flex-col flex-1 overflow-auto m-b-[70px]">
+                    <div className="flex flex-col flex-1 overflow-auto mb-[70px]">
                       <CATRenderQuestion
                         index={activeQuestion}
                         subjectIndex={activeSubject}
