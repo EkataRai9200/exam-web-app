@@ -350,7 +350,7 @@ const calcTimeSpent = (state: ExamDetailData) => {
   return timeSpent;
 };
 
-const updateLatestTimeSpent = (state: ExamDetailData) => {
+export const updateLatestTimeSpent = (state: ExamDetailData) => {
   state.elapsed_time = (state.elapsed_time ?? 0) + calcTimeSpent(state);
   (window as any).elapsed_time = state.elapsed_time;
 
@@ -366,13 +366,13 @@ const updateLatestTimeSpent = (state: ExamDetailData) => {
   state.studentExamState.timeSpent = calcTimeSpent(state);
 };
 
-const saveLatestTimeAndState = (state: ExamDetailData) => {
+export const saveLatestTimeAndState = (state: ExamDetailData) => {
   updateLatestTimeSpent(state);
   saveTest(state);
   resetTimeSpent(state);
 };
 
-const resetTimeSpent = (state: ExamDetailData) => {
+export const resetTimeSpent = (state: ExamDetailData) => {
   state.studentExamState.startTimeLocal = Date.now();
   state.studentExamState.timeSpent = 0;
 };

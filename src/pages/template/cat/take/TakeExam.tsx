@@ -9,7 +9,7 @@ import CountdownTimer from "@/components/exams/timer/countDownTimer";
 import Loader from "@/components/blocks/Loader";
 import { ExamDrawer } from "@/components/exams/drawer/drawer";
 import { useExamData, useExamWindowSwitch } from "@/lib/hooks";
-import { cn } from "@/lib/utils";
+import { cn, saveTest } from "@/lib/utils";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 // modules css
@@ -25,6 +25,7 @@ import CATCountdownTimer from "@/components/exams/timer/CATCountdownTimer";
 import { SubjectOverviewBlock } from "@/pages/submit/SubmitExam";
 import "react-simple-keyboard/build/css/index.css";
 import { toast } from "sonner";
+import { resetTimeSpent, updateLatestTimeSpent } from "@/context/ExamContext";
 
 export function TakeExam() {
   const {
@@ -156,7 +157,28 @@ export function TakeExam() {
   }, []);
 
   const handleBeforeUnload = (event: any) => {
-    dispatch({ type: "saveLatestState", payload: "" });
+    // dispatch({ type: "saveLatestState", payload: "" });
+    const s = examData;
+    updateLatestTimeSpent(s);
+    const requestBody: any = {
+      response: { ...s.studentExamState.student_answers },
+      remaining_time: 0,
+      test_id: s._id.$oid,
+      submitted: "No",
+      webtesttoken: s.authUser?.webtesttoken,
+      start_date: s.studentExamState.start_date,
+      subject_times: s.studentExamState.subject_times,
+      timeSpent: s.studentExamState.timeSpent,
+    };
+    if (s.studentExamState.submission_source) {
+      requestBody.submission_source = s.studentExamState.submission_source;
+    }
+    navigator.sendBeacon(
+      `${s.authUser?.api_url}/save-test-response`,
+      JSON.stringify(requestBody)
+    );
+    saveTest(s);
+    resetTimeSpent(s);
 
     // Show confirmation message
     event.preventDefault();
@@ -182,7 +204,7 @@ export function TakeExam() {
     // Clean up the event listener on component unmount
     return () => {
       window.removeEventListener("keydown", handleKeydown);
-      // window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
 
