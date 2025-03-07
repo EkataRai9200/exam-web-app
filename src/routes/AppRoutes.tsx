@@ -4,6 +4,12 @@ import Layout from "@/pages/Layout";
 import { Dashboard } from "@/pages/dashboard/Dashboard";
 import FeedbackPage from "@/pages/feedback/FeedbackPage";
 import { StartPage, StartPageLoaderData } from "@/pages/start/StartPage.tsx";
+
+// import {
+//   StartPage as CATStartPage,
+//   StartPageLoaderData as CATStartPageLoaderData,
+// } from "@/pages/template/cat/start/StartPage";
+
 import SubmitExam from "@/pages/submit/SubmitExam";
 import { TakeExam } from "@/pages/take/TakeExam.tsx";
 // Importing createBrowserRouter function from react-router-dom
@@ -19,6 +25,48 @@ export const routes: RouteObject[] = [
       {
         path: "/",
         Component: TakeExam,
+      },
+      {
+        path: "/cat-exam",
+        children: [
+          {
+            path: "/cat-exam/start",
+            lazy: async () => {
+              const module = await import(
+                "@/pages/template/cat/start/StartPage"
+              );
+              return {
+                Component: module.StartPage,
+                loader: module.StartPageLoaderData,
+              };
+            },
+          },
+          {
+            path: "/cat-exam/take",
+            lazy: async () => {
+              const module = await import("@/pages/template/cat/take/TakeExam");
+              return {
+                Component: module.TakeExam,
+              };
+            },
+          },
+          {
+            path: "/cat-exam/submit",
+            lazy: async () => {
+              const module = await import(
+                "@/pages/template/cat/submit/SubmitExam"
+              );
+              return {
+                Component: module.SubmitExam,
+              };
+            },
+          },
+          {
+            path: "/cat-exam/feedback",
+            Component: FeedbackPage,
+          },
+        ],
+        // Component: TakeExam,
       },
       {
         path: "/dashboard",
