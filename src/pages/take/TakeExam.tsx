@@ -54,9 +54,9 @@ export function TakeExam() {
     if (
       examData.subject_time == "yes" &&
       activeQuestion >=
-        examData.subjects[examData.studentExamState.activeSubject].questions
-          .length -
-          1
+      examData.subjects[examData.studentExamState.activeSubject].questions
+        .length -
+      1
     ) {
       toast.dismiss();
       toast.info(
@@ -203,8 +203,8 @@ export function TakeExam() {
 
                 <div className="flex w-full md:w-auto items-end justify-end mt-2 md:mt-0 md:gap-4">
                   {examData.subjects.length > 0 &&
-                  examData.subject_time == "yes" &&
-                  examData.studentExamState.subject_times ? (
+                    examData.subject_time == "yes" &&
+                    examData.studentExamState.subject_times ? (
                     <>
                       <div
                         className={cn(
@@ -221,7 +221,7 @@ export function TakeExam() {
                             if (
                               !examData.studentExamState.submitted &&
                               examData.studentExamState.activeSubject >=
-                                examData.subjects.length - 1
+                              examData.subjects.length - 1
                             ) {
                               submitExam({
                                 submission_source: "timer",
@@ -257,38 +257,36 @@ export function TakeExam() {
                   showSidebar ? "md:w-3/4" : ""
                 )}
               >
-                <div className="flex items-center w-full overflow-y-hidden overflow-x-auto md:overflow-visible gap-2 px-3 pt-2 pb-2  border-b-2">
-                  <p className="text-sm border-r-2 pr-2">Sections</p>
-                  {examData.subjects.map((v, i) => {
-                    return (
-                      <div className="relative group overflow-visible">
+                <div className="w-full">
+                  <div className="flex items-center gap-2 px-3 pt-2 pb-2 border-b-2 overflow-x-auto scroll-smooth overflow-y-visible"> {/* Added overflow-y-visible */}
+                    <p className="text-sm border-r-2 pr-2 whitespace-nowrap">Sections</p>
+                    {examData.subjects.map((v, i) => (
+                      <div key={v.sub_id} className="relative group" style={{ position: "static" }}> {/* Force root positioning */}
                         <Button
-                          key={v.sub_id}
-                          size={"sm"}
-                          disabled={
-                            examData.subject_time == "yes" && i != activeSubject
-                          }
-                          variant={activeSubject == i ? "default" : "outline"}
+                          size="sm"
+                          disabled={examData.subject_time === "yes" && i !== activeSubject}
+                          variant={activeSubject === i ? "default" : "outline"}
                           onClick={() => setActiveSubject(i)}
                         >
                           {v.name}
                         </Button>
-                        <div className="hidden absolute w-[300px] top-[50px] h-[200px] z-50 left-0 md:group-hover:block">
+                        <div className="hidden fixed z-[9999] md:group-hover:block
+                       mt-2 left-[var(--hover-left)] top-[var(--hover-top)] 
+                       w-[300px] h-[50px] shadow-lg border bg-background">
                           <SubjectOverviewBlock hideTitle subject={v} />
                         </div>
                       </div>
-                    );
-                  })}
+                    ))}
+                  </div>
                 </div>
 
                 {examData.subjects.length > 0 ? (
                   <>
                     <ScrollArea
-                      className={`md:my-0 px-2 h-full pt-0 ${
-                        examData.studentExamState.showCalculator
+                      className={`md:my-0 px-2 h-full pt-0 ${examData.studentExamState.showCalculator
                           ? "pb-[500px]"
                           : "pb-[100px]"
-                      } md:pb-[70px]`}
+                        } md:pb-[70px]`}
                     >
                       <RenderQuestion
                         index={activeQuestion}
@@ -360,11 +358,11 @@ export function TakeExam() {
                     {examData.subjects.length >= 0 && (
                       <>
                         {examData.subject_time == "yes" &&
-                        activeQuestion ==
+                          activeQuestion ==
                           examData.subjects[
                             examData.studentExamState.activeSubject
                           ].questions.length -
-                            1 ? (
+                          1 ? (
                           <Button
                             size={"default"}
                             onClick={async () => {
