@@ -1,5 +1,4 @@
 import { MAQ } from "@/components/exams/questions/maq";
-import { MCQ } from "@/components/exams/questions/mcq";
 import { Card, CardContent } from "@/components/ui/card";
 import { useExamData } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
