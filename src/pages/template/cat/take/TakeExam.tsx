@@ -2,20 +2,14 @@ import { Button } from "@/components/ui/button";
 
 import * as React from "react";
 
-import {
-  ArrowRight,
-  Calculator,
-  Info,
-  Keyboard,
-  List
-} from "lucide-react";
+import { ArrowRight, Calculator, Info, Keyboard, List } from "lucide-react";
 
 import CountdownTimer from "@/components/exams/timer/countDownTimer";
 
 import Loader from "@/components/blocks/Loader";
 import { ExamDrawer } from "@/components/exams/drawer/drawer";
 import { useExamData, useExamWindowSwitch } from "@/lib/hooks";
-import { cn } from "@/lib/utils";
+import { cn, saveTest } from "@/lib/utils";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 // modules css
@@ -161,6 +155,14 @@ export function TakeExam() {
     };
   }, []);
 
+  const handleBeforeUnload = (event: any) => {
+    saveTest(examData);
+
+    // Show confirmation message
+    event.preventDefault();
+    event.returnValue = "Are you sure you want to leave?";
+  };
+
   React.useEffect(() => {
     const handleKeydown = (e: any) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "p") {
@@ -175,9 +177,12 @@ export function TakeExam() {
 
     window.addEventListener("keydown", handleKeydown);
 
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
     // Clean up the event listener on component unmount
     return () => {
       window.removeEventListener("keydown", handleKeydown);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
 

@@ -253,7 +253,12 @@ function CATExamDrawerContent({
             className="rounded-none uppercase shadow-md font-medium w-full bg-[#38aae9]"
             asChild
           >
-            <Link to={{ pathname: "/submit", search: searchParams.toString() }}>
+            <Link
+              to={{
+                pathname: "/cat-exam/submit",
+                search: searchParams.toString(),
+              }}
+            >
               Submit Exam
             </Link>
           </Button>
