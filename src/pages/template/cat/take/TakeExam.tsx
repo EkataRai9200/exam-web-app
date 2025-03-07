@@ -9,7 +9,7 @@ import CountdownTimer from "@/components/exams/timer/countDownTimer";
 import Loader from "@/components/blocks/Loader";
 import { ExamDrawer } from "@/components/exams/drawer/drawer";
 import { useExamData, useExamWindowSwitch } from "@/lib/hooks";
-import { cn, saveTest } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 // modules css
