@@ -182,7 +182,7 @@ export function TakeExam() {
     // Clean up the event listener on component unmount
     return () => {
       window.removeEventListener("keydown", handleKeydown);
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      // window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
 
