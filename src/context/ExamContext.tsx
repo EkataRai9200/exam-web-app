@@ -411,27 +411,48 @@ const markVisitedQuestion = async (
 };
 
 const startResumeExamCallback = (state: ExamDetailData) => {
+  // check if test timer is subject wise or not
   if (state.subject_time == "yes" && state.studentExamState.subject_times) {
+    // check if any subject is not submitted
     const subjectsNotSubmitted = Object.values(
       state.studentExamState.subject_times
     ).filter((s) => !s.submitted);
+
+    // if any subject is not submitted, open that subject
     if (subjectsNotSubmitted.length > 0) {
       if (
         !state.studentExamState.subject_times[subjectsNotSubmitted[0]._id]
           .start_time
       ) {
+        // if start time is not set, set it
         state.studentExamState.subject_times[
           subjectsNotSubmitted[0]._id
         ].start_time = Date.now();
       }
-      setActiveQuestion(
-        state,
-        0,
-        state.subjects.findIndex(
-          (s) => s.sub_id == subjectsNotSubmitted[0]._id
-        ),
-        true
+
+      // get subject index
+      const subjectIndex = state.subjects.findIndex(
+        (s) => s.sub_id == subjectsNotSubmitted[0]._id
       );
+
+      // get all subject questions
+      const subjectQs = Object.values(
+        state.studentExamState.student_answers
+      ).filter((item) => item.sub_id === subjectsNotSubmitted[0]._id);
+
+      // get last active question of subject
+      const lastActiveQs =
+        subjectQs.length > 0 ? subjectQs[subjectQs.length - 1] : false;
+
+      // get last question index
+      const questionIndex = lastActiveQs
+        ? state.subjects[subjectIndex].questions.findIndex(
+            (item) => item._id["$oid"] === lastActiveQs.qid
+          )
+        : 0;
+
+      // set active question
+      setActiveQuestion(state, questionIndex, subjectIndex, true);
     }
   } else {
     if (

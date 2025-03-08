@@ -224,3 +224,17 @@
   text-indent: initial;
   border-spacing: 2px;
 }
+
+.trigexam-nat-keyboard {
+  width: 170px;
+  background-color: #e4e4e4;
+  padding: 12px 40px;
+}
+
+.trigexam-nat-keyboard.hg-layout-numeric .hg-button {
+  height: 39px;
+  background: transparent;
+  font-weight: bold;
+  border: 1px solid #535353;
+  padding: 2px;
+}

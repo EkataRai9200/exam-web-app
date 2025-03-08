@@ -60,9 +60,9 @@ export function NAT({ index, subjectIndex }: RenderMCQOptionProps) {
         <Keyboard
           keyboardRef={(r) => (keyboard.current = r)}
           layout={{
-            default: ["1 2 3", "4 5 6", "7 8 9", "0 . -", "{bksp}"],
+            default: ["{bksp}", "1 2 3", "4 5 6", "7 8 9", "0 . -"],
           }}
-          theme="hg-theme-default hg-layout-numeric numeric-theme"
+          theme="hg-theme-default hg-layout-numeric numeric-theme trigexam-nat-keyboard"
           onChange={(input) => {
             setValue(input);
           }}
