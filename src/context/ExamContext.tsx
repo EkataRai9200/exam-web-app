@@ -460,16 +460,22 @@ const startResumeExamCallback = (state: ExamDetailData) => {
       Object.keys(state.studentExamState.student_answers).length > 0
     ) {
       (window as any).elapsed_time = state.elapsed_time ?? 0;
+
       const lastActiveQs = Object.values(
         state.studentExamState.student_answers
       )[Object.keys(state.studentExamState.student_answers).length - 1];
-      const subjectIndex = state.subjects.findIndex(
-        (item) => item.sub_id === lastActiveQs.sub_id
-      );
-      const questionIndex = state.subjects[subjectIndex].questions.findIndex(
-        (item) => item._id["$oid"] === lastActiveQs.qid
-      );
-      setActiveQuestion(state, questionIndex, subjectIndex, true);
+
+      if (lastActiveQs.sub_id && lastActiveQs.qid) {
+        const subjectIndex = state.subjects.findIndex(
+          (item) => item.sub_id === lastActiveQs.sub_id
+        );
+        const questionIndex = state.subjects[subjectIndex].questions.findIndex(
+          (item) => item._id["$oid"] === lastActiveQs.qid
+        );
+        setActiveQuestion(state, questionIndex, subjectIndex, true);
+      } else {
+        setActiveQuestion(state, 0, 0, true);
+      }
     } else {
       setActiveQuestion(state, 0, 0, true);
     }
