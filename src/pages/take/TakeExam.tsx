@@ -24,7 +24,7 @@ import "react-simple-keyboard/build/css/index.css";
 import { toast } from "sonner";
 import WebcamComponent from "@/components/exams/proctor/WebcamComponent";
 import { SubjectOverviewBlock } from "@/pages/submit/SubmitExam";
-
+import { requestFullScreen } from "@/lib/utils";
 export function TakeExam() {
   const {
     examData,
@@ -40,6 +40,9 @@ export function TakeExam() {
     submitExam,
   } = useExamData();
   const [isLoading, setIsLoading] = React.useState(true);
+  
+  // Add state to track fullscreen status
+  const [isFullscreen, setIsFullscreen] = React.useState(false);
 
   const examWindow = useExamWindowSwitch();
   React.useEffect(() => {}, [examWindow.isVisible]);
@@ -49,6 +52,64 @@ export function TakeExam() {
 
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  // Function to check fullscreen status
+  const checkFullscreen = React.useCallback(() => {
+    const fullscreenElement =
+      document.fullscreenElement ||
+      (document as any).webkitFullscreenElement ||
+      (document as any).mozFullScreenElement;
+
+    // macOS Green Button Fullscreen Detection
+    const isMacOSChrome = /Macintosh.*Chrome/.test(navigator.userAgent);
+    const visualFullscreen = isMacOSChrome
+      ? window.outerWidth === screen.width && window.outerHeight === screen.height
+      : false;
+
+    // Check using matchMedia API (some browsers support this)
+    const mediaQueryFullscreen = window.matchMedia("(display-mode: fullscreen)").matches;
+
+    // Final fullscreen status
+    const fullscreenStatus = !!fullscreenElement || visualFullscreen || mediaQueryFullscreen;
+    
+    setIsFullscreen(fullscreenStatus);
+    return fullscreenStatus;
+  }, []);
+
+  // Set up fullscreen monitoring
+  React.useEffect(() => {
+    // Only enforce fullscreen if proctoring is enabled
+    if (!examData.is_proctoring_allow) {
+      return;
+    }
+    
+    // Initial fullscreen request
+    requestFullScreen();
+    
+    // Listen for standard fullscreen events
+    document.addEventListener("fullscreenchange", checkFullscreen);
+    document.addEventListener("webkitfullscreenchange", checkFullscreen);
+    document.addEventListener("mozfullscreenchange", checkFullscreen);
+    document.addEventListener("MSFullscreenChange", checkFullscreen);
+    
+    // Listen for resize (detects macOS green button)
+    window.addEventListener("resize", checkFullscreen);
+    
+    // Initial check
+    checkFullscreen();
+    
+    // Periodic check as a fallback
+    const intervalId = setInterval(checkFullscreen, 1000);
+    
+    return () => {
+      document.removeEventListener("fullscreenchange", checkFullscreen);
+      document.removeEventListener("webkitfullscreenchange", checkFullscreen);
+      document.removeEventListener("mozfullscreenchange", checkFullscreen);
+      document.removeEventListener("MSFullscreenChange", checkFullscreen);
+      window.removeEventListener("resize", checkFullscreen);
+      clearInterval(intervalId);
+    };
+  }, [checkFullscreen, examData.is_proctoring_allow]);
 
   const handleNextQuestion = () => {
     if (
@@ -181,7 +242,7 @@ export function TakeExam() {
 
   return (
     <>
-      {examData.subjects.length > 0 && !isLoading ? (
+      {examData.subjects.length > 0 && !isLoading && (examData.is_proctoring_allow ? isFullscreen : true) ? (
         <>
           <div
             className="flex flex-col md:h-screen"
@@ -271,8 +332,8 @@ export function TakeExam() {
                           {v.name}
                         </Button>
                         <div className="hidden fixed z-[9999] md:group-hover:block
-                       mt-2 left-[var(--hover-left)] top-[var(--hover-top)] 
-                       w-[300px] h-[50px] shadow-lg border bg-background">
+                      mt-2 left-[var(--hover-left)] top-[var(--hover-top)] 
+                      w-[300px] h-[50px] shadow-lg border bg-background">
                           <SubjectOverviewBlock hideTitle subject={v} />
                         </div>
                       </div>
@@ -441,7 +502,51 @@ export function TakeExam() {
           {parseInt(examData.is_calc_allow) ? <CalculatorBlock /> : ""}
         </>
       ) : (
-        <Loader visible={true} />
+        <>
+          {examData.is_proctoring_allow && !isFullscreen ? (
+            <div 
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                backgroundColor: 'rgba(0, 0, 0, 0.95)',
+                zIndex: 9999,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                color: 'white',
+                textAlign: 'center',
+                padding: '20px'
+              }}
+            >
+              <h2 style={{ fontSize: '24px', marginBottom: '20px' }}>Test Paused</h2>
+          
+              <button
+                onClick={requestFullScreen}
+                style={{
+                  padding: '12px 24px',
+                  backgroundColor: '#0c7cd5',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  fontSize: '16px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
+            
+                Start Test
+              </button>
+            </div>
+          ) : (
+            <Loader visible={true} />
+          )}
+        </>
       )}
       {examData.is_proctoring_allow ? <WebcamComponent /> : ""}
     </>
