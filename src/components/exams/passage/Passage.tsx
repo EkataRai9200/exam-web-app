@@ -22,7 +22,9 @@ function Passage({
       className={cn(
         "w-full mt-2",
         isActive && examData.passage_with_qs ? "visible" : "hidden",
-        examData.passage_alignment == "Left" ? "md:w-1/2" : ""
+        examData.passage_alignment == "Left"
+          ? "md:w-1/2 h-[calc(100vh-180px)] pb-[50px] overflow-auto"
+          : "h-auto"
       )}
     >
       <CardHeader className="relative px-3 py-1">

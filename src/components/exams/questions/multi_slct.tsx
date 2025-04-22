@@ -70,7 +70,7 @@ export default function MULTI_SLCT({
       <Label htmlFor="message">Answer</Label>
 
       <DropdownMenu open={showDropdown}>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger className="max-w-[800px] overflow-auto" asChild>
           <div
             className="cursor-pointer inline-flex items-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background h-10 px-4 py-2 justify-between"
             onClick={() => setShowDropdown(!showDropdown)}
@@ -79,9 +79,12 @@ export default function MULTI_SLCT({
               <div className="flex flex-wrap gap-2">
                 {ans.map((a) => {
                   return (
-                    <Badge variant="secondary">
-                      {options[parseInt(a)]?.value}
-                    </Badge>
+                    <Badge
+                      variant="secondary"
+                      dangerouslySetInnerHTML={{
+                        __html: options[parseInt(a)]?.value ?? "",
+                      }}
+                    ></Badge>
                   );
                 })}
               </div>
@@ -99,16 +102,17 @@ export default function MULTI_SLCT({
         </DropdownMenuTrigger>
         <DropdownMenuContent
           onPointerDownOutside={() => setShowDropdown(false)}
-          className="w-full"
+          className="max-w-[200px] md:max-w-[800px]"
         >
           {options.map((o, i) => {
             return (
               <DropdownMenuCheckboxItem
+                className="w-full overflow-auto"
                 checked={ans.filter((c) => c == i.toString()).length > 0}
                 onCheckedChange={(checked) => markAnswer(i.toString(), checked)}
                 key={i}
               >
-                {o?.value ?? ""}
+                <div dangerouslySetInnerHTML={{ __html: o?.value ?? "" }}></div>
               </DropdownMenuCheckboxItem>
             );
           })}

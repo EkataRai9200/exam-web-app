@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useExamData } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
+import { MathJax } from "better-react-mathjax";
 import { Calculator, Keyboard } from "lucide-react";
 import Passage from "../passage/Passage";
 import { AUDIO_TYPE } from "./AUDIO_TYPE";
@@ -19,7 +20,6 @@ import SLCT from "./slct";
 import { Subjective } from "./subjective";
 import { TRUEFALSE } from "./truefalse";
 import { TXT_INPUT } from "./txt_input";
-import { MathJax } from "better-react-mathjax";
 
 export enum QuestionType {
   MCQ = "MCQ",
@@ -80,11 +80,11 @@ export function RenderQuestion({
         )}
         <Card
           className={cn(
-            "w-full md:min-h-[300px] border-none",
+            "w-full border-none pb-[50px]",
             isActive ? "visible" : "hidden",
             question.passage_desc.length > 0 &&
               examData.passage_alignment == "Left"
-              ? "md:w-1/2"
+              ? "md:w-1/2 md:h-[calc(100vh-180px)] overflow-auto"
               : ""
           )}
         >
@@ -152,7 +152,7 @@ export function RenderQuestion({
               )}
             </div>
           </CardHeader>
-          <CardContent className="px-3 pt-3 h-full">
+          <CardContent className="px-3 pt-3">
             <MathJax>
               {question.find_hint && question.find_hint != "DOCQ" ? (
                 <div className="text-sm font-normal pb-3">

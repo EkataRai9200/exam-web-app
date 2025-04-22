@@ -18,12 +18,11 @@ import CalculatorBlock from "@/components/exams/calculator/CalculatorBlock";
 import Sidebar from "@/components/exams/drawer/Sidebar";
 import InstructionsContent from "@/components/exams/instructions/content/InstructionsContent";
 import KeyboardBlock from "@/components/exams/keyboard/KeyboardBlock";
+import WebcamComponent from "@/components/exams/proctor/WebcamComponent";
 import QuestionPaperContent from "@/components/exams/questions/QuestionPaperContent";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { SubjectOverviewBlock } from "@/pages/submit/SubmitExam";
 import "react-simple-keyboard/build/css/index.css";
 import { toast } from "sonner";
-import WebcamComponent from "@/components/exams/proctor/WebcamComponent";
-import { SubjectOverviewBlock } from "@/pages/submit/SubmitExam";
 
 export function TakeExam() {
   const {
@@ -54,9 +53,9 @@ export function TakeExam() {
     if (
       examData.subject_time == "yes" &&
       activeQuestion >=
-      examData.subjects[examData.studentExamState.activeSubject].questions
-        .length -
-      1
+        examData.subjects[examData.studentExamState.activeSubject].questions
+          .length -
+          1
     ) {
       toast.dismiss();
       toast.info(
@@ -203,8 +202,8 @@ export function TakeExam() {
 
                 <div className="flex w-full md:w-auto items-end justify-end mt-2 md:mt-0 md:gap-4">
                   {examData.subjects.length > 0 &&
-                    examData.subject_time == "yes" &&
-                    examData.studentExamState.subject_times ? (
+                  examData.subject_time == "yes" &&
+                  examData.studentExamState.subject_times ? (
                     <>
                       <div
                         className={cn(
@@ -221,7 +220,7 @@ export function TakeExam() {
                             if (
                               !examData.studentExamState.submitted &&
                               examData.studentExamState.activeSubject >=
-                              examData.subjects.length - 1
+                                examData.subjects.length - 1
                             ) {
                               submitExam({
                                 submission_source: "timer",
@@ -258,21 +257,36 @@ export function TakeExam() {
                 )}
               >
                 <div className="w-full">
-                  <div className="flex items-center gap-2 px-3 pt-2 pb-2 border-b-2 overflow-x-auto scroll-smooth overflow-y-visible"> {/* Added overflow-y-visible */}
-                    <p className="text-sm border-r-2 pr-2 whitespace-nowrap">Sections</p>
+                  <div className="flex items-center gap-2 px-3 pt-2 pb-2 border-b-2 overflow-x-auto scroll-smooth overflow-y-visible">
+                    {" "}
+                    {/* Added overflow-y-visible */}
+                    <p className="text-sm border-r-2 pr-2 whitespace-nowrap">
+                      Sections
+                    </p>
                     {examData.subjects.map((v, i) => (
-                      <div key={v.sub_id} className="relative group" style={{ position: "static" }}> {/* Force root positioning */}
+                      <div
+                        key={v.sub_id}
+                        className="relative group"
+                        style={{ position: "static" }}
+                      >
+                        {" "}
+                        {/* Force root positioning */}
                         <Button
                           size="sm"
-                          disabled={examData.subject_time === "yes" && i !== activeSubject}
+                          disabled={
+                            examData.subject_time === "yes" &&
+                            i !== activeSubject
+                          }
                           variant={activeSubject === i ? "default" : "outline"}
                           onClick={() => setActiveSubject(i)}
                         >
                           {v.name}
                         </Button>
-                        <div className="hidden fixed z-[9999] md:group-hover:block
+                        <div
+                          className="hidden fixed z-[9999] md:group-hover:block
                        mt-2 left-[var(--hover-left)] top-[var(--hover-top)] 
-                       w-[300px] h-[50px] shadow-lg border bg-background">
+                       w-[300px] h-[50px] shadow-lg border bg-background"
+                        >
                           <SubjectOverviewBlock hideTitle subject={v} />
                         </div>
                       </div>
@@ -282,24 +296,17 @@ export function TakeExam() {
 
                 {examData.subjects.length > 0 ? (
                   <>
-                    <ScrollArea
-                      className={`md:my-0 px-2 h-full pt-0 ${examData.studentExamState.showCalculator
-                          ? "pb-[500px]"
-                          : "pb-[100px]"
-                        } md:pb-[70px]`}
-                    >
-                      <RenderQuestion
-                        index={activeQuestion}
-                        subjectIndex={activeSubject}
-                        isActive={true}
-                        setActive={setActiveQuestion}
-                        key={
-                          examData.subjects[activeSubject].questions[
-                            activeQuestion
-                          ]._id.$oid
-                        }
-                      />
-                    </ScrollArea>
+                    <RenderQuestion
+                      index={activeQuestion}
+                      subjectIndex={activeSubject}
+                      isActive={true}
+                      setActive={setActiveQuestion}
+                      key={
+                        examData.subjects[activeSubject].questions[
+                          activeQuestion
+                        ]._id.$oid
+                      }
+                    />
                   </>
                 ) : (
                   ""
@@ -358,11 +365,11 @@ export function TakeExam() {
                     {examData.subjects.length >= 0 && (
                       <>
                         {examData.subject_time == "yes" &&
-                          activeQuestion ==
+                        activeQuestion ==
                           examData.subjects[
                             examData.studentExamState.activeSubject
                           ].questions.length -
-                          1 ? (
+                            1 ? (
                           <Button
                             size={"default"}
                             onClick={async () => {
