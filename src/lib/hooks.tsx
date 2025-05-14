@@ -176,32 +176,35 @@ export function useExamData() {
     if (submission_source)
       state.studentExamState.submission_source = submission_source;
 
+    const afterSubmit = () => {
+      dispatch({
+        type: "notifySubmitted",
+        payload: "",
+      });
+      navigate({
+        pathname: "/feedback",
+        search: searchParams.toString(),
+      });
+      MySwal.fire({
+        title: message ?? "Your exam has been submitted.",
+        showDenyButton: false,
+        showCancelButton: false,
+        allowOutsideClick: false,
+        backdrop: "rgba(0, 0, 0, 0.5)",
+        confirmButtonText: "Close Window",
+      });
+    };
+
+    if (state.studentExamState.submitted) {
+      afterSubmit();
+      return;
+    }
+
     saveTest(state, "Yes").then((res) => {
       if (res && res?.status) {
-        dispatch({
-          type: "notifySubmitted",
-          payload: "",
-        });
-        navigate({
-          pathname: "/feedback",
-          search: searchParams.toString(),
-        });
-        MySwal.fire({
-          title: message ?? "Your exam has been submitted.",
-          showDenyButton: false,
-          showCancelButton: false,
-          allowOutsideClick: false,
-          backdrop: "rgba(0, 0, 0, 0.5)",
-          confirmButtonText: "Close Window",
-        });
+        afterSubmit();
       } else {
         alert("We were unable to submit your exam. Try Again !");
-        setTimeout(() => {
-          submitExam({
-            message,
-            submission_source,
-          });
-        }, 2000);
       }
     });
     return;

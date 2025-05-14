@@ -366,9 +366,12 @@ export const updateLatestTimeSpent = (state: ExamDetailData) => {
   state.studentExamState.timeSpent = calcTimeSpent(state);
 };
 
-export const saveLatestTimeAndState = (state: ExamDetailData) => {
+export const saveLatestTimeAndState = (
+  state: ExamDetailData,
+  submitted?: boolean
+) => {
   updateLatestTimeSpent(state);
-  saveTest(state);
+  saveTest(state, submitted ? "Yes" : "No");
   resetTimeSpent(state);
 };
 
@@ -621,12 +624,19 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
         currentSubTimeData.submit_time = Date.now();
       }
 
-      saveLatestTimeAndState(submitSectionState);
+      let activeSubIndex = submitSectionState.studentExamState.activeSubject;
+      const isLastSubject =
+        activeSubIndex == submitSectionState.subjects.length - 1;
+
+      if (isLastSubject) {
+        submitSectionState.studentExamState.submitted = true;
+        saveLatestTimeAndState(submitSectionState, true);
+      } else {
+        saveLatestTimeAndState(submitSectionState, false);
+      }
 
       // navigating to next subject
-      let activeSubIndex = submitSectionState.studentExamState.activeSubject;
-
-      if (activeSubIndex < submitSectionState.subjects.length - 1) {
+      if (!isLastSubject) {
         activeSubIndex += 1;
 
         const newSubData = submitSectionState.subjects[activeSubIndex];

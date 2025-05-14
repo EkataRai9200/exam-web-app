@@ -178,6 +178,12 @@ export function TakeExam() {
   const [showQuestionPaper, setShowQuestionPaper] = React.useState(false);
   const [showInstructions, setShowInstructions] = React.useState(false);
 
+  React.useEffect(() => {
+    if (examData.studentExamState.submitted && examData.subject_time == "yes") {
+      submitExam();
+    }
+  }, [examData.studentExamState.submitted]);
+
   return (
     <>
       {examData.subjects.length > 0 && !isLoading ? (
@@ -217,15 +223,6 @@ export function TakeExam() {
                               type: "submit_section",
                               payload: {},
                             });
-                            if (
-                              !examData.studentExamState.submitted &&
-                              examData.studentExamState.activeSubject >=
-                                examData.subjects.length - 1
-                            ) {
-                              submitExam({
-                                submission_source: "timer",
-                              });
-                            }
                           }}
                         />
                       </div>
@@ -235,11 +232,7 @@ export function TakeExam() {
                       {parseInt(examData.test_time_limit) > 0 &&
                         examData.studentExamState.start_date > 0 && (
                           <CountdownTimer
-                            // startTime={examData.studentExamState.start_date}
                             onExpire={onTimerExpires}
-                            // initialSeconds={
-                            //   parseInt(examData.test_time_limit) * 60
-                            // }
                             beforeText="Time left :"
                           />
                         )}
