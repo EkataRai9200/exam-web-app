@@ -31,12 +31,8 @@ export function MCQ_MULTI_OPTIONS({
   React.useEffect(() => {
     if (activeLang == "EN") {
       setOptions(question?.slct_options ?? []);
-    } else {
-      if (question?.hi_opt1) {
-        setOptions([]);
-      } else {
-        setOptions([]);
-      }
+    }else {
+      setOptions(question.hi_slct_options ?? []);
     }
   }, [examData]);
 
