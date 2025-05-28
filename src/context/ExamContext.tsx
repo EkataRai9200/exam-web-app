@@ -2,8 +2,8 @@
 import {
   MTQStudentAnsArray,
   mapResponseAnswersToStudentAnsArray,
-} from "@/components/exams/questions/mtq";
-import { saveTest } from "@/lib/utils";
+} from "@/features/questions/types/mtq";
+import { saveTest } from "@/utils/common";
 import React, { Dispatch, createContext, useReducer } from "react";
 
 export interface Instruction {
@@ -149,6 +149,7 @@ export interface StudentExamState {
   activeAnswer: Answer["ans"];
   submitted: boolean;
   submission_source?: SubmissionSource;
+  showSubmitModal: boolean;
 }
 
 export interface ObjectID {
@@ -232,7 +233,8 @@ type Action = {
     | "deleteAnswer"
     | "notifySubmitted"
     | "updateTimer"
-    | "saveLatestState";
+    | "saveLatestState"
+    | "setShowSubmitModal";
   payload: any;
 };
 
@@ -283,6 +285,7 @@ const initialState: ExamDetailData = {
     startTimeLocal: Date.now(),
     activeAnswer: "",
     submitted: false,
+    showSubmitModal: false,
   },
   audio_base_url: "",
   submit_section_button: "yes",
@@ -725,6 +728,14 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
         studentExamState: {
           ...state.studentExamState,
           submitted: true,
+        },
+      };
+    case "setShowSubmitModal":
+      return {
+        ...state,
+        studentExamState: {
+          ...state.studentExamState,
+          showSubmitModal: action.payload,
         },
       };
     default:

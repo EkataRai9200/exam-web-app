@@ -1,6 +1,5 @@
 import { useExamData } from "@/lib/hooks";
 
-import CountdownTimer from "@/components/exams/timer/countDownTimer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
@@ -8,21 +7,19 @@ import { ExamDetailData } from "@/context/ExamContext";
 import React from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
-import {
-  isAnswered,
-  isMarkedReview,
-} from "@/components/exams/drawer/examDrawerContent";
-import Answered from "@/components/exams/status/Answered";
-import Marked from "@/components/exams/status/Marked";
-import MarkedAnswered from "@/components/exams/status/MarkedAnswered";
-import NotAnswered from "@/components/exams/status/NotAnswered";
-import NotVisited from "@/components/exams/status/NotVisited";
+import Answered from "@/components/status/Answered";
+import Marked from "@/components/status/Marked";
+import MarkedAnswered from "@/components/status/MarkedAnswered";
+import NotAnswered from "@/components/status/NotAnswered";
+import NotVisited from "@/components/status/NotVisited";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   type CarouselApi,
 } from "@/components/ui/carousel";
+import TimerDisplay from "@/features/timer/TimerDisplay";
+import { isAnswered, isMarkedReview } from "@/utils/questionUtils";
 export const calcTotalQs = (subjects: ExamDetailData["subjects"]): number => {
   return subjects.reduce((acc, v) => acc + v.questions.length, 0);
 };
@@ -245,7 +242,7 @@ function SubmitExam() {
           </h5>
           <div className="flex gap-4">
             {examData.subjects.length > 0 && examData.start_date && isLoaded ? (
-              <CountdownTimer />
+              <TimerDisplay />
             ) : (
               ""
             )}

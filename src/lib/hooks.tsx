@@ -7,13 +7,14 @@ import {
   saveLatestTimeAndState,
   SubmissionSource,
 } from "@/context/ExamContext";
-import { authenticateToken, getTestDetails } from "@/pages/start/StartPage";
+import { generateWebTestToken } from "@/services/authService";
+import { fetchTestDetails } from "@/services/examService";
 import React, { useContext, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { saveTest } from "./utils";
-import { isAnswered } from "@/components/exams/drawer/examDrawerContent";
+import { saveTest } from "@/utils/common";
+import { isAnswered } from "@/utils/questionUtils";
 
 export function useExamData() {
   const { state, dispatch } = useContext(ExamContext);
@@ -28,9 +29,9 @@ export function useExamData() {
     const url = new URL(window.location.href);
     const token = url.searchParams.get("token");
 
-    const authUser = await authenticateToken(token);
+    const authUser = await generateWebTestToken(token);
 
-    const examData = await getTestDetails(token, authUser.webtesttoken);
+    const examData = await fetchTestDetails(token, authUser.webtesttoken);
 
     return { ...examData, authUser };
   };

@@ -4,22 +4,15 @@ import * as React from "react";
 
 import { ArrowLeft, ArrowRight, Trash } from "lucide-react";
 
-import { RenderQuestion } from "@/components/exams/questions/render";
-import CountdownTimer from "@/components/exams/timer/countDownTimer";
-
-import Loader from "@/components/blocks/Loader";
-import { ExamDrawer } from "@/components/exams/drawer/drawer";
+import Loader from "@/features/loader/Loader";
 import { useExamData, useExamWindowSwitch } from "@/lib/hooks";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/common";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 // modules css
-import CalculatorBlock from "@/components/exams/calculator/CalculatorBlock";
-import Sidebar from "@/components/exams/drawer/Sidebar";
-import InstructionsContent from "@/components/exams/instructions/content/InstructionsContent";
-import KeyboardBlock from "@/components/exams/keyboard/KeyboardBlock";
-import WebcamComponent from "@/components/exams/proctor/WebcamComponent";
-import QuestionPaperContent from "@/components/exams/questions/QuestionPaperContent";
+import CalculatorBlock from "@/features/calculator/components/CalculatorBlock";
+import InstructionsContent from "@/features/instructions/components/content/InstructionsContent";
+import KeyboardBlock from "@/features/keyboard/KeyboardBlock";
 import { SubjectOverviewBlock } from "@/pages/submit/SubmitExam";
 import "react-simple-keyboard/build/css/index.css";
 import { toast } from "sonner";
@@ -28,6 +21,13 @@ import {
   calcEndTime,
   calcSubjectEndTime,
 } from "@/features/timer/timerWorkerManager";
+import TimerDisplay from "@/features/timer/TimerDisplay";
+import WebcamComponent from "@/features/proctor/WebcamComponent";
+import QuestionPaperContent from "@/features/questions/QuestionPaperContent";
+import { RenderQuestion } from "@/features/questions/render";
+import { ExamDrawer } from "@/features/drawer/drawer";
+import Sidebar from "@/features/drawer/Sidebar";
+import SubmitExamScreen from "@/features/submit/SubmitExamScreen";
 
 export function TakeExam() {
   const {
@@ -215,14 +215,14 @@ export function TakeExam() {
                           "flex bg-gray-100 items-center justify-start gap-2"
                         )}
                       >
-                        <CountdownTimer beforeText="Time Left For Section :" />
+                        <TimerDisplay beforeText="Time Left For Section :" />
                       </div>
                     </>
                   ) : (
                     <>
                       {parseInt(examData.test_time_limit) > 0 &&
                         examData.studentExamState.start_date > 0 && (
-                          <CountdownTimer beforeText="Time left :" />
+                          <TimerDisplay beforeText="Time left :" />
                         )}
                     </>
                   )}
@@ -427,6 +427,7 @@ export function TakeExam() {
           </div>
           {examData.is_keyboard_allow ? <KeyboardBlock /> : ""}
           {parseInt(examData.is_calc_allow) ? <CalculatorBlock /> : ""}
+          <SubmitExamScreen />
         </>
       ) : (
         <Loader visible={true} />

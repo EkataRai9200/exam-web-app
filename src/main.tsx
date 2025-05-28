@@ -5,10 +5,10 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 
 // Importing global styles
-import Loader from "@/components/blocks/Loader";
+import Loader from "@/features/loader/Loader";
 import "@/index.css";
+import { initGA } from "@/features/analytics/analytics";
 import { ThemeProvider } from "./components/theme-provider";
-import { initGA } from "./lib/analytics";
 
 // Add the meta tag dynamically for production
 const metaTag = document.createElement("meta");
