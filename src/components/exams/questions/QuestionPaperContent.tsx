@@ -11,7 +11,7 @@ function QuestionPaperContent({
   setOpen: any;
 }) {
   const { examData } = useExamData();
-  console.log(examData)
+  // console.log(examData)
   return (
     <div
       className={cn(
@@ -19,12 +19,10 @@ function QuestionPaperContent({
         open ? "visible" : "hidden"
       )}
     >
-
       <h1 className="w-full text-center py-2 font-medium bg-gray-50">
         {examData.subjects[examData.studentExamState.activeSubject].name}
       </h1>
       <ScrollArea className="pb-5 px-5">
-
         {examData.subjects[
           examData.studentExamState.activeSubject
         ].questions.map((question, index) => {
@@ -35,10 +33,11 @@ function QuestionPaperContent({
                 className="no-tailwindcss-base ck-editor text-sm"
                 dangerouslySetInnerHTML={{
                   __html:
-                    (question.passage_desc?.[0]?.passage || question.hi_passage_desc?.[0]?.passage) || ''
+                    question.passage_desc?.[0]?.passage ||
+                    question.hi_passage_desc?.[0]?.passage ||
+                    "",
                 }}
               ></div>
-
 
               <div
                 className="no-tailwindcss-base ck-editor text-sm"

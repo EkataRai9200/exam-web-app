@@ -280,7 +280,7 @@ const initialState: ExamDetailData = {
     timeSpent: 0,
     showKeyboard: true,
     showCalculator: false,
-    startTimeLocal: 0,
+    startTimeLocal: Date.now(),
     activeAnswer: "",
     submitted: false,
   },
@@ -343,36 +343,79 @@ const setActiveQuestion = async (
   }
 };
 
-const calcTimeSpent = (state: ExamDetailData) => {
-  const timeSpent = Math.round(
-    (Date.now() - state.studentExamState.startTimeLocal) / 1000
+export const calcTimeSpent = (state: ExamDetailData) => {
+  const elapsedMs = Date.now() - state.studentExamState.startTimeLocal;
+  const timeSpentSeconds = Math.ceil(elapsedMs / 1000);
+  return timeSpentSeconds;
+};
+
+export const calcTimeSpentForTest = (state: ExamDetailData) => {
+  const timeSpent = calcTimeSpent(state);
+
+  const t = Math.round(
+    Math.min(
+      timeSpent,
+      parseFloat(state.test_time_limit) * 60 - (state.elapsed_time ?? 0)
+    )
   );
-  return timeSpent;
+  return t;
+};
+
+export const calcTimeSpentForSubject = (
+  state: ExamDetailData,
+  sub_id: string
+) => {
+  const timeSpent = calcTimeSpent(state);
+
+  if (state.subject_time == "no" || !state.studentExamState.subject_times) {
+    return timeSpent;
+  }
+
+  const subject = state.subjects.find((s) => s.sub_id == sub_id);
+  const maxDuration = subject?.subject_time ?? "0";
+  const timeObj = state.studentExamState.subject_times[sub_id];
+
+  return Math.round(
+    Math.min(
+      timeSpent,
+      parseFloat(maxDuration) * 60 - (timeObj.elapsed_time ?? 0)
+    )
+  );
 };
 
 export const updateLatestTimeSpent = (state: ExamDetailData) => {
-  state.elapsed_time = (state.elapsed_time ?? 0) + calcTimeSpent(state);
+  const timeSpent = calcTimeSpentForTest(state);
+  state.elapsed_time = Math.round(
+    Math.min(
+      (state.elapsed_time ?? 0) + timeSpent,
+      parseFloat(state.time_limit) * 60
+    )
+  );
+
   (window as any).elapsed_time = state.elapsed_time;
 
   // save time spent on subject
   if (state.subject_time == "yes" && state.studentExamState.subject_times) {
     const sub_id = state.subjects[state.studentExamState.activeSubject].sub_id;
     const timeObj = state.studentExamState.subject_times[sub_id];
-    timeObj.elapsed_time = (timeObj.elapsed_time ?? 0) + calcTimeSpent(state);
+
+    if (!timeObj.elapsed_time) timeObj.elapsed_time = 0;
+    timeObj.elapsed_time += calcTimeSpentForSubject(state, sub_id);
     timeObj.timeSpent = 0;
   }
 
   // save time spent on test
-  state.studentExamState.timeSpent = calcTimeSpent(state);
+  state.studentExamState.timeSpent = timeSpent;
 };
 
-export const saveLatestTimeAndState = (
+export const saveLatestTimeAndState = async (
   state: ExamDetailData,
-  submitted?: boolean
+  isSubmit?: boolean
 ) => {
   updateLatestTimeSpent(state);
-  saveTest(state, submitted ? "Yes" : "No");
+  const res = await saveTest(state, isSubmit ? "Yes" : "No");
   resetTimeSpent(state);
+  return res;
 };
 
 export const resetTimeSpent = (state: ExamDetailData) => {
@@ -628,11 +671,11 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
       const isLastSubject =
         activeSubIndex == submitSectionState.subjects.length - 1;
 
-      if (isLastSubject) {
-        submitSectionState.studentExamState.submitted = true;
-        saveLatestTimeAndState(submitSectionState, true);
+      if (activeSubIndex < submitSectionState.subjects.length - 1) {
+        saveLatestTimeAndState(submitSectionState);
       } else {
-        saveLatestTimeAndState(submitSectionState, false);
+        saveLatestTimeAndState(submitSectionState, true);
+        submitSectionState.studentExamState.submitted = true;
       }
 
       // navigating to next subject

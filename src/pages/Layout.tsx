@@ -1,12 +1,10 @@
 import { Toaster } from "@/components/ui/toaster";
 import { ExamProvider } from "@/context/ExamContext";
+import TimerProvider from "@/features/timer/TImerContext";
 import { AnalyticsTracker } from "@/lib/analytics/AnalyticsTracker";
-import { ClarityTracker } from "@/lib/analytics/ClarityTracker";
+import { MathJaxContext } from "better-react-mathjax";
 import { Outlet } from "react-router-dom";
 import { Toaster as SonnerToaster } from "sonner";
-import {
-  MathJaxContext,
-} from "better-react-mathjax";
 
 function Layout() {
   const mathjaxConfig = {
@@ -18,11 +16,12 @@ function Layout() {
   return (
     <MathJaxContext config={mathjaxConfig}>
       <ExamProvider>
-        <Outlet />
-        <ClarityTracker />
-        <AnalyticsTracker />
-        <Toaster />
-        <SonnerToaster richColors />
+        <TimerProvider>
+          {typeof window !== "undefined" && <Outlet />}
+          <AnalyticsTracker />
+          <Toaster />
+          <SonnerToaster richColors />
+        </TimerProvider>
       </ExamProvider>
     </MathJaxContext>
   );

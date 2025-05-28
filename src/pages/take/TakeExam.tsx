@@ -23,6 +23,11 @@ import QuestionPaperContent from "@/components/exams/questions/QuestionPaperCont
 import { SubjectOverviewBlock } from "@/pages/submit/SubmitExam";
 import "react-simple-keyboard/build/css/index.css";
 import { toast } from "sonner";
+import { useTimer } from "@/features/timer/TImerContext";
+import {
+  calcEndTime,
+  calcSubjectEndTime,
+} from "@/features/timer/timerWorkerManager";
 
 export function TakeExam() {
   const {
@@ -31,7 +36,6 @@ export function TakeExam() {
     setActiveQuestion,
     setActiveSubject,
     isLoaded,
-    onTimerExpires,
     saveAndNextQuestion,
     saveAnswer,
     markForReview,
@@ -99,6 +103,8 @@ export function TakeExam() {
     }
   };
 
+  const timer = useTimer();
+
   React.useEffect(() => {
     if (!isLoaded) {
       navigate({
@@ -116,28 +122,21 @@ export function TakeExam() {
         document.removeEventListener("paste", disableCopyPaste);
       }
 
-      if (examData.subject_time == "yes") {
-        if (
-          examData.studentExamState.subject_times &&
-          Object.values(examData.studentExamState.subject_times).every(
-            (s) => s.submitted
-          )
-        ) {
-          // test already submitted message !
-          // onTimerExpires();
-        } else {
-        }
-        setIsLoading(false);
-      } else {
-        // if (examData.remaining_time && examData.remaining_time <= 0) {
-        //   // onTimerExpires();
-        // }
-        setIsLoading(false);
+      if (examData.subject_time != "yes") {
+        timer.start(calcEndTime(examData));
       }
 
+      setIsLoading(false);
       setActiveQuestion(activeQuestion, activeSubject);
     }
   }, []);
+
+  React.useEffect(() => {
+    if (!isLoaded) return;
+    if (examData.subject_time == "yes") {
+      timer.start(calcSubjectEndTime(examData));
+    }
+  }, [examData.studentExamState.activeSubject]);
 
   React.useEffect(() => {
     document.title = `${examData.test_name}`;
@@ -216,25 +215,14 @@ export function TakeExam() {
                           "flex bg-gray-100 items-center justify-start gap-2"
                         )}
                       >
-                        <CountdownTimer
-                          beforeText="Time Left For Section :"
-                          onExpire={() => {
-                            dispatch({
-                              type: "submit_section",
-                              payload: {},
-                            });
-                          }}
-                        />
+                        <CountdownTimer beforeText="Time Left For Section :" />
                       </div>
                     </>
                   ) : (
                     <>
                       {parseInt(examData.test_time_limit) > 0 &&
                         examData.studentExamState.start_date > 0 && (
-                          <CountdownTimer
-                            onExpire={onTimerExpires}
-                            beforeText="Time left :"
-                          />
+                          <CountdownTimer beforeText="Time left :" />
                         )}
                     </>
                   )}

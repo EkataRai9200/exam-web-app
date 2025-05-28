@@ -3,8 +3,8 @@ import { toast } from "@/components/ui/use-toast";
 import {
   Answer,
   ExamContext,
-  ExamDetailData,
   Question,
+  saveLatestTimeAndState,
   SubmissionSource,
 } from "@/context/ExamContext";
 import { authenticateToken, getTestDetails } from "@/pages/start/StartPage";
@@ -119,56 +119,6 @@ export function useExamData() {
     recordQuestionTime();
   };
 
-  const getRemainingTime = (latest_state: ExamDetailData) => {
-    let timeSpent = 0;
-
-    const endTimeLeft = latest_state.test_end_date
-      ? Math.round((latest_state.test_end_date - Date.now()) / 1000)
-      : 0;
-
-    // checks if test has ended
-    if (latest_state.test_end_date && latest_state.test_end_date < Date.now()) {
-      return 0;
-    }
-
-    // checks if subject time is enabled
-    if (
-      latest_state.subject_time == "yes" &&
-      latest_state.studentExamState.subject_times
-    ) {
-      const activeSubData =
-        latest_state.subjects[latest_state.studentExamState.activeSubject] ??
-        {};
-      const activeSubTime =
-        latest_state.studentExamState.subject_times[activeSubData.sub_id] ?? {};
-      if (!activeSubTime.start_time) {
-        return parseFloat(activeSubData.subject_time) * 60;
-      }
-
-      if (activeSubTime.submitted) return 0;
-
-      const timeLeft =
-        parseFloat(activeSubData.subject_time) * 60 -
-        (activeSubTime.elapsed_time ?? 0);
-      timeSpent = Math.round(
-        (Date.now() - latest_state.studentExamState.startTimeLocal) / 1000
-      );
-      // console.log("timeLeft", timeLeft - timeSpent);
-      return timeLeft - timeSpent;
-    } else {
-      timeSpent = Math.round(
-        (Date.now() - latest_state.studentExamState.startTimeLocal) / 1000
-      );
-      const timeLeft =
-        parseInt(latest_state.test_time_limit) * 60 -
-        timeSpent -
-        ((window as any).elapsed_time ?? 0);
-      return latest_state.test_end_date
-        ? Math.min(timeLeft, endTimeLeft ?? 0)
-        : timeLeft;
-    }
-  };
-
   const submitExam = async ({
     message,
     submission_source,
@@ -200,7 +150,7 @@ export function useExamData() {
       return;
     }
 
-    saveTest(state, "Yes").then((res) => {
+    saveLatestTimeAndState(state, true).then((res) => {
       if (res && res?.status) {
         afterSubmit();
       } else {
@@ -211,10 +161,17 @@ export function useExamData() {
   };
 
   const onTimerExpires = () => {
-    submitExam({
-      message: "Time is up. Your exam has been automatically submitted. ",
-      submission_source: "timer",
-    });
+    if (state.subject_time == "yes") {
+      dispatch({
+        type: "submit_section",
+        payload: {},
+      });
+    } else {
+      submitExam({
+        message: "Time is up. Your exam has been automatically submitted. ",
+        submission_source: "timer",
+      });
+    }
   };
 
   const createPayloadForAnswer = async ({
@@ -379,7 +336,6 @@ export function useExamData() {
     questionTimeTaken: qTimeTakenRef,
     submitExam,
     onTimerExpires,
-    getRemainingTime,
     saveAndNextQuestion,
     canSaveAnswer,
     saveAnswer,

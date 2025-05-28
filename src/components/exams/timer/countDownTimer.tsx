@@ -1,52 +1,19 @@
-import { useExamData } from "@/lib/hooks";
+import { useTimer } from "@/features/timer/TImerContext";
 import { formatTimeToJSON } from "@/lib/utils";
 import { Timer } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 
 interface CountdownTimerProps {
   onExpire?: () => void;
   beforeText?: string;
 }
 
-const CountdownTimer: React.FC<CountdownTimerProps> = ({
-  onExpire,
-  beforeText,
-}) => {
-  const { examData, getRemainingTime, isLoaded } = useExamData();
-
-  const timeLimit = parseInt(examData.test_time_limit) * 60;
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  const [timeLeft, setTimeLeft] = useState<number>(timeLimit);
-
-  useEffect(() => {
-    if (!isLoaded) {
-      return;
-    }
-    const updateRemainingTime = () => {
-      const timeLeft = Math.max(0, getRemainingTime(examData));
-      if (timeLeft <= 0 && intervalRef.current) {
-        if (
-          examData.subject_time != "yes" ||
-          (examData.subject_time == "yes" &&
-            examData.studentExamState.activeSubject >=
-              examData.subjects.length - 1)
-        )
-          clearInterval(intervalRef.current);
-        onExpire && onExpire();
-      }
-      setTimeLeft(timeLeft);
-    };
-
-    if (!intervalRef.current)
-      intervalRef.current = setInterval(updateRemainingTime, 1000);
-
-    return () => {
-      if (intervalRef.current && examData.subject_time != "yes") {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, []);
+const CountdownTimer: React.FC<CountdownTimerProps> = ({ beforeText }) => {
+  const timer = useTimer();
+  const formatTime =
+    timer.remaining != null
+      ? formatTimeToJSON(Math.floor(timer.remaining / 1000))
+      : { h: "0", m: "0", s: "0" };
 
   return (
     <>
@@ -56,13 +23,13 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
           <span className="font-medium text-sm">{beforeText}</span>
         )}
         <span className="font-medium w-7 h-6 flex items-center justify-center bg-gray-300">
-          {formatTimeToJSON(timeLeft).h}
+          {formatTime.h}
         </span>
         <span className="font-medium w-7 h-6 flex items-center justify-center bg-gray-300">
-          {formatTimeToJSON(timeLeft).m}
+          {formatTime.m}
         </span>
         <span className="font-medium w-7 h-6 flex items-center justify-center bg-gray-300">
-          {formatTimeToJSON(timeLeft).s}
+          {formatTime.s}
         </span>
       </p>
     </>
