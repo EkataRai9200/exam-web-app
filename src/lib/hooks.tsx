@@ -142,7 +142,7 @@ export function useExamData() {
         showCancelButton: false,
         allowOutsideClick: false,
         backdrop: "rgba(0, 0, 0, 0.5)",
-        confirmButtonText: "Close Window",
+        confirmButtonText: "Close",
       });
     };
 
@@ -154,8 +154,6 @@ export function useExamData() {
     saveLatestTimeAndState(state, true).then((res) => {
       if (res && res?.status) {
         afterSubmit();
-      } else {
-        alert("We were unable to submit your exam. Try Again !");
       }
     });
     return;

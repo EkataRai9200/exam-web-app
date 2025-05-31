@@ -78,12 +78,13 @@ export function saveTest(
       const response = await res.json();
       if (!response.status) {
         MySwal.fire({
-          title: "Session Expired, Start test again to continue.",
+          title: response.msg ?? "Something went wrong, try again",
           showDenyButton: false,
           showCancelButton: false,
           allowOutsideClick: false,
           backdrop: "rgba(0, 0, 0, 0.5)",
-          confirmButtonText: "Start Test",
+          confirmButtonText:
+            response.error_code == "E01" ? "Continue" : "Try Again",
         }).then((_result) => {
           if (_result.isConfirmed) {
             window.location.reload();
@@ -92,7 +93,7 @@ export function saveTest(
       }
       return response;
     })
-    .catch(() => {
+    .catch((e) => {
       showSaveTestError(() => saveTest(examData, submitted), examData);
     });
 }

@@ -61,7 +61,11 @@ export function MCQ({ index, subjectIndex }: RenderMCQOptionProps) {
   }, []);
 
   useEffect(() => {
-    if ((window as any).MathJax) (window.MathJax as any).typesetPromise();
+    if (
+      (window as any).MathJax &&
+      typeof (window.MathJax as any).typesetPromise == "function"
+    )
+      (window.MathJax as any).typesetPromise();
   }, [options]);
 
   return (
