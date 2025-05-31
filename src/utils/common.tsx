@@ -93,7 +93,7 @@ export function saveTest(
       }
       return response;
     })
-    .catch((e) => {
+    .catch(() => {
       showSaveTestError(() => saveTest(examData, submitted), examData);
     });
 }
