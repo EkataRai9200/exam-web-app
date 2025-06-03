@@ -9,12 +9,12 @@ import {
 } from "@/context/ExamContext";
 import { generateWebTestToken } from "@/services/authService";
 import { fetchTestDetails } from "@/services/examService";
+import { saveTest } from "@/utils/common";
+import { isAnswered } from "@/utils/questionUtils";
 import React, { useContext, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { saveTest } from "@/utils/common";
-import { isAnswered } from "@/utils/questionUtils";
 
 export function useExamData() {
   const { state, dispatch } = useContext(ExamContext);
@@ -151,7 +151,7 @@ export function useExamData() {
       return;
     }
 
-    saveLatestTimeAndState(state, true).then((res) => {
+    await saveLatestTimeAndState(state, true).then((res) => {
       if (res && res?.status) {
         afterSubmit();
       }
@@ -305,9 +305,9 @@ export function useExamData() {
     ) {
       setActiveSubject(state.studentExamState.activeSubject + 1);
     } else {
-      navigate({
-        pathname: "/submit",
-        search: searchParams.toString(),
+      dispatch({
+        type: "setShowSubmitModal",
+        payload: true,
       });
     }
 

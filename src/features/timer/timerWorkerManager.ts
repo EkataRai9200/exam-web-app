@@ -48,7 +48,7 @@ export function stopTimer(): void {
   }
 }
 
-export function calcEndTime(examData: ExamDetailData) {
+export function getAvailableExamTime(examData: ExamDetailData) {
   let endTimeLeft = Number.MAX_SAFE_INTEGER;
   if (examData.test_end_date) {
     endTimeLeft = examData.test_end_date - Date.now();
@@ -62,7 +62,7 @@ export function calcEndTime(examData: ExamDetailData) {
   return timeLeft;
 }
 
-export function calcSubjectEndTime(examData: ExamDetailData) {
+export function getAvailableSubjectTime(examData: ExamDetailData) {
   let endTimeLeft = Number.MAX_SAFE_INTEGER;
   if (examData.test_end_date) {
     endTimeLeft = Math.floor((examData.test_end_date - Date.now()) / 1000);

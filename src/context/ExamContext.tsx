@@ -292,24 +292,34 @@ const initialState: ExamDetailData = {
   is_option_based_marking: "",
 };
 
-const startResumeSubjectTime = (state: ExamDetailData) => {
-  const activeSubData = state.subjects[state.studentExamState.activeSubject];
-
+const startResumeSubjectTime = (newState: ExamDetailData) => {
+  // set initial state for subject_times, if not set already
+  if (!newState.studentExamState.subject_times)
+    newState.studentExamState.subject_times = {};
   if (
-    state.subject_time == "yes" &&
-    state.studentExamState.subject_times &&
-    !state.studentExamState.subject_times[activeSubData.sub_id]
+    newState.subject_time == "yes" &&
+    Object.values(newState.studentExamState.subject_times).length == 0
   ) {
-    state.subjects.map((subject) => {
-      if (
-        state.studentExamState.subject_times &&
-        !state.studentExamState.subject_times[subject.sub_id]
-      )
-        state.studentExamState.subject_times[subject.sub_id] = {
-          _id: subject.sub_id,
-          submitted: false,
-        };
+    newState.subjects.map((subject) => {
+      if (!newState.studentExamState.subject_times)
+        newState.studentExamState.subject_times = {};
+      newState.studentExamState.subject_times[subject.sub_id] = {
+        _id: subject.sub_id,
+        elapsed_time: 0,
+        submitted: false,
+      };
     });
+  }
+
+  const activeSubData =
+    newState.subjects[newState.studentExamState.activeSubject];
+
+  if (!newState.studentExamState.subject_times[activeSubData.sub_id]) {
+    newState.studentExamState.subject_times[activeSubData.sub_id] = {
+      _id: activeSubData.sub_id,
+      elapsed_time: 0,
+      submitted: false,
+    };
   }
 };
 
@@ -347,83 +357,54 @@ const setActiveQuestion = async (
 };
 
 export const calcTimeSpent = (state: ExamDetailData) => {
-  const elapsedMs = Date.now() - state.studentExamState.startTimeLocal;
-  const timeSpentSeconds = Math.ceil(elapsedMs / 1000);
+  const elapsedMs =
+    parseInt(state.test_time_limit) * 60 - (window as any).remaining_time;
+  const timeSpentSeconds = Math.round(elapsedMs / 1000);
   return timeSpentSeconds;
-};
-
-export const calcTimeSpentForTest = (state: ExamDetailData) => {
-  const timeSpent = calcTimeSpent(state);
-
-  const t = Math.round(
-    Math.min(
-      timeSpent,
-      parseFloat(state.test_time_limit) * 60 - (state.elapsed_time ?? 0)
-    )
-  );
-  return t;
 };
 
 export const calcTimeSpentForSubject = (
   state: ExamDetailData,
   sub_id: string
 ) => {
-  const timeSpent = calcTimeSpent(state);
-
   if (state.subject_time == "no" || !state.studentExamState.subject_times) {
-    return timeSpent;
+    return 0;
   }
 
   const subject = state.subjects.find((s) => s.sub_id == sub_id);
   const maxDuration = subject?.subject_time ?? "0";
-  const timeObj = state.studentExamState.subject_times[sub_id];
 
-  return Math.round(
-    Math.min(
-      timeSpent,
-      parseFloat(maxDuration) * 60 - (timeObj.elapsed_time ?? 0)
-    )
-  );
+  if (!subject) return 0;
+
+  const elapsed =
+    parseInt(subject?.subject_time) * 60 -
+    Math.ceil((window as any).remaining_time / 1000);
+  const timeSpent = elapsed;
+
+  return Math.ceil(Math.min(timeSpent + 1, parseInt(maxDuration) * 60));
 };
 
-export const updateLatestTimeSpent = (state: ExamDetailData) => {
-  const timeSpent = calcTimeSpentForTest(state);
-  state.elapsed_time = Math.round(
-    Math.min(
-      (state.elapsed_time ?? 0) + timeSpent,
-      parseFloat(state.time_limit) * 60
-    )
-  );
-
-  (window as any).elapsed_time = state.elapsed_time;
+export const getSubjectWiseTime = (state: ExamDetailData) => {
+  if (state.subject_time != "yes" || !state.studentExamState.subject_times)
+    return;
 
   // save time spent on subject
-  if (state.subject_time == "yes" && state.studentExamState.subject_times) {
-    const sub_id = state.subjects[state.studentExamState.activeSubject].sub_id;
-    const timeObj = state.studentExamState.subject_times[sub_id];
+  const sub_id = state.subjects[state.studentExamState.activeSubject].sub_id;
+  const timeObj = state.studentExamState.subject_times[sub_id];
 
-    if (!timeObj.elapsed_time) timeObj.elapsed_time = 0;
-    timeObj.elapsed_time += calcTimeSpentForSubject(state, sub_id);
-    timeObj.timeSpent = 0;
-  }
+  if (!timeObj.elapsed_time) timeObj.elapsed_time = 0;
+  timeObj.elapsed_time = calcTimeSpentForSubject(state, sub_id);
 
-  // save time spent on test
-  state.studentExamState.timeSpent = timeSpent;
+  return state;
 };
 
 export const saveLatestTimeAndState = async (
   state: ExamDetailData,
   isSubmit?: boolean
 ) => {
-  updateLatestTimeSpent(state);
+  // updateLatestTimeSpent(state);
   const res = await saveTest(state, isSubmit ? "Yes" : "No");
-  resetTimeSpent(state);
   return res;
-};
-
-export const resetTimeSpent = (state: ExamDetailData) => {
-  state.studentExamState.startTimeLocal = Date.now();
-  state.studentExamState.timeSpent = 0;
 };
 
 const markVisitedQuestion = async (
@@ -576,7 +557,7 @@ const examReducer = (state: ExamDetailData, action: Action): ExamDetailData => {
         };
         saveTest(state);
       } else {
-        startResumeExamCallback(state);
+        // startResumeExamCallback(state);
       }
       return { ...state };
     case "setActiveSubject":

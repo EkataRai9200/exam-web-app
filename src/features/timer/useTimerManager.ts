@@ -19,6 +19,7 @@ export function useTimerManager() {
     listenerRef.current = (data) => {
       if (data.type === "tick" && data.remaining != null) {
         const remaining = data.remaining;
+        (window as any).remaining_time = remaining;
         setRemaining(remaining ?? 0);
       } else if (data.type === "finished") {
         onTimerExpires();

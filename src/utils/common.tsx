@@ -1,6 +1,10 @@
 import { ToastAction } from "@/components/ui/toast";
 import { toast } from "@/components/ui/use-toast";
-import { ExamAuthUser, ExamDetailData } from "@/context/ExamContext";
+import {
+  ExamAuthUser,
+  ExamDetailData,
+  getSubjectWiseTime,
+} from "@/context/ExamContext";
 import { clsx, type ClassValue } from "clsx";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
@@ -54,6 +58,7 @@ export function saveTest(
   submitted: "Yes" | "No" = "No"
 ) {
   const MySwal = withReactContent(Swal);
+  const remaining = Math.round((window as any).remaining_time / 1000);
   const requestBody: any = {
     response: { ...examData.studentExamState.student_answers },
     remaining_time: 0,
@@ -62,11 +67,19 @@ export function saveTest(
     webtesttoken: examData.authUser?.webtesttoken,
     start_date: examData.studentExamState.start_date,
     subject_times: examData.studentExamState.subject_times,
-    timeSpent: examData.studentExamState.timeSpent,
+    timeSpent: parseInt(examData.test_time_limit) * 60 - (remaining ?? 0),
   };
   if (examData.studentExamState.submission_source) {
     requestBody.submission_source = examData.studentExamState.submission_source;
   }
+
+  if (examData.subject_time == "yes") {
+    requestBody.subject_times =
+      getSubjectWiseTime(examData)?.studentExamState?.subject_times;
+  }
+
+  console.log("requestBody", { requestBody, examData });
+
   return fetch(`${examData.authUser?.api_url}/save-test-response`, {
     method: "POST",
     headers: {

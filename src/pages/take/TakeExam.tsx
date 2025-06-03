@@ -18,8 +18,8 @@ import "react-simple-keyboard/build/css/index.css";
 import { toast } from "sonner";
 import { useTimer } from "@/features/timer/TImerContext";
 import {
-  calcEndTime,
-  calcSubjectEndTime,
+  getAvailableExamTime,
+  getAvailableSubjectTime,
 } from "@/features/timer/timerWorkerManager";
 import TimerDisplay from "@/features/timer/TimerDisplay";
 import WebcamComponent from "@/features/proctor/WebcamComponent";
@@ -105,6 +105,47 @@ export function TakeExam() {
 
   const timer = useTimer();
 
+  const handleKeydown = (e: any) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "p") {
+      e.preventDefault();
+      alert("Printing is disabled on this page.");
+    }
+    if (e.key === "PrintScreen") {
+      e.preventDefault();
+      alert("Screenshot capture is disabled.");
+    }
+  };
+
+  const init = () => {
+    document.title = `${examData.test_name}`;
+    document.addEventListener("copy", disableCopyPaste);
+    document.addEventListener("cut", disableCopyPaste);
+    document.addEventListener("paste", disableCopyPaste);
+    document.addEventListener("contextmenu", (e) => e.preventDefault());
+    window.addEventListener("keydown", handleKeydown);
+
+    if (examData.is_proctoring_allow) {
+      examWindow.activate();
+    }
+    if (examData.is_keyboard_allow) {
+      document.removeEventListener("copy", disableCopyPaste);
+      document.removeEventListener("cut", disableCopyPaste);
+      document.removeEventListener("paste", disableCopyPaste);
+    }
+    if (examData.subject_time != "yes") {
+      timer.start(getAvailableExamTime(examData));
+    }
+    setIsLoading(false);
+    setActiveQuestion(activeQuestion, activeSubject);
+  };
+
+  const onLeave = () => {
+    document.removeEventListener("copy", disableCopyPaste);
+    document.removeEventListener("cut", disableCopyPaste);
+    document.removeEventListener("paste", disableCopyPaste);
+    window.removeEventListener("keydown", handleKeydown);
+  };
+
   React.useEffect(() => {
     if (!isLoaded) {
       navigate({
@@ -112,65 +153,17 @@ export function TakeExam() {
         search: searchParams.toString(),
       });
     } else {
-      if (examData.is_proctoring_allow) {
-        examWindow.activate();
-      }
-
-      if (examData.is_keyboard_allow) {
-        document.removeEventListener("copy", disableCopyPaste);
-        document.removeEventListener("cut", disableCopyPaste);
-        document.removeEventListener("paste", disableCopyPaste);
-      }
-
-      if (examData.subject_time != "yes") {
-        timer.start(calcEndTime(examData));
-      }
-
-      setIsLoading(false);
-      setActiveQuestion(activeQuestion, activeSubject);
+      init();
     }
+    return onLeave;
   }, []);
 
   React.useEffect(() => {
     if (!isLoaded) return;
     if (examData.subject_time == "yes") {
-      timer.start(calcSubjectEndTime(examData));
+      timer.start(getAvailableSubjectTime(examData));
     }
   }, [examData.studentExamState.activeSubject]);
-
-  React.useEffect(() => {
-    document.title = `${examData.test_name}`;
-    document.addEventListener("copy", disableCopyPaste);
-    document.addEventListener("cut", disableCopyPaste);
-    document.addEventListener("paste", disableCopyPaste);
-    document.addEventListener("contextmenu", (e) => e.preventDefault());
-
-    return () => {
-      document.removeEventListener("copy", disableCopyPaste);
-      document.removeEventListener("cut", disableCopyPaste);
-      document.removeEventListener("paste", disableCopyPaste);
-    };
-  }, []);
-
-  React.useEffect(() => {
-    const handleKeydown = (e: any) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "p") {
-        e.preventDefault();
-        alert("Printing is disabled on this page.");
-      }
-      if (e.key === "PrintScreen") {
-        e.preventDefault();
-        alert("Screenshot capture is disabled.");
-      }
-    };
-
-    window.addEventListener("keydown", handleKeydown);
-
-    // Clean up the event listener on component unmount
-    return () => {
-      window.removeEventListener("keydown", handleKeydown);
-    };
-  }, []);
 
   const [showSidebar, setShowSidebar] = React.useState(true);
 
@@ -178,8 +171,9 @@ export function TakeExam() {
   const [showInstructions, setShowInstructions] = React.useState(false);
 
   React.useEffect(() => {
-    if (examData.studentExamState.submitted && examData.subject_time == "yes") {
+    if (examData.studentExamState.submitted) {
       submitExam();
+      timer.stop();
     }
   }, [examData.studentExamState.submitted]);
 
